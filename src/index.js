@@ -11,6 +11,8 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+export default app;
+
+// app.listen(port, () => {
+//     console.log(`Server is running on http://localhost:${port}`);
+// });

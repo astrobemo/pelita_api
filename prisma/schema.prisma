@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model customer{
+  id    Int @id
+  nama  String
+  alias String?
+  alamat    String
+  telepon1  String
+  telepon2  String
+  npwp      String?
+  nik  String?
+  kota String
+  provinsi  String
+  kode_pos  String
+  email     String
+  contact_person  String?
+  tempo_kredit    Int?
+  warning_kredit  Int?
+  limit_warning_type Int?
+  limit_amount  Int?
+  limit_atas    Int?
+  limit_warning_amount Int?
+  status_aktif  Boolean
+  img_link      String?
+  npwp_link     String?
+  ktp_link      String?
+  medsos_link   String?
+  tipe_company  String
+  blok    String
+  no      String
+  rt      String
+  rw      String
+  kecamatan   String
+  kelurahan   String
+  updated_at  String
+
+  @@map("customers")
+}
