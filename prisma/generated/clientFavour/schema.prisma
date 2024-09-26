@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/clientFavour"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_FAVOUR")
+}
+
+model customer {
+  id                        Int                         @id @default(autoincrement())
+  nama                      String
+  alias                     String?
+  alamat                    String
+  telepon1                  String
+  telepon2                  String
+  npwp                      String?
+  nik                       String?
+  kota                      String?
+  provinsi                  String?
+  kode_pos                  String?
+  email                     String?
+  contact_person            String?
+  tempo_kredit              Int?
+  warning_kredit            Int?
+  limit_warning_type        Int?
+  limit_amount              Int?
+  limit_atas                Int?
+  limit_warning_amount      Int?
+  status_aktif              Boolean
+  img_link                  String?
+  npwp_link                 String?
+  ktp_link                  String?
+  medsos_link               String?
+  tipe_company              String
+  blok                      String
+  no                        String
+  rt                        String
+  rw                        String
+  kecamatan                 String
+  kelurahan                 String
+  updated_at                DateTime
+  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
+
+  @@map("nd_customer")
+}
+
+model rekam_faktur_pajak {
+  id                        Int                         @id @default(autoincrement())
+  tanggal_awal              DateTime
+  tanggal_akhir             DateTime
+  status                    Int
+  locked_date               DateTime
+  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
+
+  @@map("nd_rekam_faktur_pajak")
+}
+
+model rekam_faktur_pajak_detail {
+  id                    Int                @id @default(autoincrement())
+  rekam_faktur_pajak_id Int
+  penjualan_id          Int
+  customer_id           Int
+  tanggal               DateTime
+  nama_customer         String
+  no_npwp               String?
+  no_nik                String?
+  no_faktur_pajak       String
+  rekam_faktur_pajak    rekam_faktur_pajak @relation(fields: [rekam_faktur_pajak_id], references: [id])
+  customer              customer           @relation(fields: [customer_id], references: [id])
+
+  @@map("nd_rekam_faktur_pajak_detail")
+}
