@@ -1,4 +1,4 @@
-import { prismaClient } from "../src/prisma-client.js";
+import { generatePrismaClient } from "../src/prisma-client.js";
 
 const checkMemoryUsage = () => {
     const used = process.memoryUsage();
@@ -15,6 +15,9 @@ const checkMemoryUsage = () => {
 describe("Prisma Client aggregate ", () => {
     it("Test groupby", async () => {
         checkMemoryUsage();
+
+        const company = ["Favour", "Blessing", "Grace"];
+        const prismaClient = generatePrismaClient(company);
 
         const tgl_awal = new Date('2023-10-09');
 
