@@ -9,6 +9,7 @@ const allowedOrigins = ['http://202.138.247.174'];
 
 const corsOptions = {
     origin: function (origin, callback) {
+        console.log('origin', origin);
         if (!origin) {
             callback(new Error('Origin is undefined. Not allowed by CORS'));
         } else if (allowedOrigins.indexOf(origin) !== -1) {
