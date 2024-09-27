@@ -52,8 +52,6 @@ describe("Prisma Client aggregate ", () => {
             });
         };
 
-
-
         const groupedCustomers = new Map();
         Object.entries(customers).forEach(([company, companyCustomers]) => {
             companyCustomers.forEach(customer => {
@@ -71,13 +69,12 @@ describe("Prisma Client aggregate ", () => {
                 });
 
             });
+            checkMemoryUsage();
         });
 
         
         const result = Object.fromEntries(groupedCustomers);
-        console.log(result);
-
-        checkMemoryUsage();        
+        console.log(Object.values(result).length);
 
         // const rekam_faktur_pajak2 = await prismaClient.rekam_faktur_pajak_detail.find
 
