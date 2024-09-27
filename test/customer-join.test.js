@@ -48,13 +48,15 @@ describe("Prisma Client aggregate ", () => {
                         in: customerIds
                     }
                 },
+                take: 20
             });
         };
 
-        console.log(customers);
+
 
         const groupedCustomers = new Map();
         Object.entries(customers).forEach(([company, companyCustomers]) => {
+            console.log(company, companyCustomers);
             companyCustomers.forEach(customer => {
                 const {npwp,nik} = {customer};
                 const nKey = npwp || nik;
