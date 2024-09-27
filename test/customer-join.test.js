@@ -51,12 +51,26 @@ describe("Prisma Client aggregate ", () => {
             });
         };
 
-        company.forEach(list => {
-            console.table(customers[list.toLowerCase()]);
+        const groupedCustomers = new Map();
+        Object.entries(customers).forEach(([company, companyCustomers]) => {
+            companyCustomers.forEach(customer => {
+                const {npwp,nik} = {customer};
+                const nKey = npwp || nik;
+                if(!groupedCustomers.has(nKey)){
+                    groupedCustomers.set(nKey, []);
+                }
+
+                groupedCustomers.get(nKey).push({
+                    company,
+                    ...customer
+                });
+
+            });
         });
 
-        checkMemoryUsage();
-        
+        const result = Object.fromEntries(groupedCustomers);
+        console.table(result);
+        checkMemoryUsage();        
 
         // const rekam_faktur_pajak2 = await prismaClient.rekam_faktur_pajak_detail.find
 
