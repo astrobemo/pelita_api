@@ -18,8 +18,8 @@ model customer{
   nama  String
   alias String?
   alamat    String
-  telepon1  String
-  telepon2  String
+  telepon1  String?
+  telepon2  String?
   npwp      String?
   nik  String?
   kota String?
