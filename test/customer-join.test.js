@@ -57,7 +57,8 @@ describe("Prisma Client aggregate ", () => {
         const groupedCustomers = new Map();
         Object.entries(customers).forEach(([company, companyCustomers]) => {
             companyCustomers.forEach(customer => {
-                const {npwp,nik} = {customer};
+                const npwp = customer.npwp;
+                const nik = customer.nik;
                 const nKey = npwp || nik;
                 console.log(nKey, customer);
                 if(!groupedCustomers.has(nKey)){
