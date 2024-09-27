@@ -16,7 +16,7 @@ describe("Prisma Client aggregate ", () => {
     it("Test groupby", async () => {
         checkMemoryUsage();
 
-        const company = ["Favour", "Blessing", "Grace"];
+        const company = ["favour", "blessing", "grace"];
         const prismaClient = generatePrismaClient(company);
 
         const tgl_awal = new Date('2023-10-09');
@@ -69,9 +69,10 @@ describe("Prisma Client aggregate ", () => {
         });
 
         const result = Object.fromEntries(groupedCustomers);
-        console.table(result);
 
-
+        for (const list of result) {
+            console.table(list);
+        }
         checkMemoryUsage();        
 
         // const rekam_faktur_pajak2 = await prismaClient.rekam_faktur_pajak_detail.find
