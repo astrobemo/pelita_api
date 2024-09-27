@@ -111,6 +111,15 @@ app.get('/customers/verified_by_pajak', async (req, res) => {
     
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    if (err) {
+        res.status(403).send('Not allowed by CORS');
+    } else {
+        next();
+    }
+});
+
 
 export default app;
 
