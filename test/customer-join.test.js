@@ -51,9 +51,7 @@ describe("Prisma Client aggregate ", () => {
             });
         };
 
-        for (const customer of customers) {
-            console.table(customer);
-        }
+        console.log(customers);
 
         const groupedCustomers = new Map();
         Object.entries(customers).forEach(([company, companyCustomers]) => {
