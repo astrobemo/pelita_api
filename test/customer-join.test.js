@@ -51,7 +51,9 @@ describe("Prisma Client aggregate ", () => {
             });
         };
 
-        console.table(customers);
+        company.forEach(list => {
+            console.table(customers[list.toLowerCase()]);
+        });
 
         checkMemoryUsage();
         
