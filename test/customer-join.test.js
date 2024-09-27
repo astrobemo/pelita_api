@@ -20,7 +20,7 @@ describe("Prisma Client aggregate ", () => {
         const prismaClient = generatePrismaClient(company);
 
         const tgl_awal = new Date('2023-10-09');
-        customers = [];
+        const customers = [];
 
         for (const list of company) {
             const company = list.toLowerCase();
