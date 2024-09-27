@@ -73,11 +73,9 @@ describe("Prisma Client aggregate ", () => {
             });
         });
 
-        console.log(groupedCustomers);
-
-        const result = Object.fromEntries(groupedCustomers);
-
         
+        const result = Object.fromEntries(groupedCustomers);
+        console.log(result);
 
         checkMemoryUsage();        
 
