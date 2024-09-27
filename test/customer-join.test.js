@@ -42,7 +42,7 @@ describe("Prisma Client aggregate ", () => {
             
     
             const customerIds = aggeratedCustomer.map((item) => item.customer_id);
-            customers[company] = await prismaClient[key].customer.findMany({
+            customers[company] = await prismaClient[company].customer.findMany({
                 where: {
                     id: {
                         in: customerIds
