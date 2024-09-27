@@ -20,7 +20,7 @@ describe("Prisma Client aggregate ", () => {
         const prismaClient = generatePrismaClient(company);
 
         const tgl_awal = new Date('2023-10-09');
-        const customers = [];
+        const customers = {};
 
         for (const list of company) {
             const company = list.toLowerCase();
@@ -70,6 +70,8 @@ describe("Prisma Client aggregate ", () => {
 
         const result = Object.fromEntries(groupedCustomers);
         console.table(result);
+
+
         checkMemoryUsage();        
 
         // const rekam_faktur_pajak2 = await prismaClient.rekam_faktur_pajak_detail.find
