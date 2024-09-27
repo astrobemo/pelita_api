@@ -48,7 +48,7 @@ describe("Prisma Client aggregate ", () => {
                         in: customerIds
                     }
                 },
-                take: 20
+                take: 10
             });
         };
 
@@ -71,6 +71,8 @@ describe("Prisma Client aggregate ", () => {
 
             });
         });
+
+        console.log(groupedCustomers);
 
         const result = Object.fromEntries(groupedCustomers);
 
