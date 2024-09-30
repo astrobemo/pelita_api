@@ -21,7 +21,7 @@ app.use(expressjwt({
     path:['/hello']
 }));
 
-const allowedOrigins = ['http://202.138.247.174', 'http://localhost', 'http://114.10.45.73'];
+const allowedOrigins = ['202.138.247.174', 'localhost', '114.10.45.73'];
 
 const corsOptions = {
     
