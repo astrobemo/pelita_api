@@ -36,8 +36,12 @@ const corsOptions = {
         } else {
             callback(new Error('Not allowed by CORS'));
         }
-    }
+    },
+    methods: ['GET', 'POST', 'PUT'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
+
+app.options('*', cors());
 
 app.use(cors(corsOptions));
 
@@ -51,6 +55,7 @@ app.get('/hello', (req, res) => {
     console.log('Origin:', origin);
     console.log('if !Origin:', !origin);
     console.log('ClientIp:', clientIP);
+    console.log("allowedIPs", allowedOrigins.indexOf(origin));
     console.log('Hostname:', hostname);
     res.send('Hello World!');
 });
