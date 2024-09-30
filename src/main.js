@@ -30,6 +30,10 @@ const corsOptions = {
             console.log('Request from localhost');
         }
 
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        console.log('ClientIp c:', clientIP);
+
+
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
             console.log('origin', origin);
             callback(null, true);
@@ -37,8 +41,8 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST', 'PUT'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
 };
 
 app.options('*', cors());
