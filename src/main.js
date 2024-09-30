@@ -14,10 +14,6 @@ const app = express();
 
 const COMPANY = ["favour", "blessing", "grace"];
 
-app.get('/hello', (req, res) => {
-    res.send('Hello World!');
-});
-
 app.use(expressjwt({
     secret: secret,
     algorithms: ['HS256']
@@ -25,24 +21,36 @@ app.use(expressjwt({
     path:['/hello']
 }));
 
-const allowedOrigins = ['http://202.138.247.174'];
+const allowedOrigins = ['http://202.138.247.174', 'http://localhost'];
 
 const corsOptions = {
-
+    
     origin: function (origin, callback) {
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        console.log('Request origin IP:', ip);
+        
+        console.log('Origin IP:', origin);
+
+        if (origin === 'http://localhost') {
+            console.log('Request from localhost');
+        }
+
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            console.log('origin', origin);
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
     }
-    
 };
 
 app.use(cors(corsOptions));
 
+app.get('/hello', (req, res) => {
+    const origin = req.get('origin');
+    const hostname = req.hostname;
+    console.log('Origin:', origin);
+    console.log('Hostname:', hostname);
+    res.send('Hello World!');
+});
 
 app.get('/customers/all', async (req, res) => {
     console.log('get all customer');
