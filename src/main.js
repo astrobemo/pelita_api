@@ -26,9 +26,6 @@ const allowedOrigins = ['http://202.138.247.174', 'http://localhost'];
 const corsOptions = {
     
     origin: function (origin, callback) {
-        
-        console.log('Origin IP:', origin);
-
         if (origin === 'http://localhost') {
             console.log('Request from localhost');
         }
@@ -46,8 +43,14 @@ app.use(cors(corsOptions));
 
 app.get('/hello', (req, res) => {
     const origin = req.get('origin');
-    const hostname = req.hostname;
+    const allowedIPs = [`127.0.0.1`,'::1', `::ffff:127.0.0.1`];
+    const clientIP = req.headers.origin || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    
+    const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+
     console.log('Origin:', origin);
+    console.log('if !Origin:', !origin);
+    console.log('ClientIp:', clientIP);
     console.log('Hostname:', hostname);
     res.send('Hello World!');
 });
