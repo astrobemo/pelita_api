@@ -1,6 +1,15 @@
 import express from 'express';
 import { prismaClient } from './prisma-client.js';
 import { checkMemoryUsage } from './check-memory-usage.js';
+import { expressjwt } from "express-jwt";
+import cors from "cors";
+import dotenv from 'dotenv';
+
+
+const ENVIRONMENT = process.env.ENVIRONMENT;
+dotenv.config({ path: `./.env.${ENVIRONMENT}` });
+const port = process.env.PORT || 3000;
+const secret = process.env.TOKEN_SECRET;
 
 const app = express();
 
@@ -9,6 +18,28 @@ const COMPANY = ["favour", "blessing", "grace"];
 app.get('/hello', (req, res) => {
     res.send('Hello World!');
 });
+
+app.use(expressjwt({
+    secret: secret,
+    algorithms: ['HS256']
+}).unless({
+    path:['/hello']
+}));
+
+const allowedOrigins = ['http://202.138.247.174'];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            console.log('origin', origin);
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
+
+app.use(cors(corsOptions));
 
 
 app.get('/customers/all', async (req, res) => {
