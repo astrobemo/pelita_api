@@ -13,8 +13,8 @@ const allowedOrigins = ['http://202.138.247.174'];
 
 const corsOptions = {
     origin: function (origin, callback) {
-        console.log('origin', origin);
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            console.log('origin', origin);
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -22,15 +22,15 @@ const corsOptions = {
     }
 };
 
-app.use(cors(corsOptions));
-
-
 app.use(expressjwt({
     secret: secret,
     algorithms: ['HS256']
 }).unless({
     path:['/hello']
 }));
+
+app.use(cors(corsOptions));
+
 
 app.listen(port, () => {
     console.log(`Server is running ${ENVIRONMENT} on http://localhost:${port}`);
