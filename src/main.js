@@ -30,8 +30,8 @@ const corsOptions = {
             console.log('Request from localhost');
         }
 
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            console.log('origin', origin);
+        if (allowedOrigins.includes(origin) || !origin) {
+            console.log('origin sukses', origin);
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -55,7 +55,7 @@ app.get('/hello', (req, res) => {
     console.log('Origin:', origin);
     console.log('if !Origin:', !origin);
     console.log('ClientIp:', clientIP);
-    console.log("allowedIPs", allowedOrigins.indexOf(origin));
+    console.log("allowedIPs", allowedOrigins.includes(origin));
     console.log('Hostname:', hostname);
     res.send('Hello World!');
 });
