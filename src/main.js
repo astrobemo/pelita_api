@@ -1,50 +1,25 @@
 import express from 'express';
-import { generatePrismaClient } from './prisma-client.js';
-import cors from "cors";
+import { prismaClient } from './prisma-client.js';
 import { checkMemoryUsage } from './check-memory-usage.js';
 
 const app = express();
 
-const allowedOrigins = ['http://202.138.247.174'];
+const COMPANY = ["favour", "blessing", "grace"];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        console.log('origin', origin);
-        if (!origin) {
-            callback(new Error('Origin is undefined. Not allowed by CORS'));
-        } else if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
-};
-
-app.use(cors(corsOptions));
-
-app.get('/', (req, res) => {
+app.get('/hello', (req, res) => {
     res.send('Hello World!');
 });
 
 
-app.get('/customers', async (req, res) => {
+app.get('/customers/all', async (req, res) => {
     console.log('get all customer');
+    const customers = {}
     try {
-        const customers = await prismaClient.customer.findMany();
-        res.json(customers);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching customers' });
-    }
-});
-
-app.get('/customer/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-    try {
-        const customers = await prismaClient.customer.findUnique({
-            where: {
-                id: id
-            }
-        });
+        for (const company of COMPANY) {
+            console.log('company', company);
+            customers[company] = await prismaClient[company].customer.findMany();
+        }
+        checkMemoryUsage();
         res.json(customers);
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
@@ -52,14 +27,12 @@ app.get('/customer/:id', async (req, res) => {
 });
 
 app.get('/customers/verified_by_pajak', async (req, res) => {
-
-    const company = ["favour", "blessing", "grace"];
-    const prismaClient = generatePrismaClient(company);
+    console.log('get customer verified by pajak');
 
     const tgl_awal = new Date('2023-10-09');
     const customers = {};
 
-    for (const list of company) {
+    for (const list of COMPANY) {
         const company = list.toLowerCase();
         const aggeratedCustomer = await prismaClient[company].rekam_faktur_pajak_detail.groupBy({
             by: ['customer_id'],
@@ -102,7 +75,6 @@ app.get('/customers/verified_by_pajak', async (req, res) => {
                 company,
                 ...customer
             });
-
         });
     });
     
@@ -113,6 +85,38 @@ app.get('/customers/verified_by_pajak', async (req, res) => {
 
     
 });
+
+app.get('/customers/:company_index', async (req, res) => {
+    console.log('get customer by company index');
+    const company_index = parseInt(req.params.company_index);
+    console.log('company_index', company_index);
+
+    try {
+        const customers = await prismaClient[COMPANY[company_index]].customer.findMany();
+        console.log(customers);
+        res.json(customers);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching customers' });
+    }
+});
+
+app.get('/customer/:company_index/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const company_index = parseInt(req.params.company_index);
+    try {
+        const customers = await prismaClient.customer.findUnique({
+            where: {
+                company_index: company_index,
+                id: id
+            }
+        });
+        res.json(customers);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching customers' });
+    }
+});
+
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

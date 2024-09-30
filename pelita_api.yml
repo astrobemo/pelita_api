@@ -17,7 +17,7 @@ servers:
 externalDocs:
   url: 'https://example.com'
 paths:
-  /customer:
+  /customers/all:
     get:
       tags:
         - customer
@@ -30,22 +30,44 @@ paths:
           schema:
             type: integer
           description: The number of items to return
-        - name: name
-          in: query
-          required: false
-          schema:
-            type: string
-          description: The name of the customer
       responses:
         '200':
           description: OK
-  /customer/{customerId}:
+  /customers/{company_index}:
+    get:
+      tags:
+        - customer 
+      summary: Get all customers
+      description: Get list of customers filtered by company <br/> 0 - favour <br/> 1 - blessing <br/> 2 - grace
+      parameters:
+        - name: company_index
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The company_index
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: The number of items to return
+      responses:
+        '200':
+          description: OK
+  /customer/{company_index}/{customer_id}:
     get:
       tags:
         - customer
       summary: Get single customer
-      description: Get single customers
+      description: Get single customers filtered id and by company_index
       parameters:
+        - name: company_index
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The company_index
         - name: customerId
           in: path
           required: true

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 
 const prismaClient = {};
+const COMPANY = ["favour", "blessing", "grace"];
 
 function newClient(company) {
     return new PrismaClient({
@@ -14,13 +15,8 @@ function newClient(company) {
     });
 }
 
-function generatePrismaClient(company) {
-    company.forEach((value) => {
-        prismaClient[value.toLowerCase()] = newClient(value);
-    });
+COMPANY.forEach((value) => {
+    prismaClient[value.toLowerCase()] = newClient(value);
+});
 
-    return prismaClient;
-
-}
-
-export { generatePrismaClient };
+export { prismaClient };
