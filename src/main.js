@@ -75,7 +75,13 @@ app.get('/customers/all', async (req, res) => {
     try {
         for (const company of COMPANY) {
             console.log('company', company);
-            customers[company] = await prismaClient[company].customer.findMany();
+            const limit = parseInt(req.query.limit) || 10; // Default limit to 10 if not provided
+            const offset = parseInt(req.query.offset) || 0; // Default offset to 0 if not provided
+
+            customers[company] = await prismaClient[company].customer.findMany({
+                take: limit,
+                skip: offset
+            });
         }
         checkMemoryUsage();
         res.json(customers);
@@ -84,7 +90,7 @@ app.get('/customers/all', async (req, res) => {
     }
 });
 
-app.get('/customers/verified_by_pajak', async (req, res) => {
+app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
     console.log('get customer verified by pajak');
 
     const tgl_awal = new Date('2023-10-09');
@@ -150,7 +156,17 @@ app.get('/customers/:company_index', async (req, res) => {
     console.log('company_index', company_index);
 
     try {
-        const customers = await prismaClient[COMPANY[company_index]].customer.findMany();
+        const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+        const pageNumber = parseInt(page, 10);
+        const pageSize = parseInt(limit, 10);
+
+        const customers = await prismaClient[COMPANY[company_index]].customer.findMany({
+            skip: (pageNumber - 1) * pageSize, // Calculate skip
+            take: pageSize,
+            orderBy: {
+                nama: 'asc'
+            }
+        });
         console.log(customers);
         res.json(customers);
     } catch (error) {
