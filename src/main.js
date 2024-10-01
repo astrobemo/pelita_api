@@ -201,7 +201,9 @@ app.get('/customers/:company_index', async (req, res) => {
         const customers = await prismaClient[COMPANY[company_index]].customer.findMany({
             skip: (pageNumber - 1) * pageSize, // Calculate skip
             take: pageSize,
-            [orderByFieldList]: orderDirectionList,
+            orderBy:{
+                [orderByFieldList]: orderDirectionList,
+            }
         });
 
         const totalCount = await prismaClient[COMPANY[company_index]].customer.count();
