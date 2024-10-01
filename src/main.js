@@ -181,23 +181,7 @@ app.use((err, req, res, next) => {
     if (err) {
         /* console.log(`${req.method} ${req.url}`);
         console.log('TOKEN_SECRET:', secret);
-        console.log('Authorization Header:', req.headers.authorization); */
-        const tokenFull = req.headers.authorization
-        if (tokenFull === undefined || tokenFull === null || tokenFull === '') {
-            return res.status(403).send('No token provided');            
-        }
-        const token = tokenFull.replace(`Bearer `, ``);
-        
-        const decodedToken = jwt.decode(token, { complete: true });
-        console.log(decodedToken);
-        const pl = decodedToken.payload;
-        const exp = pl.exp;
-        const iat = pl.iat;
-        console.log('exp 1000', new Date(exp * 1000));
-        console.log('exp', new Date(exp));
-        console.log('iat 1000', new Date(iat * 1000));
-        console.log('iat', new Date(iat));
-    
+        console.log('Authorization Header:', req.headers.authorization); */    
         res.status(403).send(` errors: ${err.message}`);
         
     } else {
