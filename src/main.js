@@ -21,7 +21,8 @@ app.use(expressjwt({
     path:['/hello']
 }));
 
-const allowedIPs = ['http://202.138.247.174', 'http://114.10.45.73'];
+// Read allowed IPs from environment variable and split into an array
+const allowedIPs = process.env.ALLOWED_IPS.split(',');
 
 const corsOptions = {
     
