@@ -2,6 +2,7 @@ import express from 'express';
 import { prismaClient } from './prisma-client.js';
 import { checkMemoryUsage } from './check-memory-usage.js';
 import { expressjwt } from "express-jwt";
+import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from 'dotenv';
 
@@ -9,6 +10,8 @@ import dotenv from 'dotenv';
 const ENVIRONMENT = process.env.ENVIRONMENT;
 dotenv.config({ path: `./.env.${ENVIRONMENT}` });
 const secret = process.env.TOKEN_SECRET || 'development';
+
+process.env.TZ = 'UTC';
 
 const app = express();
 
@@ -174,9 +177,14 @@ app.get('/customer/:company_index/:id', async (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err) {
-        console.log(`${req.method} ${req.url}`);
+        /* console.log(`${req.method} ${req.url}`);
         console.log('TOKEN_SECRET:', secret);
-        console.log('Authorization Header:', req.headers.authorization);
+        console.log('Authorization Header:', req.headers.authorization); */
+        const tokenFull = req.headers.authorization
+        const token = tokenFull.replace(`Bearer `, ``);
+        
+        const decodedToken = jwt.decode(token, { complete: true });
+        console.log(decodedToken);
     
         res.status(403).send(` error: ${err.message}`);
         
