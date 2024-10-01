@@ -5,6 +5,38 @@
     "version": "1.0"
   },
   "paths": {
+    "/customers/sudah_verifikasi_oleh_pajak?page={page}&limit={limit}": {
+      "get": {
+        "tags": ["customer"],
+        "summary": "Get all customers yang sudah pernah verifikasi oleh pajak after tanggal 2024-08-01",
+        "description": "Get list of customers filtered by company <br/> 0 - favour <br/> 1 - blessing <br/> 2 - grace",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of page to return, 1 is default"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of record to return, 10 is default"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/customers/{company_index}?page={page}&limit={limit}&orderByField={orderByField}&orderDirection={orderDirection}": {
       "get": {
         "tags": ["customer"],

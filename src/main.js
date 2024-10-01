@@ -102,7 +102,7 @@ app.get('/testing', (req, res) => {
     }
 }); */
 
-app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
+app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     console.log('get customer verified by pajak');
 
     const tgl_awal = new Date('2023-10-09');
@@ -113,6 +113,7 @@ app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
     const pageSize = parseInt(limit, 10);
 
     for (const list of COMPANY) {
+        const companyIndex = COMPANY.indexOf(list);
         const company = list.toLowerCase();
         const aggeratedCustomer = await prismaClient[company].rekam_faktur_pajak_detail.groupBy({
             by: ['customer_id'],
@@ -153,6 +154,7 @@ app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
 
             groupedCustomers.get(nKey).push({
                 company,
+                customerIndex: COMPANY.indexOf(company),
                 ...customer
             });
         });
