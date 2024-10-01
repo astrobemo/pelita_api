@@ -51,8 +51,9 @@ app.get('/hello', (req, res) => {
 });
 
 const ipFilter = (req, res, next) => {
-    const clientIp = req.ip;
+    const clientIp = (req.ip).replace(/^::ffff:/, '');
     console.log('clientIp', clientIp);
+    console.log('clientIp a/n', allowedIPs.includes(clientIp));
     if(allowedIPs.includes(clientIp)){
         next();
     } else {    
@@ -193,7 +194,7 @@ app.use((err, req, res, next) => {
         console.log('iat 1000', new Date(iat * 1000));
         console.log('iat', new Date(iat));
     
-        res.status(403).send(` error: ${err.message}`);
+        res.status(403).send(` errors: ${err.message}`);
         
     } else {
         next();
