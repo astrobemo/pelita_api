@@ -178,7 +178,7 @@ app.get('/customer/:company_index/:id', async (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err) {
-        res.status(403).send('Not allowed by CORS');
+        console.log('Error', err.message);
     } else {
         next();
     }
