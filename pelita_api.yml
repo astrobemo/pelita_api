@@ -1,21 +1,7 @@
 openapi: '3.0.3'
 info:
-  title: API Title
+  title: Pelita API
   version: '1.0'
-servers:
-  - url: https://{environment}.server.test/v1
-    variables:
-      environment:
-        default: dev
-        enum:
-          - dev
-          - prod
-        description: The development to use
-        x-enum-descriptions:
-          dev: Development environment
-          prod: Production environment
-externalDocs:
-  url: 'https://example.com'
 paths:
   /customers/all:
     get:

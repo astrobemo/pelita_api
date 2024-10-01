@@ -1,0 +1,263 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Pelita API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/customers/{company_index}?page={page}&limit={limit}&orderByField={orderByField}&orderDirection={orderDirection}": {
+      "get": {
+        "tags": ["customer"],
+        "summary": "Get all customers",
+        "description": "Get list of customers filtered by company <br/> 0 - favour <br/> 1 - blessing <br/> 2 - grace",
+        "parameters": [
+          {
+            "name": "company_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The company_index"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of page to return, 1 is default"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of record to return, 10 is default"
+          },
+          {
+            "name": "orderByField",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Column name to order, default is 'nama'"
+          },
+          {
+            "name": "orderDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order direction, default is 'asc'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/customer/{company_index}/{customer_id}": {
+      "get": {
+        "tags": ["customer"],
+        "summary": "Get single customer",
+        "description": "Get single customers filtered id and by company_index",
+        "parameters": [
+          {
+            "name": "company_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The company_index"
+          },
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The customer ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": ["customer"],
+        "summary": "Update customer",
+        "description": "Update customer details",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "nama",
+                  "alamat",
+                  "blok",
+                  "no",
+                  "rt",
+                  "rw",
+                  "kecamatan",
+                  "kelurahan",
+                  "kota",
+                  "provinsi",
+                  "kode_pos",
+                  "status_aktif"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "nama": {
+                    "type": "string"
+                  },
+                  "alias": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "blok": {
+                    "type": "string"
+                  },
+                  "no": {
+                    "type": "string"
+                  },
+                  "rt": {
+                    "type": "string"
+                  },
+                  "rw": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "kelurahan": {
+                    "type": "string"
+                  },
+                  "kota": {
+                    "type": "string"
+                  },
+                  "provinsi": {
+                    "type": "string"
+                  },
+                  "kode_pos": {
+                    "type": "string"
+                  },
+                  "npwp": {
+                    "type": "string"
+                  },
+                  "nik": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "contact_person": {
+                    "type": "string"
+                  },
+                  "tempo_kredit": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "warning_kredit": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_warning_type": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "limit_warning_amount": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_amount": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_atas": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "img_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "npwp_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "ktp_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "medsos_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "locked_status": {
+                    "type": "boolean",
+                    "default": null
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "jenis_pekerjaan": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "jenis_produk": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "status_aktif": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The customer ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  }
+}

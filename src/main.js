@@ -2,10 +2,12 @@ import express from 'express';
 import { prismaClient } from './prisma-client.js';
 import { checkMemoryUsage } from './check-memory-usage.js';
 import { expressjwt } from "express-jwt";
-import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from 'dotenv';
-
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 dotenv.config({ path: `./.env.${ENVIRONMENT}` });
@@ -17,11 +19,20 @@ const app = express();
 
 const COMPANY = ["favour", "blessing", "grace"];
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const swaggerDocument = fs.readFileSync(path.join(__dirname, '../pelita_api.json'), 'utf8');
+
+
+app.use('/api-docs', 
+    swaggerUi.serve, swaggerUi.setup(JSON.parse(swaggerDocument))
+);
+
 app.use(expressjwt({
     secret: secret,
     algorithms: ['HS256']
 }).unless({
-    path:['/hello']
+    path:['/hello','/api-docs']
 }));
 
 // Read allowed IPs from environment variable and split into an array
@@ -50,6 +61,7 @@ app.get('/hello', (req, res) => {
         res.send('Hello World!');
 });
 
+
 const ipFilter = (req, res, next) => {
     const clientIp = (req.ip).replace(/^::ffff:/, '');
     console.log('clientIp', clientIp);
@@ -69,7 +81,7 @@ app.get('/testing', (req, res) => {
     res.send('Testing World!');
 });
 
-app.get('/customers/all', async (req, res) => {
+/* app.get('/customers/all', async (req, res) => {
     console.log('get all customer');
     const customers = {}
     try {
@@ -88,7 +100,7 @@ app.get('/customers/all', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
-});
+}); */
 
 app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
     console.log('get customer verified by pajak');
@@ -176,16 +188,17 @@ app.get('/customers/:company_index', async (req, res) => {
     console.log('company_index', company_index);
 
     try {
-        const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+        const { page = 1, limit = 10, orderByField = ['nama'], orderDirection = 'asc' } = req.query; // Default to page 1 and limit 10
         const pageNumber = parseInt(page, 10);
         const pageSize = parseInt(limit, 10);
+        const orderByFieldList = orderByField ;
+        const orderDirectionList = orderDirection;
+
 
         const customers = await prismaClient[COMPANY[company_index]].customer.findMany({
             skip: (pageNumber - 1) * pageSize, // Calculate skip
             take: pageSize,
-            orderBy: {
-                nama: 'asc'
-            }
+            [orderByFieldList]: orderDirectionList,
         });
 
         const totalCount = await prismaClient[COMPANY[company_index]].customer.count();
