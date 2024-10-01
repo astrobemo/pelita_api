@@ -167,6 +167,9 @@ app.get('/customers/:company_index', async (req, res) => {
                 nama: 'asc'
             }
         });
+
+        const totalCount = await prismaClient[COMPANY[company_index]].customer.count();
+        const totalPages = Math.ceil(totalCount / pageSize);
         
         res.json({
             data: customers,                // The paginated data
