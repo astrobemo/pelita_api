@@ -178,7 +178,7 @@ app.get('/customer/:company_index/:id', async (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err) {
-        console.log('Error', err.message);
+        res.status(403).send(` error: ${err.message}`);
     } else {
         next();
     }
