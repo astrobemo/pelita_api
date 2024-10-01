@@ -167,8 +167,15 @@ app.get('/customers/:company_index', async (req, res) => {
                 nama: 'asc'
             }
         });
-        console.log(customers);
-        res.json(customers);
+        
+        res.json({
+            data: customers,                // The paginated data
+            totalCount: totalCount,     // Total number of records
+            totalPages: totalPages,     // Total number of pages
+            currentPage: pageNumber,    // Current page number
+            pageSize: pageSize          // Number of records per page
+          });
+        // res.json(customers);
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
