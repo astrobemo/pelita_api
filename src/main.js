@@ -183,6 +183,9 @@ app.use((err, req, res, next) => {
         console.log('TOKEN_SECRET:', secret);
         console.log('Authorization Header:', req.headers.authorization); */
         const tokenFull = req.headers.authorization
+        if (tokenFull === undefined || tokenFull === null || tokenFull === '') {
+            return res.status(403).send('No token provided');            
+        }
         const token = tokenFull.replace(`Bearer `, ``);
         
         const decodedToken = jwt.decode(token, { complete: true });
