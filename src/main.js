@@ -59,6 +59,15 @@ const ipFilter = (req, res, next) => {
 
 app.use(ipFilter);
 
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+
+app.get('/testing', (req, res) => {
+    res.send('Testing World!');
+});
+
 app.get('/customers/all', async (req, res) => {
     console.log('get all customer');
     const customers = {}
