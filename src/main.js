@@ -157,6 +157,8 @@ app.get('/customers/:company_index', async (req, res) => {
 
     try {
         const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+        console.log('page', page);
+        console.log('limit', limit);
         const pageNumber = parseInt(page, 10);
         const pageSize = parseInt(limit, 10);
 
