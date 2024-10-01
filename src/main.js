@@ -64,6 +64,7 @@ app.get('/hello', (req, res) => {
 
 const ipFilter = (req, res, next) => {
     const clientIp = (req.ip).replace(/^::ffff:/, '');
+    console.log('filtering ip address');
     console.log('clientIp', clientIp);
     console.log('allowedIp', allowedIPs);
     console.log('clientIp a/n', allowedIPs.includes(clientIp));
