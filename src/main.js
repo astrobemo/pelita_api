@@ -148,7 +148,7 @@ app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
     
     const resultCustomers = Object.fromEntries(groupedCustomers);
 
-    const totalCount = result.length;
+    const totalCount = resultCustomers.length;
     const totalPages = Math.ceil(totalCount / pageSize);
 
     const result = Object.entries(resultCustomers).slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
