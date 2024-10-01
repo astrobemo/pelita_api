@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 dotenv.config({ path: `./.env.${ENVIRONMENT}` });
-const secret = process.env.TOKEN_SECRET;
+const secret = process.env.TOKEN_SECRET || 'development';
 
 const app = express();
 
@@ -59,10 +59,6 @@ const ipFilter = (req, res, next) => {
 
 app.use(ipFilter);
 
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-});
 
 app.get('/testing', (req, res) => {
     res.send('Testing World!');
@@ -178,7 +174,12 @@ app.get('/customer/:company_index/:id', async (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err) {
+        console.log(`${req.method} ${req.url}`);
+        console.log('TOKEN_SECRET:', secret);
+        console.log('Authorization Header:', req.headers.authorization);
+    
         res.status(403).send(` error: ${err.message}`);
+        
     } else {
         next();
     }
