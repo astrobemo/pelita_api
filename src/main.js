@@ -96,6 +96,10 @@ app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
     const tgl_awal = new Date('2023-10-09');
     const customers = {};
 
+    const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+
     for (const list of COMPANY) {
         const company = list.toLowerCase();
         const aggeratedCustomer = await prismaClient[company].rekam_faktur_pajak_detail.groupBy({
@@ -142,10 +146,26 @@ app.get('/customers/sudah_verified_by_pajak', async (req, res) => {
         });
     });
     
-    checkMemoryUsage();
+    const resultCustomers = Object.fromEntries(groupedCustomers);
+
+    const totalCount = result.length;
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    const result = Object.entries(resultCustomers).slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
     
-    const result = Object.fromEntries(groupedCustomers);
-    res.json(result);
+
+    checkMemoryUsage();
+
+    res.json({
+        data: result,                // The paginated data
+        totalCount: totalCount,     // Total number of records
+        totalPages: totalPages,     // Total number of pages
+        currentPage: pageNumber,    // Current page number
+        pageSize: pageSize          // Number of records per page
+      });
+    
+    // const result = Object.fromEntries(groupedCustomers);
+    // res.json(result);
 
     
 });
@@ -157,8 +177,6 @@ app.get('/customers/:company_index', async (req, res) => {
 
     try {
         const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
-        console.log('page', page);
-        console.log('limit', limit);
         const pageNumber = parseInt(page, 10);
         const pageSize = parseInt(limit, 10);
 
