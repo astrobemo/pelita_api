@@ -185,6 +185,13 @@ app.use((err, req, res, next) => {
         
         const decodedToken = jwt.decode(token, { complete: true });
         console.log(decodedToken);
+        const pl = decodedToken.payload;
+        const exp = pl.exp;
+        const iat = pl.iat;
+        console.log('exp 1000', new Date(exp * 1000));
+        console.log('exp', new Date(exp));
+        console.log('iat 1000', new Date(iat * 1000));
+        console.log('iat', new Date(iat));
     
         res.status(403).send(` error: ${err.message}`);
         
