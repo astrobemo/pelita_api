@@ -9,8 +9,6 @@ services:
     command: ["node", "index.js"]
     volumes:
       - .:/code
-    environment:
-      - DEBUG=${DEBUG}
     env_file:
       - .env
       - .env.development
