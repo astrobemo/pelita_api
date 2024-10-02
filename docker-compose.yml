@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    image: pelita_api_services
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    command: ["node", "index.js"]
+    volumes:
+      - .:/code
+    environment:
+      - DEBUG=${DEBUG}
+    env_file:
+      - .env
+      - .env.development
+    network_mode: "host"
+  
