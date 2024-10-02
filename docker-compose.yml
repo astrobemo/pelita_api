@@ -5,7 +5,7 @@ services:
     image: pelita_api_services
     build: .
     ports:
-      - "${PORT}:${PORT}"
+      - "3000:3000"
     command: ["node", "index.js"]
     volumes:
       - .:/code
