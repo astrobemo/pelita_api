@@ -41,7 +41,7 @@ paths:
       responses:
         '200':
           description: OK
-  /customer/{company_index}/{customer_id}:
+  /customers/{company_index}/{customer_id}:
     get:
       tags:
         - customer

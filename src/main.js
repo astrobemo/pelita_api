@@ -200,13 +200,14 @@ app.get('/customers/:company_index',cors(corsOptions), async (req, res) => {
     }
 });
 
-app.get('/customer/:company_index/:id', cors(corsOptions), async (req, res) => {
+app.get('/customers/:company_index/:id', cors(corsOptions), async (req, res) => {
     const id = parseInt(req.params.id);
     const company_index = parseInt(req.params.company_index);
+
+    console.log('params',id, company_index);
     try {
-        const customers = await prismaClient.customer.findUnique({
+        const customers = await prismaClient[COMPANY[company_index]].customer.findUnique({
             where: {
-                company_index: company_index,
                 id: id
             }
         });
