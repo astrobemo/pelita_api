@@ -28,12 +28,12 @@ app.use('/api-docs',
     swaggerUi.serve, swaggerUi.setup(JSON.parse(swaggerDocument))
 );
 
-app.use(expressjwt({
+/* app.use(expressjwt({
     secret: secret,
     algorithms: ['HS256']
 }).unless({
     path:['/hello','/api-docs']
-}));
+})); */
 
 // Read allowed IPs from environment variable and split into an array
 const allowedIPs = process.env.ALLOWED_IPS.split(',');
@@ -51,11 +51,11 @@ const corsOptions = {
     },
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
-};  
+};
 
-app.options('*', cors());
+/* app.options('*', cors());
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); */
 
 app.get('/hello', (req, res) => {
         res.send('Hello World!');
@@ -77,33 +77,11 @@ const ipFilter = (req, res, next) => {
 
 app.use(ipFilter);
 
-
-app.get('/testing', (req, res) => {
+app.get('/testing-consumer', cors(corsOptions), (req, res) => {
     res.send('Testing World!');
 });
 
-/* app.get('/customers/all', async (req, res) => {
-    console.log('get all customer');
-    const customers = {}
-    try {
-        for (const company of COMPANY) {
-            console.log('company', company);
-            const limit = parseInt(req.query.limit) || 10; // Default limit to 10 if not provided
-            const offset = parseInt(req.query.offset) || 0; // Default offset to 0 if not provided
-
-            customers[company] = await prismaClient[company].customer.findMany({
-                take: limit,
-                skip: offset
-            });
-        }
-        checkMemoryUsage();
-        res.json(customers);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching customers' });
-    }
-}); */
-
-app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
+app.get('/customers/sudah_verifikasi_oleh_pajak',cors(corsOptions), async (req, res) => {
     console.log('get customer verified by pajak');
 
     const tgl_awal = new Date('2023-10-09');
@@ -185,7 +163,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     
 });
 
-app.get('/customers/:company_index', async (req, res) => {
+app.get('/customers/:company_index',cors(corsOptions), async (req, res) => {
     console.log('get customer by company index');
     const company_index = parseInt(req.params.company_index);
     console.log('company_index', company_index);
@@ -222,7 +200,7 @@ app.get('/customers/:company_index', async (req, res) => {
     }
 });
 
-app.get('/customer/:company_index/:id', async (req, res) => {
+app.get('/customer/:company_index/:id', cors(corsOptions), async (req, res) => {
     const id = parseInt(req.params.id);
     const company_index = parseInt(req.params.company_index);
     try {
@@ -237,8 +215,6 @@ app.get('/customer/:company_index/:id', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
 });
-
-
 
 // Error handling middleware
 app.use((err, req, res, next) => {
