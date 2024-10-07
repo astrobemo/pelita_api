@@ -4,8 +4,9 @@ services:
   backend:
     image: pelita_api_services
     build: .
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3003:3003"
     command: ["node", "index.js"]
     env_file:
       - .env
