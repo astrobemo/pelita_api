@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client"
+import dotenv from 'dotenv';
 
+dotenv.config();
 const prismaClient = {};
-const COMPANY = ["favour", "blessing", "grace"];
+const COMPANY = process.env.COMPANY.split(',');
 
 function newClient(company) {
     return new PrismaClient({

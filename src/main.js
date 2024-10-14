@@ -10,6 +10,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
+const COMPANY = process.env.COMPANY.split(',');
+
 dotenv.config({ path: `./.env.${ENVIRONMENT}` });
 const secret = process.env.TOKEN_SECRET || 'development';
 
@@ -17,7 +19,6 @@ process.env.TZ = 'UTC';
 
 const app = express();
 
-const COMPANY = ["favour", "blessing", "grace"];
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -77,11 +78,11 @@ const ipFilter = (req, res, next) => {
 
 app.use(ipFilter);
 
-app.get('/testing-consumer', cors(corsOptions), (req, res) => {
+app.get('/testing-consumer', (req, res) => {
     res.send('Testing World!');
 });
 
-app.get('/customers/sudah_verifikasi_oleh_pajak',cors(corsOptions), async (req, res) => {
+app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     console.log('get customer verified by pajak');
 
     const tgl_awal = new Date('2023-10-09');
@@ -127,11 +128,19 @@ app.get('/customers/sudah_verifikasi_oleh_pajak',cors(corsOptions), async (req, 
             const npwp = customer.npwp;
             const nik = customer.nik;
             const nKey = npwp || nik;
+            const keyName = npwp ? 'npwp' : 'nik';
             if(!groupedCustomers.has(nKey)){
-                groupedCustomers.set(nKey, []);
+                groupedCustomers.set(nKey, {
+                    keyName: keyName,
+                    keyValue : nKey,
+                    company_indexes: [COMPANY.indexOf(company)],
+                    data_list: []
+                });
+            }else{
+                groupedCustomers.get(nKey).customer_indexes.push(COMPANY.indexOf(company));
             }
 
-            groupedCustomers.get(nKey).push({
+            groupedCustomers.get(nKey).data_list.push({
                 company,
                 customerIndex: COMPANY.indexOf(company),
                 ...customer
@@ -144,8 +153,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak',cors(corsOptions), async (req, 
     const totalCount = Object.keys(resultCustomers).length;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    const result = Object.entries(resultCustomers).slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-    
+    const result = Object.entries(resultCustomers).slice((pageNumber - 1) * pageSize, pageNumber * pageSize);    
 
     checkMemoryUsage();
 
@@ -163,7 +171,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak',cors(corsOptions), async (req, 
     
 });
 
-app.get('/customers/:company_index',cors(corsOptions), async (req, res) => {
+app.get('/customers/:company_index', async (req, res) => {
     console.log('get customer by company index');
     const company_index = parseInt(req.params.company_index);
     console.log('company_index', company_index);
@@ -200,7 +208,7 @@ app.get('/customers/:company_index',cors(corsOptions), async (req, res) => {
     }
 });
 
-app.get('/customers/:company_index/:id', cors(corsOptions), async (req, res) => {
+app.get('/customers/:company_index/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const company_index = parseInt(req.params.company_index);
 
@@ -214,6 +222,30 @@ app.get('/customers/:company_index/:id', cors(corsOptions), async (req, res) => 
         res.json(customers);
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
+    }
+});
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
+
+app.put('/customers/:company_index/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const company_index = parseInt(req.params.company_index);
+    const updateData = req.body;
+
+    try {
+        console.log(updateData)
+        const updatedCustomer = await prismaClient[COMPANY[company_index]].customer.update({
+            data: updateData,
+            where: {
+                id: id
+            },
+        });
+        res.json(updatedCustomer);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while updating the customer' });
     }
 });
 
