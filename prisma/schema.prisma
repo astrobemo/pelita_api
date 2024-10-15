@@ -45,8 +45,6 @@ model customer{
   rw      String
   kecamatan   String
   kelurahan   String
-  jenis_pekerjaan String?
-  jenis_produk String?
   updated_at  DateTime
   verified_time DateTime?
   customer_id_central Int?
