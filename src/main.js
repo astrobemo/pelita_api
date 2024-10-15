@@ -98,12 +98,12 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
         const aggeratedCustomer = await prismaClient[company].rekam_faktur_pajak_detail.groupBy({
             by: ['customer_id'],
             _max: {
-                tanggal:true
+            tanggal: true
             },
-            where:{
+            where: {
                 rekam_faktur_pajak: {
                     tanggal_awal: {
-                        gte: tgl_awal
+                    gte: tgl_awal
                     }
                 }
             },
@@ -117,7 +117,8 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
             where: {
                 id: {
                     in: customerIds
-                }
+                },
+                customer_id_central: null
             },
         });
     };
