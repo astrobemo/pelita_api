@@ -141,108 +141,122 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "id",
+                  "keyName", "keyValue", "company_indexes", "id",
                   "tipe_company", "nama",
                   "alamat", "blok", "no", "rt", "rw",
                   "kecamatan", "kelurahan", "kota", "provinsi", "kode_pos",
                   "npwp", "nik", "status_aktif"
                 ],
                 "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "tipe_company": {
+                  "keyName": {
                     "type": "string"
                   },
-                  "nama": {
+                  "keyValue": {
                     "type": "string"
                   },
-                  "alamat": {
-                    "type": "string"
+                  "company_indexes": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
                   },
-                  "blok": {
-                    "type": "string"
-                  },
-                  "no": {
-                    "type": "string"
-                  },
-                  "rt": {
-                    "type": "string"
-                  },
-                  "rw": {
-                    "type": "string"
-                  },
-                  "kecamatan": {
-                    "type": "string"
-                  },
-                  "kelurahan": {
-                    "type": "string"
-                  },
-                  "kota": {
-                    "type": "string"
-                  },
-                  "provinsi": {
-                    "type": "string"
-                  },
-                  "kode_pos": {
-                    "type": "string"
-                  },
-                  "npwp": {
-                    "type": "string"
-                  },
-                  "nik": {
-                    "type": "string"
-                  },
-                  "status_aktif": {
-                    "type": "boolean"
-                  },
-                  "tempo_kredit": {
-                    "type": "integer",
-                    "default": null
-                  },
-                  "warning_kredit": {
-                    "type": "integer",
-                    "default": null
-                  },
-                  "limit_warning_type": {
-                    "type": "string",
-                    "default": null
-                  },
-                  "limit_warning_amount": {
-                    "type": "integer",
-                    "default": null
-                  },
-                  "limit_amount": {
-                    "type": "integer",
-                    "default": null
-                  },
-                  "limit_atas": {
-                    "type": "integer",
-                    "default": null
-                  },
-                  "img_link": {
-                    "type": "string",
-                    "default": null
-                  },
-                  "npwp_link": {
-                    "type": "string",
-                    "default": null
-                  },
-                  "ktp_link": {
-                    "type": "string",
-                    "default": null
-                  },
-                  "contact_person": {
-                    "type": "string",
-                    "default": null
-                  },
-                  "email": {
-                    "type": "string",
-                    "default": null
-                  },
-                  "medsos_link": {
-                    "type": "string",
-                    "default": null
+                  "data_customer":{
+                    "id": {
+                      "type": "integer"
+                    },
+                    "tipe_company": {
+                      "type": "string"
+                    },
+                    "nama": {
+                      "type": "string"
+                    },
+                    "alamat": {
+                      "type": "string"
+                    },
+                    "blok": {
+                      "type": "string"
+                    },
+                    "no": {
+                      "type": "string"
+                    },
+                    "rt": {
+                      "type": "string"
+                    },
+                    "rw": {
+                      "type": "string"
+                    },
+                    "kecamatan": {
+                      "type": "string"
+                    },
+                    "kelurahan": {
+                      "type": "string"
+                    },
+                    "kota": {
+                      "type": "string"
+                    },
+                    "provinsi": {
+                      "type": "string"
+                    },
+                    "kode_pos": {
+                      "type": "string"
+                    },
+                    "npwp": {
+                      "type": "string"
+                    },
+                    "nik": {
+                      "type": "string"
+                    },
+                    "status_aktif": {
+                      "type": "boolean"
+                    },
+                    "tempo_kredit": {
+                      "type": "integer",
+                      "default": null
+                    },
+                    "warning_kredit": {
+                      "type": "integer",
+                      "default": null
+                    },
+                    "limit_warning_type": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "limit_warning_amount": {
+                      "type": "integer",
+                      "default": null
+                    },
+                    "limit_amount": {
+                      "type": "integer",
+                      "default": null
+                    },
+                    "limit_atas": {
+                      "type": "integer",
+                      "default": null
+                    },
+                    "img_link": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "npwp_link": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "ktp_link": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "contact_person": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "email": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "medsos_link": {
+                      "type": "string",
+                      "default": null
+                    }
                   }
                 }
               }
