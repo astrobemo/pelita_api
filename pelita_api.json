@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/customers/sudah_verifikasi_oleh_pajak?page={page}&limit={limit}": {
+    "/customers-legacy/sudah_verifikasi_oleh_pajak?page={page}&limit={limit}": {
       "get": {
         "tags": ["customer"],
         "summary": "Get all customers yang sudah pernah verifikasi oleh pajak after tanggal 2024-08-01",
@@ -37,7 +37,7 @@
         }
       }
     },
-    "/customers/{company_index}?page={page}&limit={limit}&orderByField={orderByField}&orderDirection={orderDirection}": {
+    "/customers-legacy/{company_index}?page={page}&limit={limit}&orderByField={orderByField}&orderDirection={orderDirection}": {
       "get": {
         "tags": ["customer"],
         "summary": "Get all customers",
@@ -96,7 +96,7 @@
         }
       }
     },
-    "/customer/{company_index}/{customer_id}": {
+    "/customers-legacy/{company_index}/{customer_id}": {
       "get": {
         "tags": ["customer"],
         "summary": "Get single customer",
@@ -121,6 +121,305 @@
             "description": "The customer ID"
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": ["customer"],
+        "summary": "Update customer",
+        "description": "Update customer details",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "nama",
+                  "alamat",
+                  "blok",
+                  "no",
+                  "rt",
+                  "rw",
+                  "kecamatan",
+                  "kelurahan",
+                  "kota",
+                  "provinsi",
+                  "kode_pos",
+                  "status_aktif"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "nama": {
+                    "type": "string"
+                  },
+                  "alias": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "blok": {
+                    "type": "string"
+                  },
+                  "no": {
+                    "type": "string"
+                  },
+                  "rt": {
+                    "type": "string"
+                  },
+                  "rw": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "kelurahan": {
+                    "type": "string"
+                  },
+                  "kota": {
+                    "type": "string"
+                  },
+                  "provinsi": {
+                    "type": "string"
+                  },
+                  "kode_pos": {
+                    "type": "string"
+                  },
+                  "npwp": {
+                    "type": "string"
+                  },
+                  "nik": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "contact_person": {
+                    "type": "string"
+                  },
+                  "tempo_kredit": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "warning_kredit": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_warning_type": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "limit_warning_amount": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_amount": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_atas": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "img_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "npwp_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "ktp_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "medsos_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "locked_status": {
+                    "type": "boolean",
+                    "default": null
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "jenis_pekerjaan": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "jenis_produk": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "status_aktif": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The customer ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/customers-legacy/verifikasi_oleh_user": {
+      "post": {
+        "tags": ["customer"],
+        "summary": "Send data untuk customer yang dipilih",
+        "description": "Kirim data  customers",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "tipe_company", "nama",
+                  "alamat", "blok", "no", "rt", "rw",
+                  "kecamatan", "kelurahan", "kota", "provinsi", "kode_pos",
+                  "npwp", "nik", "status_aktif"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "tipe_company": {
+                    "type": "string"
+                  },
+                  "nama": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "blok": {
+                    "type": "string"
+                  },
+                  "no": {
+                    "type": "string"
+                  },
+                  "rt": {
+                    "type": "string"
+                  },
+                  "rw": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "kelurahan": {
+                    "type": "string"
+                  },
+                  "kota": {
+                    "type": "string"
+                  },
+                  "provinsi": {
+                    "type": "string"
+                  },
+                  "kode_pos": {
+                    "type": "string"
+                  },
+                  "npwp": {
+                    "type": "string"
+                  },
+                  "nik": {
+                    "type": "string"
+                  },
+                  "status_aktif": {
+                    "type": "boolean"
+                  },
+                  "tempo_kredit": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "warning_kredit": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_warning_type": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "limit_warning_amount": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_amount": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "limit_atas": {
+                    "type": "integer",
+                    "default": null
+                  },
+                  "img_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "npwp_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "ktp_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "contact_person": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "email": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "medsos_link": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "jenis_pekerjaan":{ 
+                    "type": "string",
+                    "default": null
+                  },
+                  "jenis_produk": {
+                    "type": "string",
+                    "default": null
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
