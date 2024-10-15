@@ -105,8 +105,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
                     tanggal_awal: {
                         gte: tgl_awal
                     }
-                },
-                customer_id_central: null
+                }
             },
         });
 
