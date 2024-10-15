@@ -243,14 +243,6 @@
                   "medsos_link": {
                     "type": "string",
                     "default": null
-                  },
-                  "jenis_pekerjaan":{ 
-                    "type": "string",
-                    "default": null
-                  },
-                  "jenis_produk": {
-                    "type": "string",
-                    "default": null
                   }
                 }
               }

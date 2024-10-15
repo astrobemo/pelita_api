@@ -126,6 +126,8 @@ const consumeMessages = async () => {
                     });
                 }
 
+                console.log('customer has been Updated');
+                
                 break;
             case 'customer.updated':
                 console.log('customer has been Updated');
