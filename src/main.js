@@ -137,12 +137,13 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
                     data_list: []
                 });
             }else{
-                groupedCustomers.get(nKey).customer_indexes.push(COMPANY.indexOf(company));
+                
+                groupedCustomers.get(nKey).company_indexes.push(COMPANY.indexOf(company));
             }
 
             groupedCustomers.get(nKey).data_list.push({
                 company,
-                customerIndex: COMPANY.indexOf(company),
+                companyIndex: COMPANY.indexOf(company),
                 ...customer
             });
         });
