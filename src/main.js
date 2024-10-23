@@ -165,7 +165,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
         totalPages: totalPages,     // Total number of pages
         currentPage: pageNumber,    // Current page number
         pageSize: pageSize          // Number of records per page
-      });
+    });
     
     // const result = Object.fromEntries(groupedCustomers);
     // res.json(result);
