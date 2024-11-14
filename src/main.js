@@ -77,6 +77,7 @@ const ipFilter = (req, res, next) => {
 }
 
 app.use((req, res, next) => {
+    console.log('path', req.path);
     if (req.path === '/api-docs') {
       next();
     } else {
