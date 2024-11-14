@@ -59,20 +59,24 @@ const corsOptions = {
 app.use(cors(corsOptions)); */
 
 app.get('/hello', (req, res) => {
-        res.send('Hello World!');
+    res.send('Hello World!');
 });
 
 
 const ipFilter = (req, res, next) => {
-    const clientIp = (req.ip).replace(/^::ffff:/, '');
-    console.log('filtering ip address');
-    console.log('clientIp', clientIp);
-    console.log('allowedIp', allowedIPs);
-    console.log('clientIp a/n', allowedIPs.includes(clientIp));
-    if(allowedIPs.includes(clientIp)){
+    if (req.path === '/api-docs') {
         next();
-    } else {    
-        res.status(403).send({error: 'Access restricted'});
+    }else{
+        const clientIp = (req.ip).replace(/^::ffff:/, '');
+        console.log('filtering ip address');
+        console.log('clientIp', clientIp);
+        console.log('allowedIp', allowedIPs);
+        console.log('clientIp a/n', allowedIPs.includes(clientIp));
+        if(allowedIPs.includes(clientIp)){
+            next();
+        } else {    
+            res.status(403).send({error: 'Access restricted'});
+        }
     }
 }
 
