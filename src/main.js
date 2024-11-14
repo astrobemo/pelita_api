@@ -64,23 +64,25 @@ app.get('/hello', (req, res) => {
 
 
 const ipFilter = (req, res, next) => {
-    if (req.path === '/api-docs') {
+    const clientIp = (req.ip).replace(/^::ffff:/, '');
+    console.log('filtering ip address');
+    console.log('clientIp', clientIp);
+    console.log('allowedIp', allowedIPs);
+    console.log('clientIp a/n', allowedIPs.includes(clientIp));
+    if(allowedIPs.includes(clientIp)){
         next();
-    }else{
-        const clientIp = (req.ip).replace(/^::ffff:/, '');
-        console.log('filtering ip address');
-        console.log('clientIp', clientIp);
-        console.log('allowedIp', allowedIPs);
-        console.log('clientIp a/n', allowedIPs.includes(clientIp));
-        if(allowedIPs.includes(clientIp)){
-            next();
-        } else {    
-            res.status(403).send({error: 'Access restricted'});
-        }
+    } else {    
+        res.status(403).send({error: 'Access restricted'});
     }
 }
 
-app.use(ipFilter);
+app.use((req, res, next) => {
+    if (req.path === '/api-docs') {
+      next();
+    } else {
+      ipFilter(req, res, next);
+    }
+});
 
 app.get('/testing-consumer', (req, res) => {
     res.send('Testing World!');
