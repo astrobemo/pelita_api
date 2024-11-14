@@ -272,6 +272,42 @@
           }
         }
       }
+    },
+    "/user/me": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get user logged in",
+        "description": "Get user profile that logged in",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/upload-image/temp": {
+      "post": {
+        "tags": ["upload","customer"],
+        "summary": "upload temporary image",
+        "description": "For manage image form, <b>Semua file disini akan otomatis dihapus setiap hari</b>, Gunakan nama file untuk menyimpan ke database",
+        "responses": {
+          "200": {
+            "description": "image success and image name"
+          }
+        }
+      }
+    },
+    "/upload-image/customer_ids": {
+      "post": {
+        "tags": ["upload","customer"],
+        "summary": "bukan untuk upload image hanya verifikasi image from temp",
+        "description": "Untuk submit nama image setelah verifikasi, ",
+        "responses": {
+          "200": {
+            "description": "image success"
+          }
+        }
+      }
     }
   }
 }
