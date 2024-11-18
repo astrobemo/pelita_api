@@ -8,6 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import axios from 'axios';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const COMPANY = process.env.COMPANY.split(',');
@@ -180,6 +181,45 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     
 });
 
+app.get('/customers/customer-central', async (req, res) => {
+
+    const query = `
+        query {
+            allCustomer {
+                id
+                tipe_company
+                nama
+                alamat
+                no
+                kota
+                rt
+                rw
+                kelurahan
+                kecamatan
+                kode_pos
+                kota
+                npwp
+                nik
+                email
+            }
+        }
+    `;
+
+    try {
+        const response = await axios.post('http://localhost:3301/graphql', { query }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const customers = await response.data.data.allCustomer;
+        res.status(200).send(customers);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching customers from the GraphQL backend' });
+    }
+});
+
+
+
 app.get('/customers/:company_index', async (req, res) => {
     console.log('get customer by company index');
     const company_index = parseInt(req.params.company_index);
@@ -233,6 +273,8 @@ app.get('/customers/:company_index/:id', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
 });
+
+
 
 // Middleware to parse JSON bodies
 app.use(express.json());
