@@ -287,7 +287,7 @@
     },
     "/upload-image/temp": {
       "post": {
-        "tags": ["upload","customer"],
+        "tags": ["upload","customer","image"],
         "summary": "upload temporary image",
         "description": "For manage image form, <b>Semua file disini akan otomatis dihapus setiap hari</b>, Gunakan nama file untuk menyimpan ke database",
         "responses": {
@@ -299,12 +299,24 @@
     },
     "/upload-image/customer_ids": {
       "post": {
-        "tags": ["upload","customer"],
+        "tags": ["upload","customer", "image"],
         "summary": "bukan untuk upload image hanya verifikasi image from temp",
         "description": "Untuk submit nama image setelah verifikasi, ",
         "responses": {
           "200": {
             "description": "image success"
+          }
+        }
+      }
+    },
+    "/uploads/customer/ids": {
+      "post": {
+        "tags": ["upload","customer", "image"],
+        "summary": "untuk image customer id",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "image file"
           }
         }
       }

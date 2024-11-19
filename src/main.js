@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import e from 'express';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const COMPANY = process.env.COMPANY.split(',');
@@ -181,29 +182,54 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     
 });
 
-app.get('/customers/customer-central', async (req, res) => {
+app.get('/customers/customer-central/:id', async (req, res) => {
 
-    const query = `
-        query {
-            allCustomer {
-                id
-                tipe_company
-                nama
-                alamat
-                no
-                kota
-                rt
-                rw
-                kelurahan
-                kecamatan
-                kode_pos
-                kota
-                npwp
-                nik
-                email
-            }
-        }
-    `;
+    let query = "";
+
+    if(req.params.id != "all"){
+        query = `
+            query {
+                customer(id:${req.params.id}) {
+                    id
+                    tipe_company
+                    nama
+                    alamat
+                    blok
+                    no
+                    rt
+                    rw
+                    kelurahan
+                    kecamatan
+                    kota
+                    provinsi
+                    kode_pos
+                    npwp
+                    nik
+                }
+            }`;
+    }else{
+        query = `
+            query {
+                allCustomer {
+                    id
+                    tipe_company
+                    nama
+                    alamat
+                    blok
+                    no
+                    rt
+                    rw
+                    kelurahan
+                    kecamatan
+                    kota
+                    provinsi
+                    kode_pos
+                    npwp
+                    nik
+                }
+            }`;
+    }
+
 
     try {
         const response = await axios.post('http://localhost:3301/graphql', { query }, {
@@ -211,14 +237,19 @@ app.get('/customers/customer-central', async (req, res) => {
                 'Content-Type': 'application/json'
             }
         });
-        const customers = await response.data.data.allCustomer;
+
+        let customers = {};
+        if(req.params.id == "all"){
+            customers = await response.data.data.allCustomer;
+        }else{
+            customers = await response.data.data.customer;
+        }
+
         res.status(200).send(customers);
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers from the GraphQL backend' });
     }
 });
-
-
 
 app.get('/customers/:company_index', async (req, res) => {
     console.log('get customer by company index');
