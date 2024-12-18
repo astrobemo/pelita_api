@@ -40,25 +40,24 @@ app.use('/api-docs',
 
 // Read allowed IPs from environment variable and split into an array
 const allowedIPs = process.env.ALLOWED_IPS.split(',');
+const allowedCors = process.env.ALLOWED_ORIGINS.split(',');
 
 const corsOptions = {
     
     origin: function (origin, callback) {
-        if (allowedIPs.includes(origin) || !origin) {
-            console.log('origin success', origin);
-            callback(null, true);
+        if (!origin || allowedCors.indexOf(origin) !== -1) {
+            callback(null, true); // Allow the request
         } else {
-            console.log('origin denied', origin);
-            callback(new Error('Not allowed by CORS'));
+            callback(new Error('Not allowed by CORS')); // Reject the request
         }
     },
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
 };
 
-/* app.options('*', cors());
+/* app.options('*', cors());*/
 
-app.use(cors(corsOptions)); */
+app.use(cors(corsOptions)); 
 
 app.get('/hello', (req, res) => {
     res.send('Hello World!');
