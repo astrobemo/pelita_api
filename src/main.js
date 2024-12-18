@@ -72,8 +72,10 @@ const ipFilter = (req, res, next) => {
     console.log('allowedIp', allowedIPs);
     console.log('clientIp a/n', allowedIPs.includes(clientIp));
     if(allowedIPs.includes(clientIp)){
+        console.log("access granted");
         next();
     } else {    
+        console.log("access resricted");
         res.status(403).send({error: 'Access restricted'});
     }
 }
@@ -254,13 +256,13 @@ app.get('/customers/customer-central/:id', async (req, res) => {
 app.get('/customers/:company_index', async (req, res) => {
     console.log('get customer by company index');
     const company_index = parseInt(req.params.company_index);
-    console.log('company_index', company_index);
-
+    
     try {
-        const { page = 1, limit = 10, orderByField = ['nama'], orderDirection = 'asc' } = req.query; // Default to page 1 and limit 10
+        const { page = 1, limit = 10, orderByField = ['nama'], orderDirection = 'asc' } = req.query;
+        
         const pageNumber = parseInt(page, 10);
         const pageSize = parseInt(limit, 10);
-        const orderByFieldList = orderByField ;
+        const orderByFieldList = orderByField;
         const orderDirectionList = orderDirection;
 
 
