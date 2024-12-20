@@ -12,10 +12,10 @@ const rabbitMqPassword = process.env.RABBITMQ_PASSWORD;
 const rabbitMqPort = process.env.RABBITMQ_PORT;
 const nodeUrl = process.env.NODE1_URL;
 
-console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
+// console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
 
 let channel;
-const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:${rabbitMqPassword}/master`).catch((err) => {
+const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:${rabbitMqPort}}/master`).catch((err) => {
     console.error(err);
     // process.exit(1);
 });
