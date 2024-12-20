@@ -117,7 +117,6 @@ const consumeMessages = async () => {
                     const keyValue = data.keyValue;
                     const id = data.id;
     
-    
                     const response = await axios.post(nodeUrl, {
                         query: `
                             query Customer {
@@ -186,6 +185,11 @@ const consumeMessages = async () => {
                         });
                     }
 
+                    break;
+                }
+            case 'customer.testing':
+                {
+                    console.log('customer.testing success');
                     break;
                 }
             default:
