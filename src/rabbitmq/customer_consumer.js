@@ -17,7 +17,7 @@ const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort
 
 let channel;
 const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:${rabbitMqPort}}/master`).catch((err) => {
-    console.error(err);
+    console.error('connection error', err);
     // process.exit(1);
 });
 
