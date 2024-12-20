@@ -13,6 +13,7 @@ const rabbitMqPort = process.env.RABBITMQ_PORT;
 const nodeUrl = process.env.NODE1_URL;
 
 // console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
+const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort];
 
 let channel;
 const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:${rabbitMqPort}}/master`).catch((err) => {
@@ -198,7 +199,7 @@ const consumeMessages = async () => {
     }, { noAck: true });
 }
 
-export { consumeMessages };
+export { consumeMessages, rabbitMqParam };
 
 // await channel.close();
 // await connection.close();
