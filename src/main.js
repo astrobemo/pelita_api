@@ -9,13 +9,12 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
-import e from 'express';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const COMPANY = process.env.COMPANY.split(',');
 
 dotenv.config({ path: `./.env.${ENVIRONMENT}` });
-const secret = process.env.TOKEN_SECRET || 'development';
+// const secret = process.env.TOKEN_SECRET || 'development';
 
 process.env.TZ = 'UTC';
 

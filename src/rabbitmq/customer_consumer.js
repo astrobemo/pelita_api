@@ -25,7 +25,6 @@ if(connection){
     channel = await connection.createChannel();
 }
 
-
 const consumeMessages = async () => {
     await channel.consume("customer_legacy_que", async (msg) => {
         const event = msg.fields.routingKey;
