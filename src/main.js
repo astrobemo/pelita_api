@@ -77,6 +77,7 @@ const ipFilter = (req, res, next) => {
     }
 }
 
+app.set('trust proxy', true);
 app.use((req, res, next) => {
     const clientIp = (req.ip).replace(/^::ffff:/, '');
     console.log('========================');
