@@ -82,6 +82,7 @@ app.use((req, res, next) => {
     console.log('========================');
     console.log('path', req.path);
     console.log('clientIp', clientIp);
+    console.log(req.headers['x-forwarded-for']);
     console.log('========================');
     if (req.path === '/api-docs') {
       next();
