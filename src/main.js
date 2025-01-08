@@ -78,7 +78,11 @@ const ipFilter = (req, res, next) => {
 }
 
 app.use((req, res, next) => {
+    const clientIp = (req.ip).replace(/^::ffff:/, '');
+    console.log('========================');
     console.log('path', req.path);
+    console.log('clientIp', clientIp);
+    console.log('========================');
     if (req.path === '/api-docs') {
       next();
     } else {
