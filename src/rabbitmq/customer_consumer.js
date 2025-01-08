@@ -38,7 +38,6 @@ const consumeMessages = async () => {
                     const keyValue = data.keyValue;
                     const id = data.id;
 
-
                     const response = await axios.post(nodeUrl, {
                         query: `
                             query Customer {
@@ -97,6 +96,25 @@ const consumeMessages = async () => {
                     };
 
                     for (const index of company_indexes) {
+
+                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findUnique({
+                            where: {
+                                [keyName]: keyValue
+                            }
+                        });
+
+                        if (!existingCustomer) {
+                            console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
+                            continue;
+                        }else{
+                            
+                            await prismaClient[COMPANY[index]].customer_backup.create({
+                                data: existingCustomer,
+                            });
+                        }
+
+
+
                         await prismaClient[COMPANY[index]].customer.updateMany({
                             data: newData,
                             where: {
