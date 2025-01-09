@@ -32,6 +32,8 @@ const consumeMessages = async () => {
             case 'customer.chosen': 
                 {
 
+                    console.log('customer.chosen success');
+
                     const data = JSON.parse(msg.content.toString());
                     const company_indexes = data.company_indexes;
                     const keyName = data.keyName;
@@ -94,6 +96,9 @@ const consumeMessages = async () => {
                         customer_id_central : id,
                         status_aktif: status_aktif
                     };
+
+                    console.log('new data', newData);
+
 
                     for (const index of company_indexes) {
 
