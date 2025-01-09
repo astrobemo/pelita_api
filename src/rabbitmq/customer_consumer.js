@@ -75,6 +75,9 @@ const consumeMessages = async () => {
             
                     } = updateData;
 
+                    console.log('updatedData', updateData);
+
+
                     const currentDate = new Date();
                     const verified_time = new Date(currentDate.setHours(currentDate.getHours() + 7));
                     const newData = {
