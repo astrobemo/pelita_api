@@ -113,14 +113,17 @@ const consumeMessages = async () => {
                             });
                         }
 
-
-
-                        await prismaClient[COMPANY[index]].customer.updateMany({
-                            data: newData,
-                            where: {
-                                [keyName]: keyValue
-                            },
-                        });
+                        if (keyName == "" || keyValue == "") {
+                            console.log('keyName or keyValue is empty');
+                            continue;
+                        }else{
+                            await prismaClient[COMPANY[index]].customer.updateMany({
+                                data: newData,
+                                where: {
+                                    [keyName]: keyValue
+                                },
+                            });
+                        }
                     }
 
                     console.log('customer has been Updated');
