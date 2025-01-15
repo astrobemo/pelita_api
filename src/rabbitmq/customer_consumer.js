@@ -66,6 +66,8 @@ const consumeMessages = async () => {
 
                     const updateData = response.data.data.customer;
 
+                    console.log('updatedData', updateData);
+
                     const { 
                         tipe_company, nama,
                         alamat, blok, no, rt, rw,
@@ -75,7 +77,6 @@ const consumeMessages = async () => {
             
                     } = updateData;
 
-                    console.log('updatedData', updateData);
 
 
                     const currentDate = new Date();
@@ -101,7 +102,6 @@ const consumeMessages = async () => {
                     };
 
                     console.log('new data', newData);
-
 
                     for (const index of company_indexes) {
 

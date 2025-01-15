@@ -96,6 +96,10 @@ app.get('/testing-consumer', (req, res) => {
     res.send('Testing World!');
 });
 
+app.get('/customers_bounce_back', async (req, res) => {
+    
+});
+
 app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     console.log('get customer verified by pajak');
 
@@ -183,8 +187,6 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     
     // const result = Object.fromEntries(groupedCustomers);
     // res.json(result);
-
-    
 });
 
 app.get('/customers/customer-central/:id', async (req, res) => {
@@ -309,7 +311,6 @@ app.get('/customers/:company_index/:id', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
 });
-
 
 
 // Middleware to parse JSON bodies
