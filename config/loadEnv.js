@@ -15,6 +15,11 @@ if (fs.existsSync(envFile)) {
   console.warn(`Environment file ${envFile} not found.`);
 }
 
+
+// Your application logic starts here
+console.log('Environment:', process.env.NODE_ENV);
+console.log('Database HOST:', process.env.DB_HOST);
+
 export const LIFETIME = process.env.TOKEN_LIFETIME;
 export const TOKENSECRET = process.env.TOKEN_SECRET;
 export const FRONTEND_URL = process.env.FRONTEND_URL;
