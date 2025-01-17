@@ -13,6 +13,9 @@ const rabbitMqPassword = process.env.RABBITMQ_PASSWORD;
 const rabbitMqPort = process.env.RABBITMQ_PORT;
 const nodeUrl = process.env.NODE1_URL;
 
+const authUrl = process.env.AUTH_URL;
+const apiKey = process.env.API_KEY;
+
 // console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
 const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort];
 
@@ -42,7 +45,7 @@ const consumeMessages = async () => {
 
                     if (!isTokenValid()) {
                         try {
-                            await getAuthToken(process.env.AUTH_APP_ENDPOINT, process.env.API_KEY);
+                            await getAuthToken(authUrl, apiKey);
                         } catch (error) {
                             console.error('Failed to get auth token, requeueing message');
                             channel.nack(msg, false, true); // Requeue the message
@@ -162,7 +165,7 @@ const consumeMessages = async () => {
 
                     if (!isTokenValid()) {
                         try {
-                            await getAuthToken(process.env.AUTH_APP_ENDPOINT, process.env.API_KEY);
+                            await getAuthToken(authUrl, apiKey);
                         } catch (error) {
                             console.error('Failed to get auth token, requeueing message');
                             channel.nack(msg, false, true); // Requeue the message
