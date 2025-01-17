@@ -8,15 +8,15 @@ export default {
         NODE_ENV: "development", 
       },
       env_development: {
-        ENV_FILE: path.resolve(__dirname, `../.env.development`), 
+        ENV_FILE: `.env.development`, 
       },
       env_testing: {
         NODE_ENV: "testing", 
-        ENV_FILE: path.resolve(__dirname, `../.env.testing`), 
+        ENV_FILE: `.env.testing`, 
       },
       env_production: {
         NODE_ENV: "production", 
-        ENV_FILE: path.resolve(__dirname, `../.env.production`), 
+        ENV_FILE: `.env.production`, 
       },
     },
   ],
