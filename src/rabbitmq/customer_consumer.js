@@ -11,6 +11,7 @@ const rabbitMqUser = process.env.RABBITMQ_USER;
 const rabbitMqPassword = process.env.RABBITMQ_PASSWORD;
 const rabbitMqPort = process.env.RABBITMQ_PORT;
 const nodeUrl = process.env.NODE1_URL;
+const jwtToken = process.env.JWT_TOKEN; // Add this line to get the JWT token from environment variables
 
 // console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
 const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort];
@@ -18,7 +19,6 @@ const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort
 let channel;
 const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:${rabbitMqPort}/master`).catch((err) => {
     console.error('connection error', err);
-    // process.exit(1);
 });
 
 if(connection){
@@ -39,6 +39,8 @@ const consumeMessages = async () => {
                     const keyName = data.keyName;
                     const keyValue = data.keyValue;
                     const id = data.id;
+
+                    
 
                     const response = await axios.post(nodeUrl, {
                         query: `
@@ -62,6 +64,10 @@ const consumeMessages = async () => {
                                 }
                             }
                         `,
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${jwtToken}` // Add this line to include the JWT token in the request headers
+                        }
                     });
 
                     const updateData = response.data.data.customer;
@@ -168,6 +174,10 @@ const consumeMessages = async () => {
                                 }
                             }
                         `,
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${jwtToken}` // Add this line to include the JWT token in the request headers
+                        }
                     });
     
                     const customerData = response.data.data.customer;

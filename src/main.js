@@ -37,6 +37,7 @@ app.use('/api-docs',
 })); */
 
 // Read allowed IPs from environment variable and split into an array
+console.log('env', ENVIRONMENT);
 const allowedIPs = process.env.ALLOWED_IPS.split(',');
 const allowedCors = process.env.ALLOWED_ORIGINS.split(',');
 

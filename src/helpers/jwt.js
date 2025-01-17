@@ -1,7 +1,32 @@
 import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from 'url';
 
-const LIFETIME = process.env.LIFETIME || '3h';
-const TOKENSECRET = process.env.TOKENSECRET || 'development';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const loadEnvFile = (filePath) => {
+    // console.log('path', filePath);
+    const result = dotenv.config({ path: filePath });
+    // console.log('result', result);
+    const envMain = process.env.ENVIRONMENT;
+    // console.log('envMain', envMain);
+    if (result.error) {
+      throw new Error(`Warning: Could not load .env file at ${filePath}`);
+    }
+};
+
+// Load the root .env file first
+loadEnvFile(path.resolve(__dirname, '../../.env'));
+
+// Now, load the environment-specific .env file
+const envMain = process.env.ENVIRONMENT || 'development';
+loadEnvFile(path.resolve(__dirname, `../.env.${envMain}`));
+  
+TOKEN_LIFETIME
+const LIFETIME = process.env.TOKEN_LIFETIME || '3h';
+const TOKENSECRET = process.env.TOKEN_SECRET || 'development';
 
 const generateToken = (payload) => {
     console.log('tokenSecret',TOKENSECRET, ' LIFETIME', LIFETIME);

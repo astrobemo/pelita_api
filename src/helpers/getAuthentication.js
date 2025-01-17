@@ -1,0 +1,27 @@
+const axios = require('axios');
+
+let authToken = null;
+let tokenExpiry = 0; 
+
+const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
+    try {
+        const response = await axios.post(AUTH_APP_ENDPOINT, {
+            username: process.env.AUTH_USERNAME
+        }, {
+            headers: {
+                'API-Key': API_KEY
+            }
+        });
+        authToken = response.data.token;
+        tokenExpiry = Date.now() + response.data.expires_in * 1000; // Assuming expires_in is in seconds
+    } catch (error) {
+        console.error('Error fetching auth token:', error);
+        throw error;
+    }
+};
+
+const isTokenValid = () => {
+    return Date.now() < tokenExpiry;
+}
+
+export default { getAuthToken, isTokenValid };
