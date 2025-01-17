@@ -2,6 +2,7 @@ import { connect } from "amqplib";
 import dotenv from "dotenv";
 import { prismaClient } from "../prisma-client.js"
 import axios from "axios";
+import { getAuthToken, isTokenValid, authToken } from "../helpers/getAuthentication.js";
 
 dotenv.config({ path: `../../.env` });
 
@@ -11,7 +12,6 @@ const rabbitMqUser = process.env.RABBITMQ_USER;
 const rabbitMqPassword = process.env.RABBITMQ_PASSWORD;
 const rabbitMqPort = process.env.RABBITMQ_PORT;
 const nodeUrl = process.env.NODE1_URL;
-const jwtToken = process.env.JWT_TOKEN; // Add this line to get the JWT token from environment variables
 
 // console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
 const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort];
@@ -40,7 +40,15 @@ const consumeMessages = async () => {
                     const keyValue = data.keyValue;
                     const id = data.id;
 
-                    
+                    if (!isTokenValid()) {
+                        try {
+                            await getAuthToken(process.env.AUTH_APP_ENDPOINT, process.env.API_KEY);
+                        } catch (error) {
+                            console.error('Failed to get auth token, requeueing message');
+                            channel.nack(msg, false, true); // Requeue the message
+                            return;
+                        }
+                    }
 
                     const response = await axios.post(nodeUrl, {
                         query: `
@@ -66,7 +74,7 @@ const consumeMessages = async () => {
                         `,
                     }, {
                         headers: {
-                            Authorization: `Bearer ${jwtToken}` // Add this line to include the JWT token in the request headers
+                            Authorization: `Bearer ${authToken}` // Add this line to include the JWT token in the request headers
                         }
                     });
 
@@ -151,6 +159,16 @@ const consumeMessages = async () => {
                     const keyName = data.keyName;
                     const keyValue = data.keyValue;
                     const id = data.id;
+
+                    if (!isTokenValid()) {
+                        try {
+                            await getAuthToken(process.env.AUTH_APP_ENDPOINT, process.env.API_KEY);
+                        } catch (error) {
+                            console.error('Failed to get auth token, requeueing message');
+                            channel.nack(msg, false, true); // Requeue the message
+                            return;
+                        }
+                    }
     
                     const response = await axios.post(nodeUrl, {
                         query: `
@@ -176,7 +194,7 @@ const consumeMessages = async () => {
                         `,
                     }, {
                         headers: {
-                            Authorization: `Bearer ${jwtToken}` // Add this line to include the JWT token in the request headers
+                            Authorization: `Bearer ${authToken}` // Add this line to include the JWT token in the request headers
                         }
                     });
     

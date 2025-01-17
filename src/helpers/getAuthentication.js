@@ -1,7 +1,6 @@
-const axios = require('axios');
-
+import axios from "axios";
 let authToken = null;
-let tokenExpiry = 0; 
+let tokenExpiry = null; 
 
 const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
     try {
@@ -24,4 +23,4 @@ const isTokenValid = () => {
     return Date.now() < tokenExpiry;
 }
 
-export default { getAuthToken, isTokenValid };
+export { getAuthToken, isTokenValid, authToken };
