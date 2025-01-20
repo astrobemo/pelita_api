@@ -338,6 +338,17 @@ app.put('/customers/:company_index/:id', async (req, res) => {
     }
 });
 
+// Middleware to handle non-existent endpoints
+app.use((req, res, next) => {
+    if (err.status === 401) {
+        res.status(401).json({ error: 'Unauthorized access' });
+    }else if(err.status === 404){
+        res.status(404).json({ error: 'Endpoint not found' });
+    } else{
+        next(err);
+    }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err) {
@@ -350,6 +361,8 @@ app.use((err, req, res, next) => {
         next();
     }
 });
+
+
 
 
 export default app;
