@@ -2,7 +2,7 @@ import app from "./src/main.js";
 import dotenv from 'dotenv';
 import { consumersApp } from "./src/rabbitmq/index.js";
 
-const ENVIRONMENT = process.env.ENVIRONMENT;
+const ENVIRONMENT = process.env.NODE_ENV || 'development';
 dotenv.config({ path: `./.env.${ENVIRONMENT}` });
 const port = process.env.PORT || 3000;
 
