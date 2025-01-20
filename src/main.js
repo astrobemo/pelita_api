@@ -344,6 +344,8 @@ app.use((req, res, next) => {
         res.status(401).json({ error: 'Unauthorized access' });
     }else if(err.status === 404){
         res.status(404).json({ error: 'Endpoint not found' });
+    }else if(err.status === 403){
+        res.status(404).json({ error: 'Forbidden' });
     } else{
         next(err);
     }
