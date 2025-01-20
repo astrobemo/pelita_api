@@ -346,9 +346,11 @@ app.use((err, req, res, next) => {
         res.status(404).json({ error: 'Endpoint not found' });
     }else if(err.status === 403){
         res.status(403).json({ error: 'Forbidden' });
-    } else{
+    }else if(err){
+        console.log(err);
         res.status(403).send(` errors: ${err.message}`);
-        next();
+    }else{
+        next(err);
     }
 });
 
