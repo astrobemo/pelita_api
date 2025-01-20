@@ -1,20 +1,19 @@
 import { connect } from "amqplib";
-import dotenv from "dotenv";
 import { prismaClient } from "../prisma-client.js"
 import axios from "axios";
 import { getAuthToken, isTokenValid, authToken } from "../helpers/getAuthentication.js";
 
-dotenv.config({ path: `../../.env` });
+import { COMPANY as COMPANY_ALL, RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD, RABBITMQ_PORT, NODE1_URL, AUTH_URL, API_KEY } from "../../config/loadEnv.js";
 
-const COMPANY = process.env.COMPANY.split(',');
-const rabbitMqUrl = process.env.RABBITMQ_URL;
-const rabbitMqUser = process.env.RABBITMQ_USER;
-const rabbitMqPassword = process.env.RABBITMQ_PASSWORD;
-const rabbitMqPort = process.env.RABBITMQ_PORT;
-const nodeUrl = process.env.NODE1_URL;
+const COMPANY = COMPANY_ALL.split(',');
+const rabbitMqUrl = RABBITMQ_URL;
+const rabbitMqUser = RABBITMQ_USER;
+const rabbitMqPassword = RABBITMQ_PASSWORD;
+const rabbitMqPort = RABBITMQ_PORT;
+const nodeUrl = NODE1_URL;
 
-const authUrl = process.env.AUTH_URL;
-const apiKey = process.env.API_KEY;
+const authUrl = AUTH_URL;
+const apiKey = API_KEY;
 
 // console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
 const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort];

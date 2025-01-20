@@ -1,18 +1,13 @@
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// PM2 requires CommonJS by default. Add this flag in your PM2 start command: `--interpreter node --node-args="--experimental-loader=@esbuild-kit/esm-loader"`
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const { watch } = require('fs');
+const path = require('path');
 
 // Export the configuration object
 const configuration = {
   apps: [
     {
-      name: "pelita-api-app",
+      name: "legacy-api",
       script: "./index.js",
+      watch: true,
       env: {
         NODE_ENV: "development",
       },
@@ -31,4 +26,4 @@ const configuration = {
   ],
 };
 
-export default configuration;
+module.exports = configuration;
