@@ -339,30 +339,28 @@ app.put('/customers/:company_index/:id', async (req, res) => {
 });
 
 // Middleware to handle non-existent endpoints
-app.use((req, res, next) => {
+app.use((err, req, res, next) => {
     if (err.status === 401) {
         res.status(401).json({ error: 'Unauthorized access' });
     }else if(err.status === 404){
         res.status(404).json({ error: 'Endpoint not found' });
     }else if(err.status === 403){
-        res.status(404).json({ error: 'Forbidden' });
+        res.status(403).json({ error: 'Forbidden' });
     } else{
-        next(err);
+        res.status(403).send(` errors: ${err.message}`);
+        next();
     }
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+/* app.use((err, req, res, next) => {
     if (err) {
-        /* console.log(`${req.method} ${req.url}`);
-        console.log('TOKEN_SECRET:', secret);
-        console.log('Authorization Header:', req.headers.authorization); */    
         res.status(403).send(` errors: ${err.message}`);
         
     } else {
         next();
     }
-});
+}); */
 
 
 
