@@ -248,7 +248,49 @@ const consumeMessages = async () => {
                 }
             case 'customer.testing':
                 {
-                    console.log('customer.testing success');
+                    console.log('customer.testing accessed');
+
+                    if (!isTokenValid()) {
+                        try {
+                            await getAuthToken(authUrl, apiKey);
+                        } catch (error) {
+                            console.error('Failed to get auth token, requeueing message');
+                            channel.nack(msg, false, true); // Requeue the message
+                            return;
+                        }
+                    }
+
+                    const response = await axios.post(nodeUrl, {
+                        query: `
+                            query Customer {
+                                customer(id: 1) {
+                                    tipe_company
+                                    nama
+                                    alamat
+                                    blok
+                                    no
+                                    rt
+                                    rw
+                                    kecamatan
+                                    kelurahan
+                                    kota
+                                    provinsi
+                                    kode_pos
+                                    npwp
+                                    nik
+                                    status_aktif
+                                }
+                            }
+                        `,
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${authToken}` // Add this line to include the JWT token in the request headers
+                        }
+                    });
+
+                    const getData = response.data.data.customer;
+
+                    console.log('axios success getData', getData);
                     break;
                 }
             default:
