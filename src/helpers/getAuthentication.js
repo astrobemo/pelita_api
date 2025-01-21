@@ -28,7 +28,9 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
 };
 
 const isTokenValid = () => {
-    console.log('Token expiry:', tokenExpiry);
+    if(!authToken || !tokenExpiry) {
+        return false;
+    }
     return Date.now() < tokenExpiry;
 }
 
