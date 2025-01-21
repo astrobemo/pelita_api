@@ -12,7 +12,7 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
             }
         });
         authToken = response.data.token;
-        console.log('Auth token:', authToken);
+        console.log('Auth token:', authToken); 
 
         const currentTime = Math.floor(Date.now() / 1000);
         
@@ -28,6 +28,7 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
 };
 
 const isTokenValid = () => {
+    console.log('Token expiry:', tokenExpiry);
     return Date.now() < tokenExpiry;
 }
 
