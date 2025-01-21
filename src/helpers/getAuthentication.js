@@ -4,6 +4,8 @@ let tokenExpiry = null;
 
 const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
     try {
+
+        console.log('start getAuthToken');
         const response = await axios.post(AUTH_APP_ENDPOINT, {
             username: process.env.AUTH_USERNAME
         }, {
@@ -29,6 +31,7 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
 
 const isTokenValid = () => {
     if(!authToken || !tokenExpiry) {
+        console.log("no authtoken or tokenExpiry");
         return false;
     }
     return Date.now() < tokenExpiry;

@@ -246,7 +246,6 @@ const consumeMessages = async () => {
                 }
             case 'customer.testing':
                 {
-                    console.log('customer.testing accessed');
 
                     if (!isTokenValid()) {
                         try {
@@ -263,6 +262,8 @@ const consumeMessages = async () => {
                             } */
                         }
                     }
+                    console.log('customer.testing accessed');
+
 
                     /* const response = await axios.post(nodeUrl, {
                         query: `
