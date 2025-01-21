@@ -93,8 +93,6 @@ const consumeMessages = async () => {
             
                     } = updateData;
 
-
-
                     const currentDate = new Date();
                     const verified_time = new Date(currentDate.setHours(currentDate.getHours() + 7));
                     const newData = {
@@ -255,7 +253,7 @@ const consumeMessages = async () => {
                             await getAuthToken(authUrl, apiKey);
                         } catch (error) {
                             console.error('Failed to get auth token, requeueing message');
-                            channel.nack(msg, false, true); // Requeue the message
+                            channel.basicNack(msg, true, true); // Requeue the message
                             return;
                         }
                     }
