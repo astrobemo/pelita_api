@@ -12,6 +12,7 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
             }
         });
         authToken = response.data.token;
+        console.log('Auth token:', authToken);
 
         const currentTime = Math.floor(Date.now() / 1000);
         
