@@ -253,7 +253,7 @@ const consumeMessages = async () => {
                             await getAuthToken(authUrl, apiKey);
                         } catch (error) {
                             console.error('Failed to get auth token, requeueing message');
-                            channel.basicNack(msg, true, true); // Requeue the message
+                            channel.nack(msg, false, true); // Requeue the message
                             return;
                         }
                     }
@@ -289,12 +289,13 @@ const consumeMessages = async () => {
                     const getData = response.data.data.customer;
 
                     console.log('axios success getData', getData);
+                    channel.ack(msg);
                     break;
                 }
             default:
                 break;
         }
-    }, { noAck: true });
+    }, { noAck: false });
 }
 
 export { consumeMessages, rabbitMqParam };
