@@ -252,9 +252,15 @@ const consumeMessages = async () => {
                         try {
                             await getAuthToken(authUrl, apiKey);
                         } catch (error) {
-                            console.error('Failed to get auth token, requeueing message');
-                            channel.nack(msg, false, true); // Requeue the message
-                            return;
+                            console.error('Failed to process message, requeueing', error);
+                            if (!msg.fields.redelivered) {
+                                console.log('Requeuing message...');
+                                channel.nack(msg, false, true); // Requeue the message only if it hasn't been redelivered
+                                console.log('Message requeued successfully');
+                            } else {
+                                console.error('Message has already been redelivered, discarding');
+                                channel.nack(msg, false, false); // Discard the message if it has been redelivered
+                            }
                         }
                     }
 
