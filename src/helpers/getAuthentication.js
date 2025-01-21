@@ -5,9 +5,9 @@ let tokenExpiry = null;
 const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
     try {
 
-        console.log('start getAuthToken');
+        console.log('start getAuthToken ', AUTH_APP_ENDPOINT,API_KEY);
         const response = await axios.post(AUTH_APP_ENDPOINT, {
-            username: process.env.AUTH_USERNAME
+            username: "Machine"
         }, {
             headers: {
                 'API-Key': API_KEY
