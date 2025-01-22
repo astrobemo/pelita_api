@@ -4,7 +4,6 @@ let tokenExpiry = null;
 
 const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
     try {
-
         console.log('start getAuthToken ', AUTH_APP_ENDPOINT,API_KEY);
         const response = await axios.post(AUTH_APP_ENDPOINT,
             {
@@ -17,8 +16,14 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
                 },
             }
         );
-        authToken = response.data.token;
+
+        console.table(response.data);
+        authToken = response.data.accessToken;
         console.log('Auth token:', authToken); 
+
+        const payload = JSON.parse(Buffer.from(authToken.split('.')[1], 'base64').toString());
+        console.log('Token payload:', payload);
+        tokenExpiry = payload.exp * 1000; // Assuming exp is in seconds and converting to milliseconds
 
         const currentTime = Math.floor(Date.now() / 1000);
         
@@ -38,7 +43,13 @@ const isTokenValid = () => {
         console.log("no authtoken or tokenExpiry");
         return false;
     }
-    return Date.now() < tokenExpiry;
+
+    if(Date.now() > tokenExpiry) {
+        console.log("token expired");
+        return false;
+    }
+
+    return true;
 }
 
 export { getAuthToken, isTokenValid, authToken };
