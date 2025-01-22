@@ -122,9 +122,12 @@ const consumeMessages = async () => {
                         status_aktif: status_aktif
                     };
 
-                    console.log('new data', newData);
-
+                    
                     for (const index of company_indexes) {
+                        
+                        console.log('new data', newData);
+                        console.log('keyName', keyName);
+                        console.log('keyValue', keyValue);
 
                         const existingCustomer = await prismaClient[COMPANY[index]].customer.findUnique({
                             where: {
@@ -307,7 +310,7 @@ const consumeMessages = async () => {
                     });
 
                     const getData = response.data.data.customer;
-                    console.log(response.data.data);
+
                     console.log('axios success getData', getData);
                     channel.ack(msg);
                     break;
