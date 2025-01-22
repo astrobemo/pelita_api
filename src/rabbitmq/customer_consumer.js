@@ -124,7 +124,7 @@ const consumeMessages = async () => {
 
                     
                     for (const index of company_indexes) {
-                        
+
                         console.log('new data', newData);
                         console.log('keyName', keyName);
                         console.log('keyValue', keyValue);
@@ -280,11 +280,16 @@ const consumeMessages = async () => {
                     }
                     console.log('customer.testing accessed', authToken);
 
+                    const data = JSON.parse(msg.content.toString());
+                    const company_indexes = data.company_indexes;
+                    const keyName = data.keyName;
+                    const keyValue = data.keyValue;
+                    const id = data.id;
 
                     const response = await axios.post(nodeUrl, {
                         query: `
                             query Customer {
-                                customer(id: 1) {
+                                customer(id: ${id}) {
                                     tipe_company
                                     nama
                                     alamat
@@ -312,6 +317,31 @@ const consumeMessages = async () => {
                     const getData = response.data.data.customer;
 
                     console.log('axios success getData', getData);
+
+                    for (const index of company_indexes) {
+
+                        console.log('new data', newData);
+                        console.log('keyName', keyName);
+                        console.log('keyValue', keyValue);
+
+                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findUnique({
+                            where: {
+                                [keyName]: keyValue
+                            }
+                        });
+
+                        if (!existingCustomer) {
+                            console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
+                            continue;
+                        }else{
+                            
+                            await prismaClient[COMPANY[index]].customer_backup.create({
+                                data: existingCustomer,
+                            });
+                        }
+
+                    }
+
                     channel.ack(msg);
                     break;
                 }
