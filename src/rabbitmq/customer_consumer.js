@@ -46,11 +46,18 @@ const consumeMessages = async () => {
                         try {
                             await getAuthToken(authUrl, apiKey);
                         } catch (error) {
-                            console.error('Failed to get auth token, requeueing message');
-                            channel.nack(msg, false, true); // Requeue the message
-                            return;
+                            console.log('Failed to process message, requeueing', error);
+                            if (!msg.fields.redelivered) {
+                                console.log('Requeuing message...');
+                                channel.nack(msg, false, true); // Requeue the message only if it hasn't been redelivered
+                                console.log('Message requeued successfully');
+                            } else {
+                                console.log('Message has already been redelivered, discarding');
+                                channel.nack(msg, false, false); // Discard the message if it has been redelivered
+                            }
                         }
                     }
+                    console.log('customer.chosen accessed', data, authToken);
 
                     const response = await axios.post(nodeUrl, {
                         query: `
@@ -164,11 +171,18 @@ const consumeMessages = async () => {
                         try {
                             await getAuthToken(authUrl, apiKey);
                         } catch (error) {
-                            console.error('Failed to get auth token, requeueing message');
-                            channel.nack(msg, false, true); // Requeue the message
-                            return;
+                            console.log('Failed to process message, requeueing', error);
+                            if (!msg.fields.redelivered) {
+                                console.log('Requeuing message...');
+                                channel.nack(msg, false, true); // Requeue the message only if it hasn't been redelivered
+                                console.log('Message requeued successfully');
+                            } else {
+                                console.log('Message has already been redelivered, discarding');
+                                channel.nack(msg, false, false); // Discard the message if it has been redelivered
+                            }
                         }
                     }
+                    console.log('customer.chosen accessed', authToken);
     
                     const response = await axios.post(nodeUrl, {
                         query: `
@@ -246,8 +260,6 @@ const consumeMessages = async () => {
                 }
             case 'customer.testing':
                 {
-
-
                     if (!isTokenValid()) {
                         try {
                             await getAuthToken(authUrl, apiKey);
