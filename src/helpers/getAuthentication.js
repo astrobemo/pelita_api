@@ -6,11 +6,12 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
     try {
 
         console.log('start getAuthToken ', AUTH_APP_ENDPOINT,API_KEY);
-        const response = await axios.post(AUTH_APP_ENDPOINT, {
-            username: "Machine"
-        }, {
+        const response = await axios.post(AUTH_APP_ENDPOINT,  {
             headers: {
-                'API-Key': API_KEY
+                'x-api-key': API_KEY
+            },
+            data: {
+                username: 'machine',
             }
         });
         authToken = response.data.token;
