@@ -307,7 +307,7 @@ const consumeMessages = async () => {
                     });
 
                     const getData = response.data.data.customer;
-
+                    console.log(response.data.data);
                     console.log('axios success getData', getData);
                     channel.ack(msg);
                     break;
