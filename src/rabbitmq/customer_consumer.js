@@ -247,6 +247,7 @@ const consumeMessages = async () => {
             case 'customer.testing':
                 {
 
+
                     if (!isTokenValid()) {
                         try {
                             await getAuthToken(authUrl, apiKey);
@@ -262,7 +263,7 @@ const consumeMessages = async () => {
                             }
                         }
                     }
-                    console.log('customer.testing accessed');
+                    console.log('customer.testing accessed', authToken);
 
 
                     const response = await axios.post(nodeUrl, {
@@ -295,7 +296,7 @@ const consumeMessages = async () => {
 
                     const getData = response.data.data.customer;
 
-                    console.log('axios success getData', getData);
+                    // console.log('axios success getData', getData);
                     channel.ack(msg);
                     break;
                 }
