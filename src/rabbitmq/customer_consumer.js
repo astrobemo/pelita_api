@@ -278,13 +278,15 @@ const consumeMessages = async () => {
                             }
                         }
                     }
-                    console.log('customer.testing accessed', authToken);
 
                     const data = JSON.parse(msg.content.toString());
                     const company_indexes = data.company_indexes;
                     const keyName = data.keyName;
                     const keyValue = data.keyValue;
                     const id = data.id;
+
+                    console.log('customer.testing accessed', data);
+
 
                     const response = await axios.post(nodeUrl, {
                         query: `
