@@ -30,8 +30,6 @@ const getAuthToken = async (AUTH_APP_ENDPOINT, API_KEY) => {
         if (req.auth.exp && req.auth.exp < currentTime) {
             return res.status(401).json({ error: 'Token expired' });
         }
-
-        tokenExpiry = Date.now() + response.data.expires_in * 1000; // Assuming expires_in is in seconds
     } catch (error) {
         console.error('Error fetching auth token:', error);
         throw error;
