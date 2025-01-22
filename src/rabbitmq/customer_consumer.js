@@ -251,7 +251,7 @@ const consumeMessages = async () => {
                         try {
                             await getAuthToken(authUrl, apiKey);
                         } catch (error) {
-                            /* console.log('Failed to process message, requeueing', error);
+                            console.log('Failed to process message, requeueing', error);
                             if (!msg.fields.redelivered) {
                                 console.log('Requeuing message...');
                                 channel.nack(msg, false, true); // Requeue the message only if it hasn't been redelivered
@@ -259,13 +259,13 @@ const consumeMessages = async () => {
                             } else {
                                 console.log('Message has already been redelivered, discarding');
                                 channel.nack(msg, false, false); // Discard the message if it has been redelivered
-                            } */
+                            }
                         }
                     }
                     console.log('customer.testing accessed');
 
 
-                    /* const response = await axios.post(nodeUrl, {
+                    const response = await axios.post(nodeUrl, {
                         query: `
                             query Customer {
                                 customer(id: 1) {
@@ -296,7 +296,7 @@ const consumeMessages = async () => {
                     const getData = response.data.data.customer;
 
                     console.log('axios success getData', getData);
-                    channel.ack(msg); */
+                    channel.ack(msg);
                     break;
                 }
             default:
