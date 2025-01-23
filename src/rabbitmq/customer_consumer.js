@@ -335,36 +335,37 @@ const consumeMessages = async () => {
                             continue;
                         }else{
                             
-                            console.log('existingCustomer exist do backup');
+                            console.log('existingCustomer exist do backup', existingCustomer);
+                            const backupData = existingCustomer[0];
                             await prismaClient[COMPANY[index]].customer_backup.create({
                                 data: {
                                     // Map the fields from existingCustomer to the customer_backup model
-                                    tipe_company: existingCustomer.tipe_company,
-                                    nama: existingCustomer.nama,
-                                    alamat: existingCustomer.alamat,
-                                    blok: existingCustomer.blok,
-                                    no: existingCustomer.no,
-                                    rt: existingCustomer.rt,
-                                    rw: existingCustomer.rw,
-                                    kecamatan: existingCustomer.kecamatan,
-                                    kelurahan: existingCustomer.kelurahan,
-                                    kota: existingCustomer.kota,
-                                    provinsi: existingCustomer.provinsi,
-                                    kode_pos: existingCustomer.kode_pos,
-                                    npwp: existingCustomer.npwp,
-                                    nik: existingCustomer.nik,
-                                    status_aktif: existingCustomer.status_aktif,
+                                    tipe_company: backupData.tipe_company,
+                                    nama: backupData.nama,
+                                    alamat: backupData.alamat,
+                                    blok: backupData.blok,
+                                    no: backupData.no,
+                                    rt: backupData.rt,
+                                    rw: backupData.rw,
+                                    kecamatan: backupData.kecamatan,
+                                    kelurahan: backupData.kelurahan,
+                                    kota: backupData.kota,
+                                    provinsi: backupData.provinsi,
+                                    kode_pos: backupData.kode_pos,
+                                    npwp: backupData.npwp,
+                                    nik: backupData.nik,
+                                    status_aktif: backupData.status_aktif,
 
-                                    contact_person: existingCustomer.contact_person,
-                                    email: existingCustomer.email,
-                                    telepon1: existingCustomer.telepon1,
-                                    telepon2: existingCustomer.telepon2,
-                                    tempo_kredit: existingCustomer.tempo_kredit,
-                                    warning_kredit: existingCustomer.warning_kredit,
-                                    limit_warning_type: existingCustomer.limit_warning_type,
-                                    limit_amount: existingCustomer.limit_amount,
-                                    limit_atas: existingCustomer.limit_atas,
-                                    limit_warning_amount: existingCustomer.limit_warning_amount
+                                    contact_person: backupData.contact_person,
+                                    email: backupData.email,
+                                    telepon1: backupData.telepon1,
+                                    telepon2: backupData.telepon2,
+                                    tempo_kredit: backupData.tempo_kredit,
+                                    warning_kredit: backupData.warning_kredit,
+                                    limit_warning_type: backupData.limit_warning_type,
+                                    limit_amount: backupData.limit_amount,
+                                    limit_atas: backupData.limit_atas,
+                                    limit_warning_amount: backupData.limit_warning_amount
                                     
                                     // Add any other fields that are required in the customer_backup model
                                 },
