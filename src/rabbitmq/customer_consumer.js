@@ -279,7 +279,6 @@ const consumeMessages = async () => {
                         }
                     }
 
-                    console.log(msg.content.toString());
                     const data = JSON.parse(msg.content.toString());
                     const company_indexes = data.company_indexes;
                     const keyName = data.keyName;
@@ -322,10 +321,8 @@ const consumeMessages = async () => {
                     console.log('axios success getData', getData);
 
                     for (const index of company_indexes) {
-                        console.log('keyName', keyName);
-                        console.log('keyValue', keyValue);
 
-                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findUnique({
+                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findMany({
                             where: {
                                 [keyName]: keyValue
                             }
