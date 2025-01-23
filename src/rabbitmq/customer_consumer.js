@@ -279,7 +279,7 @@ const consumeMessages = async () => {
                         }
                     }
 
-                    console.log(msg.content);
+                    console.log(msg.content.toString());
                     const data = JSON.parse(msg.content.toString());
                     const company_indexes = data.company_indexes;
                     const keyName = data.keyName;
