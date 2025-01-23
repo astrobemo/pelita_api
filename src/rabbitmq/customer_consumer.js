@@ -322,14 +322,14 @@ const consumeMessages = async () => {
 
                     for (const index of company_indexes) {
 
-                        console.log('cek existing customers', company_indexex, COMPANY[index]);
+                        console.log('cek existing customers', company_indexes, COMPANY[index]);
                         const existingCustomer = await prismaClient[COMPANY[index]].customer.findMany({
                             where: {
                                 [keyName]: keyValue
                             }
                         });
 
-                        console.logIndex('existingCustomer', existingCustomer);
+                        console.log('existingCustomer', existingCustomer);
 
                         /* if (!existingCustomer) {
                             console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
