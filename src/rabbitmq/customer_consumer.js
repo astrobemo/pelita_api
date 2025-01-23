@@ -322,8 +322,6 @@ const consumeMessages = async () => {
                     console.log('axios success getData', getData);
 
                     for (const index of company_indexes) {
-
-                        console.log('new data', newData);
                         console.log('keyName', keyName);
                         console.log('keyValue', keyValue);
 
