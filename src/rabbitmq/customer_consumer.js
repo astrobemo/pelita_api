@@ -322,6 +322,7 @@ const consumeMessages = async () => {
 
                     for (const index of company_indexes) {
 
+                        console.log('cek existing customers', company_indexex, COMPANY[index]);
                         const existingCustomer = await prismaClient[COMPANY[index]].customer.findMany({
                             where: {
                                 [keyName]: keyValue
