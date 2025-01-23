@@ -331,7 +331,7 @@ const consumeMessages = async () => {
 
                         console.log('existingCustomer', existingCustomer);
 
-                        /* if (!existingCustomer) {
+                        if (!existingCustomer) {
                             console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
                             continue;
                         }else{
@@ -339,7 +339,7 @@ const consumeMessages = async () => {
                             await prismaClient[COMPANY[index]].customer_backup.create({
                                 data: existingCustomer,
                             });
-                        } */
+                        }
 
                     }
 
