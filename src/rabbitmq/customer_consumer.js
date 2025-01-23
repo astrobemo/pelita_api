@@ -354,6 +354,18 @@ const consumeMessages = async () => {
                                     npwp: existingCustomer.npwp,
                                     nik: existingCustomer.nik,
                                     status_aktif: existingCustomer.status_aktif,
+
+                                    contact_person: existingCustomer.contact_person,
+                                    email: existingCustomer.email,
+                                    telepon1: existingCustomer.telepon1,
+                                    telepon2: existingCustomer.telepon2,
+                                    tempo_kredit: existingCustomer.tempo_kredit,
+                                    warning_kredit: existingCustomer.warning_kredit,
+                                    limit_warning_type: existingCustomer.limit_warning_type,
+                                    limit_amount: existingCustomer.limit_amount,
+                                    limit_atas: existingCustomer.limit_atas,
+                                    limit_warning_amount: existingCustomer.limit_warning_amount
+                                    
                                     // Add any other fields that are required in the customer_backup model
                                 },
                             });
