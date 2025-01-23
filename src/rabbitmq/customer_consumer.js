@@ -279,6 +279,7 @@ const consumeMessages = async () => {
                         }
                     }
 
+                    console.log(msg.content);
                     const data = JSON.parse(msg.content.toString());
                     const company_indexes = data.company_indexes;
                     const keyName = data.keyName;
