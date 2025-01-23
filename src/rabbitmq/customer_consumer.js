@@ -337,7 +337,25 @@ const consumeMessages = async () => {
                             
                             console.log('existingCustomer exist do backup');
                             await prismaClient[COMPANY[index]].customer_backup.create({
-                                data: existingCustomer,
+                                data: {
+                                    // Map the fields from existingCustomer to the customer_backup model
+                                    tipe_company: existingCustomer.tipe_company,
+                                    nama: existingCustomer.nama,
+                                    alamat: existingCustomer.alamat,
+                                    blok: existingCustomer.blok,
+                                    no: existingCustomer.no,
+                                    rt: existingCustomer.rt,
+                                    rw: existingCustomer.rw,
+                                    kecamatan: existingCustomer.kecamatan,
+                                    kelurahan: existingCustomer.kelurahan,
+                                    kota: existingCustomer.kota,
+                                    provinsi: existingCustomer.provinsi,
+                                    kode_pos: existingCustomer.kode_pos,
+                                    npwp: existingCustomer.npwp,
+                                    nik: existingCustomer.nik,
+                                    status_aktif: existingCustomer.status_aktif,
+                                    // Add any other fields that are required in the customer_backup model
+                                },
                             });
                         }
 
