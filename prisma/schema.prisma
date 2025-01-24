@@ -82,6 +82,7 @@ model rekam_faktur_pajak_detail{
 
 model customer_backup{
   id    Int @id @default(autoincrement())
+  id_original Int
   nama  String
   alias String?
   alamat    String
@@ -112,7 +113,7 @@ model customer_backup{
   rw      String
   kecamatan   String
   kelurahan   String
-  updated_at  DateTime
+  updated_at  DateTime?
   verified_time DateTime?
   customer_id_central Int?
 

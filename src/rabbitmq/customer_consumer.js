@@ -340,6 +340,7 @@ const consumeMessages = async () => {
                             await prismaClient[COMPANY[index]].customer_backup.create({
                                 data: {
                                     // Map the fields from existingCustomer to the customer_backup model
+                                    id_original: backupData.id,
                                     tipe_company: backupData.tipe_company,
                                     nama: backupData.nama,
                                     alamat: backupData.alamat,
