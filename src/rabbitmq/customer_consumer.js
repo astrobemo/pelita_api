@@ -89,7 +89,7 @@ const consumeMessages = async () => {
 
                     const updateData = response.data.data.customer;
 
-                    console.log('updatedData', updateData);
+                    console.log('chosenData', updateData);
 
                     const { 
                         tipe_company, nama,
@@ -129,19 +129,53 @@ const consumeMessages = async () => {
                         console.log('keyName', keyName);
                         console.log('keyValue', keyValue);
 
-                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findUnique({
+                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findMany({
                             where: {
                                 [keyName]: keyValue
                             }
                         });
 
-                        if (!existingCustomer) {
+                        if (!existingCustomer.length) {
                             console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
                             continue;
                         }else{
                             
+                            const backupData = existingCustomer[0];
                             await prismaClient[COMPANY[index]].customer_backup.create({
-                                data: existingCustomer,
+                                data: {
+                                    // Map the fields from existingCustomer to the customer_backup model
+                                    id_original: backupData.id,
+                                    tipe_company: backupData.tipe_company,
+                                    nama: backupData.nama,
+                                    alamat: backupData.alamat,
+                                    blok: backupData.blok,
+                                    no: backupData.no,
+                                    rt: backupData.rt,
+                                    rw: backupData.rw,
+                                    kecamatan: backupData.kecamatan,
+                                    kelurahan: backupData.kelurahan,
+                                    kota: backupData.kota,
+                                    provinsi: backupData.provinsi,
+                                    kode_pos: backupData.kode_pos,
+                                    npwp: backupData.npwp,
+                                    nik: backupData.nik,
+                                    status_aktif: backupData.status_aktif,
+
+                                    contact_person: backupData.contact_person,
+                                    email: backupData.email,
+                                    telepon1: backupData.telepon1,
+                                    telepon2: backupData.telepon2,
+                                    tempo_kredit: backupData.tempo_kredit,
+                                    warning_kredit: backupData.warning_kredit,
+                                    limit_warning_type: backupData.limit_warning_type,
+                                    limit_amount: backupData.limit_amount,
+                                    limit_atas: backupData.limit_atas,
+                                    limit_warning_amount: backupData.limit_warning_amount, 
+                                    updated_at: backupData.updated_at,
+                                    created_register: backupData.created_register,
+                                    
+                                    // Add any other fields that are required in the customer_backup model
+                                },
                             });
                         }
 
@@ -159,6 +193,7 @@ const consumeMessages = async () => {
                     }
 
                     console.log('customer has been Updated');
+                    channel.ack(msg);
                     
                     break;
                 }
