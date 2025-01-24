@@ -366,8 +366,8 @@ const consumeMessages = async () => {
                                     limit_amount: backupData.limit_amount,
                                     limit_atas: backupData.limit_atas,
                                     limit_warning_amount: backupData.limit_warning_amount, 
-                                    updatedAt: backupData.updatedAt,
-                                    createdAt: backupData.createdAt,
+                                    updated_at: backupData.updated_at,
+                                    created_register: backupData.created_register,
                                     
                                     // Add any other fields that are required in the customer_backup model
                                 },
