@@ -328,9 +328,8 @@ const consumeMessages = async () => {
                                 [keyName]: keyValue
                             }
                         });
-
                         
-                        if (!existingCustomer) {
+                        if (!existingCustomer.length) {
                             console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
                             continue;
                         }else{
