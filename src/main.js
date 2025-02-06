@@ -322,9 +322,12 @@ app.get('/pajak/generate_faktur_pajak_coretax', async (req, res) => {
 
 
     try {
-        const result = await coretaxPajak(rekam_faktur_pajak_id, company_name);
-        console.log('result', result); 
-        res.json(result);
+        let fileXML = await coretaxPajak(rekam_faktur_pajak_id, company_name);
+
+        res.setHeader('Content-Disposition', 'attachment; filename=faktur_pajak.xml');
+        res.setHeader('Content-Type', 'application/xml');
+        res.send(fileXML);
+
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
