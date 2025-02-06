@@ -106,55 +106,97 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         </TaxInvoiceBulk>
      */
 
-        const builder = new Builder();
+        const toko = await prismaClient[company].toko.findUnique({
+            where: {
+                id: 1
+            }
+        });
+
+    const npwp_toko = toko[0].npwp;
+    const npwp_filtered = npwp_toko.replace(/[.-]/g, '');
+    const tin_toko = (npwp_filtered.length === 15) ? "0"+npwp_filtered : npwp_filtered;
+    const idtku_toko = tin_toko + "000000";
+
+    const builder = new Builder();
     const fakturPajakXml = builder.buildObject(fakturPajak);
 
-    const xmlTemplate = {
+    const unit = {
+        "yard": "UM.0016",
+        "kg" : "UM.0003",
+    }
+
+    const invoices = fakturPajak.map(fp => {
+        const npwp = fp.no_npwp.replace(/[.-]/g, '');
+        const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
+        const nik = fp.no_nik;
+        const tin = (npwp_tin.length > 0) ? npwp_tin : nik;
+        let listOfGoodService = [];
+
+        const ppn_berlaku = fp.ppn_berlaku;
+
+        listOfGoodService = fp.penjualan.penjualan_detail.map(pd => {
+
+            let dpp = pd.harga / (1 + (ppn_berlaku / 100));
+            dpp = dpp.toFixed(2);
+            const subTotal = pd.harga * pd.qty;
+            const taxBase = dpp * pd.qty;
+            let otherTaxBase = taxBase * ppn / 12;
+            otherTaxBase = otherTaxBase.toFixed(2);
+            let vat = subTotal - taxBase;
+
+            ListOfGoodService.push({
+                Opt: 'A',
+                Code: '000000',
+                Name: pd.barang.nama_jual,
+                Unit: unit[pd.barang.satuan.toLowerCase()],
+                Price: dpp,
+                Qty: pd.qty,
+                TotalDiscount: "0",
+                TaxBase: taxBase,
+                OtherTaxBase: otherTaxBase,
+                VATRate: 12,
+                VAT: vat,
+                STLGRate: "0",
+                STLG: "0"
+            });
+
+            return ListOfGoodService;
+        });
+
+        return TaxInvoice = {
+            TaxInvoiceDate: fp.tanggal,
+            TaxInvoiceOpt: 'Normal',
+            TrxCode: '04',
+            AddInfo: '',
+            CustomDoc: '',
+            RefDesc: fp.no_faktur_jual,
+            FacilityStamp: '',
+            SellerIDTKU: idtku_toko,
+            BuyerTin: tin,
+            BuyerDocument: 'TIN',
+            BuyerCountry: 'IDN',
+            BuyerDocumentNumber: '-',
+            BuyerName: fp.nama_customer,
+            BuyerAdress: fp.alamat_lengkap,
+            BuyerEmail: '',
+            ListOfGoodService: listOfGoodService.map(xml=>xml.ListOfGoodService)
+        }
+    });
+
+    const xmlFinal = {
         TaxInvoiceBulk: {
-            TIN: '1091031210912281',
+            TIN: tin_toko,
             ListOfTaxInvoice: {
-                TaxInvoice: fakturPajak.map(fp => ({
-                    TaxInvoiceDate: '2025-01-02',
-                    TaxInvoiceOpt: 'Normal',
-                    TrxCode: '08',
-                    AddInfo: 'TD.00501',
-                    CustomDoc: '',
-                    RefDesc: 'Test 01',
-                    FacilityStamp: 'TD.01101',
-                    SellerIDTKU: '1091031210912281000000',
-                    BuyerTin: '1091031210912343',
-                    BuyerDocument: 'TIN',
-                    BuyerCountry: 'IDN',
-                    BuyerDocumentNumber: '-',
-                    BuyerName: 'Kongsi PPN',
-                    BuyerAdress: 'Jalan Jakarta',
-                    BuyerEmail: 'a2@some.com',
-                    BuyerIDTKU: '1091031210912343000000',
-                    ListOfGoodService: {
-                        GoodService: fp.penjualan.penjualan_detail.map(pd => ({
-                            Opt: 'A',
-                            Code: '000000',
-                            Name: pd.barang.name,
-                            Unit: pd.barang.satuan.name,
-                            Price: pd.price,
-                            Qty: pd.qty,
-                            TotalDiscount: pd.total_discount,
-                            TaxBase: pd.tax_base,
-                            OtherTaxBase: pd.other_tax_base,
-                            VATRate: pd.vat_rate,
-                            VAT: pd.vat,
-                            STLGRate: pd.stlg_rate,
-                            STLG: pd.stlg
-                        }))
-                    }
-                }))
+                TaxInvoice: invoices.map(xml=>xml.TaxInvoice)
             }
         }
     };
 
 
-    fs.writeFileSync('/path/to/output.xml', fakturPajakXml);
-    console.log(fakturPajakXml);
 
-    return fakturPajak;
+
+    console.log(xmlFinal);
+    fs.writeFileSync('/path/to/output.xml', xmlFinal);
+
+    // return fakturPajak;
 }
