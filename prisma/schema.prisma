@@ -141,7 +141,7 @@ model penjualan_detail{
   id    Int @id @default(autoincrement())
   penjualan_id Int
   barang_id Int
-  subqty Int @map("qty")
+  qty Int @map("subqty")
   harga Int
   diskon  Int
   total Int
