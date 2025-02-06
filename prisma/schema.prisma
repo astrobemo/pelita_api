@@ -154,8 +154,6 @@ model barang {
   id    Int @id @default(autoincrement())
   nama_jual  String
   satuan_id   Int
-  created_at  DateTime
-  updated_at  DateTime
   satuan satuan @relation(fields: [satuan_id], references: [id])
   penjualan_detail penjualan_detail[]
 
@@ -166,8 +164,7 @@ model barang {
 model satuan{
   id    Int @id @default(autoincrement())
   nama  String
-  created_at  DateTime
-  updated_at  DateTime
+  status_aktif  Boolean
   barang barang[]
 
   @@map("nd_satuan")
