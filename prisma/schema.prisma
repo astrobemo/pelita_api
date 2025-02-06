@@ -134,6 +134,7 @@ model penjualan{
   updated_at  DateTime
   customer customer @relation(fields: [customer_id], references: [id])
   rekam_faktur_pajak_detail rekam_faktur_pajak_detail?
+  penjualan_detail penjualan_detail[]
 
   @@map("nd_penjualan")
 }
@@ -149,6 +150,7 @@ model penjualan_detail{
   created_at  DateTime
   updated_at  DateTime
   barang barang @relation(fields: [barang_id], references: [id])
+  penjualan penjualan @relation(fields: [penjualan_id], references: [id])
 
   @@map("nd_penjualan_detail")
 }
