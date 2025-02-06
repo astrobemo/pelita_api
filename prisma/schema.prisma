@@ -130,8 +130,6 @@ model penjualan{
   customer_id Int
   status_aktif  Boolean
   ppn Int
-  created_at  DateTime
-  updated_at  DateTime
   customer customer @relation(fields: [customer_id], references: [id])
   rekam_faktur_pajak_detail rekam_faktur_pajak_detail?
   penjualan_detail penjualan_detail[]
