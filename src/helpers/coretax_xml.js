@@ -15,7 +15,11 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 include: {
                     penjualan_detail: {
                         include: {
-                            barang: true
+                            barang: {
+                                include: {
+                                    satuan:true
+                                }
+                            }
                         }
                     }
                 }

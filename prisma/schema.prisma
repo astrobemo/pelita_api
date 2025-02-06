@@ -142,9 +142,7 @@ model penjualan_detail{
   penjualan_id Int
   barang_id Int
   qty Int @map("subqty")
-  harga Int
-  diskon  Int
-  total Int
+  harga Int @map("harga_jual")
   barang barang @relation(fields: [barang_id], references: [id])
   penjualan penjualan @relation(fields: [penjualan_id], references: [id])
 
