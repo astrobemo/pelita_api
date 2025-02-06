@@ -169,3 +169,12 @@ model satuan{
 
   @@map("nd_satuan")
 }
+
+model toko{
+  id    Int @id @default(autoincrement())
+  nama  String
+  alamat    String
+  npwp      String?
+
+  @@map("nd_toko")
+}
