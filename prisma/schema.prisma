@@ -141,12 +141,10 @@ model penjualan_detail{
   id    Int @id @default(autoincrement())
   penjualan_id Int
   barang_id Int
-  qty   Int
+  subqty Int @map("qty")
   harga Int
   diskon  Int
   total Int
-  created_at  DateTime
-  updated_at  DateTime
   barang barang @relation(fields: [barang_id], references: [id])
   penjualan penjualan @relation(fields: [penjualan_id], references: [id])
 
