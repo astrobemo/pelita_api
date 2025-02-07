@@ -49,6 +49,7 @@ const corsOptions = {
         if (!origin || allowedCors.indexOf(origin) !== -1) {
             callback(null, true); // Allow the request
         } else {
+            console.log('origin', origin);
             callback(new Error('Not allowed by CORS')); // Reject the request
         }
     },
