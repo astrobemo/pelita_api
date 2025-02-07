@@ -7,6 +7,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
     console.log('company_name', company_name);
     console.log('rekam_faktur_pajak_id', rekam_faktur_pajak_id);
 
+    let fakturPajakXml = null;
     const company = company_name.toLowerCase();    
     const fakturPajak = await prismaClient[company].rekam_faktur_pajak_detail.findMany({
         where: {
@@ -28,6 +29,8 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             }
         }
     });
+
+    console.log(fakturPajak);
 
     
     const toko = await prismaClient[company].toko.findMany();
@@ -115,9 +118,9 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         }
     };
 
-    // console.log(xmlFinal);
+    console.log(xmlFinal);
     const builder = new Builder();
-    const fakturPajakXml = builder.buildObject(xmlFinal);
+    fakturPajakXml = builder.buildObject(xmlFinal);
 
     
     return fakturPajakXml;
