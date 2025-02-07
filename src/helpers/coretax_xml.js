@@ -57,9 +57,9 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
     try {
 
         const invoices = fakturPajak.map(fp => {
-            const npwp = fp.no_npwp.replace(/[.-]/g, '');
+            const npwp = (fp.no_npwp ? fp.no_npwp.replace(/[.-]/g, '') : '');
             const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
-            const nik = fp.no_nik;
+            const nik = (fp.no_nik ? fp.no_nik : '');
             const tin = (npwp_tin.length > 0) ? npwp_tin : nik;
     
             const ppn_berlaku = fp.ppn_berlaku;
@@ -118,6 +118,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         });
         
     } catch (error) {
+        console.log('Error fetching fakturPajak:', error);
         console.error('Error fetching fakturPajak:', error);
         return; // or handle the error as needed
         
