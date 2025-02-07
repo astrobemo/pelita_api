@@ -63,6 +63,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
             const nik = (fp.no_nik ? fp.no_nik : '');
             const tin = (npwp_tin.length > 0) ? npwp_tin : nik;
+            const idtku = tin + "000000";
             const tanggal = new Date(fp.tanggal).toISOString().split('T')[0];
     
             const ppn_berlaku = fp.ppn_berlaku;
@@ -115,6 +116,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 BuyerName: fp.nama_customer,
                 BuyerAdress: fp.alamat_lengkap,
                 BuyerEmail: '',
+                BuyerIDTKU: idtku,
                 ListOfGoodService: listOfGoodService
             }
     
