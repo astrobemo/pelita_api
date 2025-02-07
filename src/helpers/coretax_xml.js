@@ -89,7 +89,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                     TaxBase: taxBase,
                     OtherTaxBase: otherTaxBase,
                     VATRate: 12,
-                    VAT: vat,
+                    VAT: vat.toFixed(2),
                     STLGRate: "0",
                     STLG: "0"
                 }
