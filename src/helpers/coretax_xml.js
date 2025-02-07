@@ -9,29 +9,40 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     let fakturPajakXml = null;
     const company = company_name.toLowerCase();    
-    const fakturPajak = await prismaClient[company].rekam_faktur_pajak_detail.findMany({
-        where: {
-            rekam_faktur_pajak_id: parseInt(rekam_faktur_pajak_id)
-        },
-        include: {
-            penjualan: {
-                include: {
-                    penjualan_detail: {
-                        include: {
-                            barang: {
-                                include: {
-                                    satuan:true
+    let fakturPajak;
+    try {
+        fakturPajak = await prismaClient[company].rekam_faktur_pajak_detail.findMany({
+            where: {
+                rekam_faktur_pajak_id: parseInt(rekam_faktur_pajak_id)
+            },
+            include: {
+                penjualan: {
+                    include: {
+                        penjualan_detail: {
+                            include: {
+                                barang: {
+                                    include: {
+                                        satuan:true
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error fetching fakturPajak:', error);
+        return; // or handle the error as needed
+    }
 
-    
-    const toko = await prismaClient[company].toko.findMany();
+    let toko;
+    try {
+        toko = await prismaClient[company].toko.findMany();
+    } catch (error) {
+        console.error('Error fetching toko:', error);
+        return; // or handle the error as needed
+    }
 
     const npwp_toko = toko[0].npwp;
     const npwp_filtered = npwp_toko.replace(/[.-]/g, '');
