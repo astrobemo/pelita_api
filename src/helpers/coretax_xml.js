@@ -54,17 +54,18 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         "kg" : "UM.0003",
     }
 
-    const invoices = fakturPajak.map(fp => {
-        const npwp = fp.no_npwp.replace(/[.-]/g, '');
-        const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
-        const nik = fp.no_nik;
-        const tin = (npwp_tin.length > 0) ? npwp_tin : nik;
+    try {
 
-        const ppn_berlaku = fp.ppn_berlaku;
-
-        const GoodServices = fp.penjualan.penjualan_detail.map(pd => {
-
-            try {
+        const invoices = fakturPajak.map(fp => {
+            const npwp = fp.no_npwp.replace(/[.-]/g, '');
+            const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
+            const nik = fp.no_nik;
+            const tin = (npwp_tin.length > 0) ? npwp_tin : nik;
+    
+            const ppn_berlaku = fp.ppn_berlaku;
+    
+            const GoodServices = fp.penjualan.penjualan_detail.map(pd => {
+    
                 let dpp = pd.harga / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
                 const subTotal = pd.harga * pd.qty;
@@ -88,17 +89,13 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                     STLGRate: "0",
                     STLG: "0"
                 }
-            } catch (error) {
-                console.log('error GoodServices', error);
+    
+            });
+    
+            const listOfGoodService = {
+                GoodService: GoodServices
             }
-
-        });
-
-        const listOfGoodService = {
-            GoodService: GoodServices
-        }
-        
-        try {
+            
             return {
                 TaxInvoiceDate: fp.tanggal,
                 TaxInvoiceOpt: 'Normal',
@@ -117,11 +114,16 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 BuyerEmail: '',
                 ListOfGoodService: listOfGoodService
             }
-        } catch (error) {
-            console.log('error invoices', error);
-        }
+    
+        });
+        
+    } catch (error) {
+        console.error('Error fetching fakturPajak:', error);
+        return; // or handle the error as needed
+        
+    }
 
-    });
+    
 
     const taxInvoice = {
         "TaxInvoice": invoices
