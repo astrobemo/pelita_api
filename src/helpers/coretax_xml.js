@@ -130,10 +130,8 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
     let xmlFinal = {};
 
     try {
-        taxInvoice = {
-            "TaxInvoice": invoices
-        }
-    
+        taxInvoice = invoices;
+        
         xmlFinal = {
             TaxInvoiceBulk: {
                 TIN: tin_toko,
