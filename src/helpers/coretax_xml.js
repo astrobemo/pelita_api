@@ -58,12 +58,35 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     try {
 
+        const buyerDocs = {
+            'npwp': "TIN",
+            'nik': "National ID"
+        }
+
         invoices = fakturPajak.map(fp => {
-            const npwp = (fp.no_npwp ? fp.no_npwp.replace(/[.-]/g, '') : '');
+
+            const isNpwp = (fp.no_npwp && fp.no_npwp != "") ? true : false;
+            const npwp = (isNpwp ? fp.no_npwp.replace(/[.-]/g, '') : '');
             const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
             const nik = (fp.no_nik ? fp.no_nik : '');
-            const tin = (npwp_tin.length > 0) ? npwp_tin : nik;
-            const idtku = tin + "000000";
+
+            // klo nik bisa dianggap npwp maka oke tapi sekarnag masih error
+            let tin = "";
+            let idtku = "";
+            let buyerDocument = "";
+            let BuyerDocumentNumber = "-";
+            if(isNpwp) {
+                tin = npwp_tin;
+                idtku = tin + "000000";
+                buyerDocument = buyerDocs['npwp'];
+            }else{
+                tin = "0000000000000000";
+                idtku = "000000";
+                buyerDocument = buyerDocs['nik'];
+                BuyerDocumentNumber = nik;
+            }
+
+
             const tanggal = new Date(fp.tanggal).toISOString().split('T')[0];
     
             const ppn_berlaku = fp.ppn_berlaku;
@@ -110,9 +133,9 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 FacilityStamp: '',
                 SellerIDTKU: idtku_toko,
                 BuyerTin: tin,
-                BuyerDocument: 'TIN',
+                BuyerDocument: buyerDocument,
                 BuyerCountry: 'IDN',
-                BuyerDocumentNumber: '-',
+                BuyerDocumentNumber: BuyerDocumentNumber,
                 BuyerName: fp.nama_customer,
                 BuyerAdress: fp.alamat_lengkap,
                 BuyerEmail: '',
