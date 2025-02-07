@@ -30,8 +30,6 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         }
     });
 
-    console.log(fakturPajak);
-
     
     const toko = await prismaClient[company].toko.findMany();
 
@@ -118,10 +116,10 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         }
     };
 
-    console.log(xmlFinal);
     const builder = new Builder();
     fakturPajakXml = builder.buildObject(xmlFinal);
-
+    console.log(fakturPajakXml);
+    
     
     return fakturPajakXml;
     // return fakturPajakXml;
