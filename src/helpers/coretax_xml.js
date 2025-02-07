@@ -53,54 +53,63 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
         const GoodServices = fp.penjualan.penjualan_detail.map(pd => {
 
-            let dpp = pd.harga / (1 + (ppn_berlaku / 100));
-            dpp = dpp.toFixed(2);
-            const subTotal = pd.harga * pd.qty;
-            const taxBase = (dpp * pd.qty).toFixed(2);
-            let otherTaxBase = taxBase * ppn_berlaku / 12;
-            otherTaxBase = otherTaxBase.toFixed(2);
-            let vat = subTotal - taxBase;
-
-            return {
-                Opt: 'A',
-                Code: '000000',
-                Name: pd.barang.nama_jual,
-                Unit: unit[pd.barang.satuan.nama.toLowerCase()],
-                Price: dpp,
-                Qty: pd.qty,
-                TotalDiscount: "0",
-                TaxBase: taxBase,
-                OtherTaxBase: otherTaxBase,
-                VATRate: 12,
-                VAT: vat,
-                STLGRate: "0",
-                STLG: "0"
+            try {
+                let dpp = pd.harga / (1 + (ppn_berlaku / 100));
+                dpp = dpp.toFixed(2);
+                const subTotal = pd.harga * pd.qty;
+                const taxBase = (dpp * pd.qty).toFixed(2);
+                let otherTaxBase = taxBase * ppn_berlaku / 12;
+                otherTaxBase = otherTaxBase.toFixed(2);
+                let vat = subTotal - taxBase;
+    
+                return {
+                    Opt: 'A',
+                    Code: '000000',
+                    Name: pd.barang.nama_jual,
+                    Unit: unit[pd.barang.satuan.nama.toLowerCase()],
+                    Price: dpp,
+                    Qty: pd.qty,
+                    TotalDiscount: "0",
+                    TaxBase: taxBase,
+                    OtherTaxBase: otherTaxBase,
+                    VATRate: 12,
+                    VAT: vat,
+                    STLGRate: "0",
+                    STLG: "0"
+                }
+            } catch (error) {
+                console.log('error GoodServices', error);
             }
+
         });
 
         const listOfGoodService = {
             GoodService: GoodServices
         }
         
-
-        return {
-            TaxInvoiceDate: fp.tanggal,
-            TaxInvoiceOpt: 'Normal',
-            TrxCode: '04',
-            AddInfo: '',
-            CustomDoc: '',
-            RefDesc: fp.no_faktur_jual,
-            FacilityStamp: '',
-            SellerIDTKU: idtku_toko,
-            BuyerTin: tin,
-            BuyerDocument: 'TIN',
-            BuyerCountry: 'IDN',
-            BuyerDocumentNumber: '-',
-            BuyerName: fp.nama_customer,
-            BuyerAdress: fp.alamat_lengkap,
-            BuyerEmail: '',
-            ListOfGoodService: listOfGoodService
+        try {
+            return {
+                TaxInvoiceDate: fp.tanggal,
+                TaxInvoiceOpt: 'Normal',
+                TrxCode: '04',
+                AddInfo: '',
+                CustomDoc: '',
+                RefDesc: fp.no_faktur_jual,
+                FacilityStamp: '',
+                SellerIDTKU: idtku_toko,
+                BuyerTin: tin,
+                BuyerDocument: 'TIN',
+                BuyerCountry: 'IDN',
+                BuyerDocumentNumber: '-',
+                BuyerName: fp.nama_customer,
+                BuyerAdress: fp.alamat_lengkap,
+                BuyerEmail: '',
+                ListOfGoodService: listOfGoodService
+            }
+        } catch (error) {
+            console.log('error invoices', error);
         }
+
     });
 
     const taxInvoice = {
@@ -118,7 +127,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     const builder = new Builder();
     fakturPajakXml = builder.buildObject(xmlFinal);
-    console.log(fakturPajakXml);
+    console.log(fakt);
     
     
     return fakturPajakXml;
