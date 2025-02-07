@@ -54,9 +54,11 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         "kg" : "UM.0003",
     }
 
+    let invoices = [];
+
     try {
 
-        const invoices = fakturPajak.map(fp => {
+        invoices = fakturPajak.map(fp => {
             const npwp = (fp.no_npwp ? fp.no_npwp.replace(/[.-]/g, '') : '');
             const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
             const nik = (fp.no_nik ? fp.no_nik : '');
@@ -124,24 +126,32 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         
     }
 
-    
+    let taxInvoice = {};
+    let xmlFinal = {};
 
-    const taxInvoice = {
-        "TaxInvoice": invoices
+    try {
+        taxInvoice = {
+            "TaxInvoice": invoices
+        }
+    
+        xmlFinal = {
+            TaxInvoiceBulk: {
+                TIN: tin_toko,
+                ListOfTaxInvoice: {
+                    TaxInvoice: taxInvoice
+                }
+            }
+        };
+        
+        const builder = new Builder();
+        fakturPajakXml = builder.buildObject(xmlFinal);
+        
+    } catch (error) {
+        console.error('Error fetching fakturPajak:', error);
+        return; // or handle the error
+        
     }
 
-    const xmlFinal = {
-        TaxInvoiceBulk: {
-            TIN: tin_toko,
-            ListOfTaxInvoice: {
-                TaxInvoice: taxInvoice
-            }
-        }
-    };
-
-    const builder = new Builder();
-    fakturPajakXml = builder.buildObject(xmlFinal);
-    console.log(fakt);
     
     
     return fakturPajakXml;
