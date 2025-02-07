@@ -136,8 +136,8 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 BuyerDocument: buyerDocument,
                 BuyerCountry: 'IDN',
                 BuyerDocumentNumber: BuyerDocumentNumber,
-                BuyerName: fp.nama_customer,
-                BuyerAdress: fp.alamat_lengkap,
+                BuyerName: fp.nama_customer.trim(),
+                BuyerAdress: fp.alamat_lengkap.trim(),
                 BuyerEmail: '',
                 BuyerIDTKU: idtku,
                 ListOfGoodService: listOfGoodService
