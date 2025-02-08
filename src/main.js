@@ -82,7 +82,7 @@ const ipFilter = (req, res, next) => {
 }
 
 app.set('trust proxy', true);
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
     const clientIp = (req.ip).replace(/^::ffff:/, '');
     console.log('========================');
     console.log('path', req.path);
@@ -94,7 +94,7 @@ app.use((req, res, next) => {
     } else {
       ipFilter(req, res, next);
     }
-});
+}); */
 
 app.get('/testing-consumer', (req, res) => {
     res.send('Testing World!');
