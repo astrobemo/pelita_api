@@ -75,7 +75,12 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             let idtku = "";
             let buyerDocument = "";
             let BuyerDocumentNumber = "-";
-            if(isNpwp && nik == "") {
+
+            if(nik != "" && isNpwp) {
+                tin = nik;
+                idtku = tin + "000000";
+                buyerDocument = buyerDocs['npwp'];
+            }else if(isNpwp) {
                 tin = npwp_tin;
                 idtku = tin + "000000";
                 buyerDocument = buyerDocs['npwp'];
