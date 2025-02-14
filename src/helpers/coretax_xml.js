@@ -1,3 +1,4 @@
+import { equal } from 'assert';
 import { prismaClient } from '../prisma-client.js';
 import fs from 'fs';
 import { Builder } from 'xml2js';
@@ -15,19 +16,15 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             where: {
                 AND: [
                     {
+                        rekam_faktur_pajak_id: {
+                            equals : parseInt(rekam_faktur_pajak_id)
+                        }
+                    },
+                    {
                         OR: [
-                            {
-                                no_faktur_pajak: {
-                                    equals: null
-                                }
-                            },
-                            {
-                                no_faktur_pajak: {
-                                    equals: ''
-                                }
-                            }
-                        ],
-                    rekam_faktur_pajak_id: parseInt(rekam_faktur_pajak_id)
+                            {no_faktur_pajak: {equals: null}},
+                            {no_faktur_pajak: {equals: ''}},
+                        ]
                     }
                 ]
             },

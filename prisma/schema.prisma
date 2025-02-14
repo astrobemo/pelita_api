@@ -75,7 +75,7 @@ model rekam_faktur_pajak_detail{
   no_npwp String?
   no_nik String?
   alamat_lengkap String
-  no_faktur_pajak String
+  no_faktur_pajak String?
   no_faktur_jual String
   ppn_berlaku Int
   rekam_faktur_pajak rekam_faktur_pajak @relation(fields: [rekam_faktur_pajak_id], references: [id])
