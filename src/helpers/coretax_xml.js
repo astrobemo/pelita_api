@@ -13,7 +13,23 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
     try {
         fakturPajak = await prismaClient[company].rekam_faktur_pajak_detail.findMany({
             where: {
-                rekam_faktur_pajak_id: parseInt(rekam_faktur_pajak_id)
+                AND: [
+                    {
+                        OR: [
+                            {
+                                no_faktur_pajak: {
+                                    equals: null
+                                }
+                            },
+                            {
+                                no_faktur_pajak: {
+                                    equals: ''
+                                }
+                            }
+                        ],
+                    rekam_faktur_pajak_id: parseInt(rekam_faktur_pajak_id)
+                    }
+                ]
             },
             include: {
                 penjualan: {
@@ -65,6 +81,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
         invoices = fakturPajak.map(fp => {
 
+            
             const isNpwp = (fp.no_npwp && fp.no_npwp != "") ? true : false;
             const npwp = (isNpwp ? fp.no_npwp.replace(/[.-]/g, '') : '');
             const npwp_tin = (npwp.length === 15) ? "0"+npwp : npwp;
@@ -89,6 +106,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 idtku = "000000";
                 buyerDocument = buyerDocs['nik'];
                 BuyerDocumentNumber = nik;
+
             }
 
 
