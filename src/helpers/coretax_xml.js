@@ -383,7 +383,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 TIN: tin_toko,
                 TaxPeriodMonth: month_period,
                 TaxPeriodYear: year_period,
-                ListOfRetailTaxInvoice: {
+                ListOfRetailInvoice: {
                     RetailInvoice: taxInvoice
                 }
             }
