@@ -277,6 +277,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
             'nik': "National ID"
         }
 
+        let month_period = '';
+        let year_period = '';
+
         invoices = fakturPajak.map(fp => {
 
             
@@ -309,13 +312,21 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
 
 
             const tanggal = new Date(fp.tanggal).toISOString().split('T')[0];
+            
+            if(month_period == '' || year_period == '') {
+                const date = new Date(fp.tanggal);
+                const month = date.getMonth() + 1; // getMonth() returns 0-11, so add 1
+                const year = date.getFullYear();
+                month_period = month.toString().padStart(2, '0'); // ensure two digits
+                year_period = year.toString();
+            }
     
             const ppn_berlaku = fp.ppn_berla
 
             let totalTaxBase = 0;
             let totalOtherTaxBase = 0;
             let totalVAT = 0;
-            const GoodServices = fp.penjualan.penjualan_detail.map(pd => {
+            fp.penjualan.penjualan_detail.map(pd => {
     
                 let dpp = pd.harga / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
@@ -332,23 +343,19 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
             });
             
             return {
-                TaxInvoiceDate: tanggal,
-                TaxInvoiceOpt: 'Normal',
-                TrxCode: '04',
-                AddInfo: '',
-                CustomDoc: '',
-                RefDesc: fp.no_faktur_jual,
-                FacilityStamp: '',
-                SellerIDTKU: idtku_toko,
-                BuyerTin: tin,
-                BuyerDocument: buyerDocument,
-                BuyerCountry: 'IDN',
-                BuyerDocumentNumber: BuyerDocumentNumber,
+                TrxCode: 'Normal',
                 BuyerName: fp.nama_customer.trim(),
-                BuyerAdress: fp.alamat_lengkap.trim(),
-                BuyerEmail: '',
-                BuyerIDTKU: idtku,
-            }
+                BuyerIdOpt: buyerDocument,
+                BuyerIdNumber: BuyerDocumentNumber,
+                GoodServiceOpt: 'A',
+                SerialNo: fp.no_faktur_jual,
+                TransactionDate: tanggal,
+                TaxBaseSellingPrice: totalTaxBase.toFixed(2),
+                OtherTaxBaseSellingPrice: totalOtherTaxBase.toFixed(2),
+                VAT: totalVAT.toFixed(2),
+                STLG: "0",
+                Info: 'ok'
+            };
     
         });
         
@@ -366,10 +373,12 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
         taxInvoice = invoices;
 
         xmlFinal = {
-            TaxInvoiceBulk: {
+            RetailInvoiceBulk: {
                 TIN: tin_toko,
+                TaxPeriodMonth: month_period,
+                TaxPeriodYear: year_period,
                 ListOfTaxInvoice: {
-                    TaxInvoice: taxInvoice
+                    RetailInvoice: taxInvoice
                 }
             }
         };
