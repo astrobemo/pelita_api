@@ -269,7 +269,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
     }
 
     let invoices = [];
-
+    let month_period = '';
+    let year_period = '';
+    
     try {
 
         const buyerDocs = {
@@ -277,8 +279,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
             'nik': "National ID"
         }
 
-        let month_period = '';
-        let year_period = '';
+        
 
         invoices = fakturPajak.map(fp => {
 
