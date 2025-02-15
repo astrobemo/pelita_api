@@ -271,12 +271,12 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
     let invoices = [];
     let month_period = '';
     let year_period = '';
-    
+
     try {
 
         const buyerDocs = {
             'npwp': "TIN",
-            'nik': "National ID"
+            'nik': "NIK"
         }
 
         
@@ -322,7 +322,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 year_period = year.toString();
             }
     
-            const ppn_berlaku = fp.ppn_berla
+            const ppn_berlaku = fp.ppn_berlaku;
 
             let totalTaxBase = 0;
             let totalOtherTaxBase = 0;
@@ -336,10 +336,15 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
                 otherTaxBase = otherTaxBase.toFixed(2);
                 let vat = subTotal - taxBase;
+
+                console.log('pd',pd);
+
     
                 totalTaxBase += parseFloat(taxBase);
                 totalOtherTaxBase += parseFloat(otherTaxBase);
                 totalVAT += parseFloat(vat);
+
+                console.log(totalTaxBase, totalOtherTaxBase, totalVAT);
     
             });
             
@@ -378,7 +383,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 TIN: tin_toko,
                 TaxPeriodMonth: month_period,
                 TaxPeriodYear: year_period,
-                ListOfTaxInvoice: {
+                ListOfRetailTaxInvoice: {
                     RetailInvoice: taxInvoice
                 }
             }
