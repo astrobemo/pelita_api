@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 
-import { coretaxPajak } from './helpers/coretax_xml.js';
+import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const COMPANY = process.env.COMPANY.split(',');
