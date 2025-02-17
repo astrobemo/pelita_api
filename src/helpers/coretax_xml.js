@@ -340,8 +340,6 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 otherTaxBase = otherTaxBase.toFixed(2);
                 let vat = subTotal - taxBase;
 
-                console.log('pd',pd);
-
     
                 totalTaxBase += parseFloat(taxBase);
                 totalOtherTaxBase += parseFloat(otherTaxBase);
