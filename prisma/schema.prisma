@@ -142,8 +142,8 @@ model penjualan_detail{
   id    Int @id @default(autoincrement())
   penjualan_id Int
   barang_id Int
-  qty Decimal @map("subqty")
-  harga Decimal @map("harga_jual")
+  qty Decimal @db.Decimal(15,2) @map("subqty")
+  harga Decimal @db.Decimal(15,2) @map("harga_jual")
   barang barang @relation(fields: [barang_id], references: [id])
   penjualan penjualan @relation(fields: [penjualan_id], references: [id])
 

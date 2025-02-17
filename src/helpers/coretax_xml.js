@@ -112,6 +112,8 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             const ppn_berlaku = fp.ppn_berlaku;
     
             const GoodServices = fp.penjualan.penjualan_detail.map(pd => {
+
+                console.log('pd',pd);
     
                 let dpp = pd.harga / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
