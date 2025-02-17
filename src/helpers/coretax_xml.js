@@ -111,9 +111,8 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
     
             const ppn_berlaku = fp.ppn_berlaku;
     
-            const GoodServices = fp.penjualan.penjualan_detail.map(pd => {
+            const goodServices = fp.penjualan.penjualan_detail.map(pd => {
 
-                console.log('pd',pd);
     
                 let dpp = pd.harga / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
@@ -122,6 +121,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
                 otherTaxBase = otherTaxBase.toFixed(2);
                 let vat = subTotal - taxBase;
+
     
                 return {
                     Opt: 'A',
@@ -140,9 +140,12 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 }
     
             });
+
+            console.log('logs', goodServices);
+
     
             const listOfGoodService = {
-                GoodService: GoodServices
+                GoodService: goodServices
             }
             
             return {
