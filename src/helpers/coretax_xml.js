@@ -129,7 +129,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                     Name: pd.barang.nama_jual,
                     Unit: unit[pd.barang.satuan.nama.toLowerCase()],
                     Price: dpp,
-                    Qty: pd.qty,
+                    Qty: parseFloat(pd.qty).toFixed(2),
                     TotalDiscount: "0",
                     TaxBase: taxBase,
                     OtherTaxBase: otherTaxBase,
@@ -140,8 +140,6 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 }
     
             });
-
-            console.log('logs', goodServices);
 
     
             const listOfGoodService = {
