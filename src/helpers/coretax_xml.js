@@ -115,7 +115,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     
                 let dpp = pd.harga / (1 + (ppn_berlaku / 100));
-                dpp = dpp.toFixed(2);
+                // dpp = dpp.toFixed(2);
                 const subTotal = pd.harga * pd.qty;
                 const taxBase = (dpp * pd.qty).toFixed(2);
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
@@ -128,7 +128,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                     Code: '000000',
                     Name: pd.barang.nama_jual,
                     Unit: unit[pd.barang.satuan.nama.toLowerCase()],
-                    Price: dpp,
+                    Price: parseFloat(dpp).toFixed(2),
                     Qty: parseFloat(pd.qty).toFixed(2),
                     TotalDiscount: "0",
                     TaxBase: taxBase,
@@ -344,8 +344,6 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 totalTaxBase += parseFloat(taxBase);
                 totalOtherTaxBase += parseFloat(otherTaxBase);
                 totalVAT += parseFloat(vat);
-
-                console.log(totalTaxBase, totalOtherTaxBase, totalVAT);
     
             });
             
