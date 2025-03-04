@@ -78,6 +78,10 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
         invoices = fakturPajak.map(fp => {
 
+            if(fp.no_faktur_jual === "PL:PJ01/2502/0289"){
+                console.log('fp', fp);
+            }
+
             
             const isNpwp = (fp.no_npwp && fp.no_npwp != "") ? true : false;
             const npwp = (isNpwp ? fp.no_npwp.replace(/[.-]/g, '') : '');
@@ -90,7 +94,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             let buyerDocument = "";
             let BuyerDocumentNumber = "-";
 
-            if(nik != "" && isNpwp) {
+            if(nik != "" && npwp != "") {
                 tin = nik;
                 idtku = tin + "000000";
                 buyerDocument = buyerDocs['npwp'];
@@ -114,6 +118,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
             const goodServices = fp.penjualan.penjualan_detail.map(pd => {
 
     
+                
                 let dpp = pd.harga / (1 + (ppn_berlaku / 100));
                 // dpp = dpp.toFixed(2);
                 const subTotal = pd.harga * pd.qty;
