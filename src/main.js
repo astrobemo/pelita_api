@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 
-import { coretaxPajak } from './helpers/coretax_xml.js';
+import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const COMPANY = process.env.COMPANY.split(',');
@@ -326,6 +326,23 @@ app.get('/pajak/generate_faktur_pajak_coretax', async (req, res) => {
         let fileXML = await coretaxPajak(rekam_faktur_pajak_id, company_name);
 
         res.setHeader('Content-Disposition', 'attachment; filename=faktur_pajak.xml');
+        res.setHeader('Content-Type', 'application/xml');
+        res.send(fileXML);
+
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching customers' });
+    }
+    
+});
+
+app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
+    const company_name = req.query.company_name;
+    const rekam_faktur_pajak_id = req.query.rekam_faktur_pajak_id;
+
+    try {
+        let fileXML = await coretaxPajakGunggung(rekam_faktur_pajak_id, company_name);
+
+        res.setHeader('Content-Disposition', 'attachment; filename=faktur_pajak_gunggung.xml');
         res.setHeader('Content-Type', 'application/xml');
         res.send(fileXML);
 
