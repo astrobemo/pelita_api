@@ -179,3 +179,13 @@ model toko{
 
   @@map("nd_toko")
 }
+
+model master_barang{
+  id Int @id @default(autoincrement())
+  barang_id_master Int
+  barang_id_toko Int
+  nama_master String
+
+  @@map("nd_master_toko_barang")
+}
+
