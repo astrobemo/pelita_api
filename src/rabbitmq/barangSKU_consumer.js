@@ -28,7 +28,7 @@ if(connection){
 }
 
 const consumeMessages = async () => {
-    const queue = 'your_queue_name';
+    const queue = 'pairing_sku_master_toko';
 
     await channel.assertQueue(queue, { durable: true });
 
@@ -37,6 +37,17 @@ const consumeMessages = async () => {
             const messageContent = msg.content.toString();
             console.log("Received message:", messageContent);
 
+            // validate if barang_id and warna_id is known
+            const barangSKU = JSON.parse(messageContent);
+            const company = barangSKU.company;
+            const barangId = barangSKU.barang_id;
+            const warnaId = barangSKU.warna_id;
+
+            /* const existingBarang = await prismaClient[COMPANY[company]].findMany({
+                where: {
+                    barang_id_master: barangId
+                }
+            }); */
             // Process the message here
 
             channel.ack(msg);
