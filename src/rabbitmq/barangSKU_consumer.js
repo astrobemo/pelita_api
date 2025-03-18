@@ -123,9 +123,7 @@ export const barangMasterSKUAssigned = async () =>{
                 response = {
                     status: "success",
                     message: "SKU berhasil ditambahkan",
-                    data: {
-                        affected_rows: affectedRows
-                    }
+                    affectedRows: affectedRows
                 };
                 
     
