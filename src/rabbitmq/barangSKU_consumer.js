@@ -1,11 +1,11 @@
-import {connection, channel} from "./consumer";
+import {connection, channel} from "./connection";
 
 channel.consume("add_barang_master_toko", async (msg) => {
 
     if(!connection){
         throw new Error("RabbitMQ connection is not established");
     }
-    
+
     if (msg !== null) {
         const messageContent = msg.content.toString();
         console.log("Received message:", messageContent);

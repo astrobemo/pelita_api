@@ -1,33 +1,20 @@
-import { connect } from "amqplib";
 import { prismaClient } from "../prisma-client.js"
 import axios from "axios";
 import { getAuthToken, isTokenValid, authToken } from "../helpers/getAuthentication.js";
-
-import { COMPANY as COMPANY_ALL, RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD, RABBITMQ_PORT, NODE1_URL, AUTH_URL, API_KEY } from "../../config/loadEnv.js";
+import { COMPANY as COMPANY_ALL, NODE1_URL, AUTH_URL, API_KEY } from "../../config/loadEnv.js";
+import { connection, channel } from "./connection.js";
 
 const COMPANY = COMPANY_ALL.split(',');
-const rabbitMqUrl = RABBITMQ_URL;
-const rabbitMqUser = RABBITMQ_USER;
-const rabbitMqPassword = RABBITMQ_PASSWORD;
-const rabbitMqPort = RABBITMQ_PORT;
 const nodeUrl = NODE1_URL;
-
 const authUrl = AUTH_URL;
 const apiKey = API_KEY;
 
-// console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
-const rabbitMqParam = [rabbitMqUrl, rabbitMqUser, rabbitMqPassword, rabbitMqPort];
-
-let channel;
-const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:${rabbitMqPort}/master`).catch((err) => {
-    console.error('connection error', err);
-});
-
-if(connection){
-    channel = await connection.createChannel();
-}
 
 const consumeMessages = async () => {
+    if (!connection) {
+        throw new Error("RabbitMQ connection is not established");
+    }
+    
     await channel.consume("customer_legacy_que", async (msg) => {
         const event = msg.fields.routingKey;
         switch (event) {
