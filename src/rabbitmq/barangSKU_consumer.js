@@ -36,21 +36,38 @@ const consumeMessages = async () => {
         if (msg !== null) {
             const messageContent = msg.content.toString();
             console.log("Received message:", messageContent);
-
             // validate if barang_id and warna_id is known
-            const barangSKU = JSON.parse(messageContent);
-            const company = barangSKU.company;
-            const barangId = barangSKU.barang_id;
-            const warnaId = barangSKU.warna_id;
 
-            /* const existingBarang = await prismaClient[COMPANY[company]].findMany({
-                where: {
-                    barang_id_master: barangId
+            try {
+                const barangSKU = JSON.parse(messageContent);
+                const company = barangSKU.company;
+                const barangId = barangSKU.barang_id;
+                const warnaId = barangSKU.warna_id;
+
+                const existingBarang = await prismaClient[COMPANY[company]].findMany({
+                    where: {
+                        barang_id_master: barangId
+                    }
+                });
+
+                if(existingBarang.length === 0){
+                    console.log("Barang not found");
+                    channel.nack(msg);
+                    return;
                 }
-            }); */
-            // Process the message here
 
-            channel.ack(msg);
+                if(existingBarang[0].warna_id_master !== warnaId){
+                    console.log("Warna not found");
+                    channel.nack(msg);
+                    return;
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                channel.ack(msg);
+                return;
+                
+            }
         }
     });
 }
