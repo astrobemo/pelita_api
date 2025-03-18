@@ -1,7 +1,7 @@
 import { prismaClient } from "../prisma-client";
 import {connection, channel} from "./connection";
 
-export const barangMasterassigned = async () =>{
+export const barangMasterAssigned = async () =>{
     if(!connection){
         throw new Error("RabbitMQ connection is not established");
     }
@@ -12,12 +12,18 @@ export const barangMasterassigned = async () =>{
             const mContent = msg.content.toString();
             console.log("Received message:", messageContent);
             // validate if barang_id and warna_id is known
+
+            const replyTo = msg.properties.replyTo;
+            const correlationId = msg.properties.correlationId;
+            let response = {};
     
             try {
                 const company = mContent.company;
                 const barangId = mContent.barang_id;
                 const namaBarang = mContent.nama_barang;
                 const satuanId = mContent.satuan_id;
+
+                
                 
                 const existingBarang = await prismaClient[COMPANY[company]].master_barang.findMany({
                     where: {
@@ -26,7 +32,7 @@ export const barangMasterassigned = async () =>{
                 });
     
                 // by SOP klo barang ga ada artinya harus dipastikan barang baru
-                if(existingBarang.length !== 0){
+                if(existingBarang.length === 0){
 
                     const newBarang = await prismaClient[COMPANY[company]].barang.create({
                         nama_jual: namaBarang,
@@ -42,16 +48,86 @@ export const barangMasterassigned = async () =>{
                             barang_id_toko: insertedId
                         }
                     });
-                    return;
+                    
+                    response = {
+                        status: "success",
+                        message: "Barang berhasil ditambahkan",
+                        data: {
+                            barang_id: insertedId
+                        }
+                    };
+
                 }else{
+                    
+                    const existingBarangNama = existingBarang[0].nama_master;
                     console.log("Barang sudah ada");
-                }
-    
-                channel.ack(msg);
+                    response = {
+                        status: "success",
+                        message: `Barang sudah pernah didaftarkan: ${existingBarangNama}`,
+                    };
+                }                
+
     
             } catch (error) {
                 console.error(error);
-                channel.nack(msg);
+                response = {
+                    status: "failed",
+                    message: "Terjadi kesalahan pada server"
+                }
+            }
+
+            channel.sendToQueue(replyTo, Buffer.from(JSON.stringify(response)), {
+                correlationId: correlationId
+            });
+        }
+    });
+}
+
+export const barangMasterSKUAssigned = async () =>{
+    if(!connection){
+        throw new Error("RabbitMQ connection is not established");
+    }
+
+    channel.consume("add_barang_sku_master_toko", async (msg) => {
+    
+        if (msg !== null) {
+            const mContent = msg.content.toString();
+            console.log("Received message:", messageContent);
+            const mData = JSON.parse(mContent);
+            // validate if barang_id and warna_id is known
+
+            let affectedRows = 0;
+    
+            try {
+                const company = mData.company;
+                const correlationId = mData.correlation_id;
+                const barangId = mData.barang_id;
+                const skuList = mData.data;
+                
+                const existingBarang = await prismaClient[COMPANY[company]].master_barang.findMany({
+                    where: {
+                        barang_id_master: barangId
+                    }
+                });
+
+                const barangList = skuList.map(async (sku) => {
+                    return {
+                        barang_sku_id: sku.id,
+                        nama_barang: sku.nama_barang,
+                        barang_id_master: sku.barang_id,
+                        warna_id_master: sku.warna_id
+                    }
+                });
+
+                const newList = await prismaClient[COMPANY[company]].master_barang_sku.createMany({
+                    data: barangList
+                });
+
+                affectedRows = newList.count;
+                
+    
+            } catch (error) {
+                console.error(error);
             }
         }
     });
