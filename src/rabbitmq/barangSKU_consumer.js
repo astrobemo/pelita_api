@@ -97,18 +97,14 @@ export const barangMasterSKUAssigned = async () =>{
             // validate if barang_id and warna_id is known
 
             let response = {};
+
+            const replyTo = msg.properties.replyTo;
+            const correlationId = msg.properties.correlationId;
     
             try {
                 const company = mData.company;
-                const correlationId = mData.correlation_id;
                 const barangId = mData.barang_id;
                 const skuList = mData.data;
-                
-                const existingBarang = await prismaClient[COMPANY[company]].master_barang.findMany({
-                    where: {
-                        barang_id_master: barangId
-                    }
-                });
 
                 const barangList = skuList.map(async (sku) => {
                     return {
