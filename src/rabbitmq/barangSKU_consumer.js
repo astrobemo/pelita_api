@@ -1,7 +1,7 @@
 import { prismaClient } from "../prisma-client";
 import {connection, channel} from "./connection";
 
-export const barangSKUassigned = async () =>{
+export const barangMasterassigned = async () =>{
     if(!connection){
         throw new Error("RabbitMQ connection is not established");
     }
