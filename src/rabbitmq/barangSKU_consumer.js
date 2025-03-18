@@ -96,7 +96,7 @@ export const barangMasterSKUAssigned = async () =>{
             const mData = JSON.parse(mContent);
             // validate if barang_id and warna_id is known
 
-            let affectedRows = 0;
+            let response = {};
     
             try {
                 const company = mData.company;
@@ -123,12 +123,27 @@ export const barangMasterSKUAssigned = async () =>{
                     data: barangList
                 });
 
-                affectedRows = newList.count;
+                const affectedRows = newList.count;
+                response = {
+                    status: "success",
+                    message: "SKU berhasil ditambahkan",
+                    data: {
+                        affected_rows: affectedRows
+                    }
+                };
                 
     
             } catch (error) {
                 console.error(error);
+                response = {
+                    status: "failed",
+                    message: "Terjadi kesalahan pada server"
+                }
             }
+
+            channel.sendToQueue(replyTo, Buffer.from(JSON.stringify(response)), {
+                correlationId: correlationId
+            });
         }
     });
 }
