@@ -5,7 +5,8 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js  --detectOpenHandles"
+    "test": "vitest",
+    "test:file": "set:NODE_ENV=test && vitest run"
   },
   "repository": {
     "type": "git",
@@ -41,8 +42,8 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
     "prisma": "^5.19.1",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "vitest": "^3.1.1"
   }
 }

@@ -1,23 +1,68 @@
 import { connect } from "amqplib";
-import dotenv from "dotenv";
-import { prismaClient } from "../prisma-client";
+import { rabbitMqUrl, rabbitMqUser, rabbitMqPassword } from "../config/rabbitmqConfig";
 
-dotenv.config({ path: `../../.env` });
+console.log('rmq', rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
 
-const rabbitMqUrl = process.env.RABBITMQ_URL;
-const rabbitMqUser = process.env.RABBITMQ_USER;
-const rabbitMqPassword = process.env.RABBITMQ_PASSWORD;
+let channel = null;
+let confirmChannel = null;
+let connection = null;
 
-console.log(rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
+const initializeRabbitMQ = async () => {
+    try {
+        if (!connection) {
+            console.log('param status', rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
+            connection = await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:5672/master`).catch((err) => {
+                console.error(err);
+                throw new Error('Failed to connect to RabbitMQ');
+            });
 
-export const connection =  await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:5672/`);
-export const channel = await connection.createChannel();
+            connection.on('error', async (err) => {
+                console.error('Connection error:', err);
 
-await channel.consume("webapp_notif", (message) => {
-    console.info(message.fields.routingKey);
-    // console.info(message);
-    console.log('Received message:', message.content.toString());
-}, { noAck: true });
+                if (err.message !== "Connection closing") {
+                    connection = null;
+                    channel = null;
+                    confirmChannel = null;
 
-// await channel.close();
-// await connection.close();
+                    setTimeout(async () => {
+                        console.log('Reconnecting to RabbitMQ...');
+                        await initializeRabbitMQ();
+                    }, 2000); // Retry after 1 second
+                }
+            });
+
+            connection.on("close", async () => {
+                console.warn("RabbitMQ connection closed. Reconnecting...");
+
+                connection = null;
+                channel = null;
+                confirmChannel = null;
+
+                setTimeout(async () => {
+                    console.log('Reconnecting to RabbitMQ...');
+                    await initializeRabbitMQ();
+                }, 2000); // Retry after 1 second
+            });
+        }
+        console.log('Connected to RabbitMQ');
+    } catch (error) {
+        console.error('Connection Failed', error.message);
+        throw error;
+    }
+};
+
+export const getRabbitMQ = async () => {
+    console.log('Getting RabbitMQ connection...');
+    if (!connection) {
+        await initializeRabbitMQ();
+    }
+
+    if (!channel) {
+        channel = await connection.createChannel();
+    }
+    if (!confirmChannel) {
+        confirmChannel = await connection.createConfirmChannel();
+    }
+
+    return { channel, confirmChannel, connection };
+};
