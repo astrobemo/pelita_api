@@ -1,11 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getRabbitMQ } from "../../src/rabbitmq/connection";
 
+// Mock rabbitmqConfig
+vi.mock("../../src/config/rabbitmqConfig", () => ({
+    rabbitMqUrl: "mocked_url",
+    rabbitMqUser: "mocked_user",
+    rabbitMqPassword: "mocked_password",
+}));
+
+// Mock amqplib
+vi.mock("amqplib", () => ({
+    connect: vi.fn(() => ({
+        createChannel: vi.fn(() => ({
+            consume: vi.fn((queue, callback, options) => {
+                const mockMessage = {
+                    fields: { routingKey: "test.key" },
+                    content: Buffer.from("Test message"),
+                };
+                callback(mockMessage);
+            }),
+        })),
+        createConfirmChannel: vi.fn(() => ({})),
+        on: vi.fn(),
+    })),
+}));
 
 let mockConnection, mockChannel, mockConfirmChannel;
 
 beforeEach(() => {
-
     mockConnection = {
         createChannel: vi.fn(() => mockChannel),
         createConfirmChannel: vi.fn(() => mockConfirmChannel),
@@ -21,13 +43,6 @@ beforeEach(() => {
 
 describe("RabbitMQ Connection", () => {
     it("should initialize and return RabbitMQ connection, channel, and confirmChannel", async () => {
-
-        
-
-    process.env.RABBITMQ_URL = "localhost";
-    process.env.RABBITMQ_USER = "my_user";
-    process.env.RABBITMQ_PASSWORD = "my_password";
-
         const result = await getRabbitMQ();
 
         expect(result.connection).toBeDefined();
@@ -38,4 +53,20 @@ describe("RabbitMQ Connection", () => {
         expect(mockConnection.createConfirmChannel).toHaveBeenCalled();
     });
 
+    it("should consume messages from the channel", async () => {
+        const { channel } = await getRabbitMQ();
+
+        const consumeSpy = vi.spyOn(channel, "consume");
+
+        channel.consume("webapp_notif", (message) => {
+            expect(message.fields.routingKey).toBe("test.key");
+            expect(message.content.toString()).toBe("Test message");
+        }, { noAck: true });
+
+        expect(consumeSpy).toHaveBeenCalledWith(
+            "webapp_notif",
+            expect.any(Function),
+            { noAck: true }
+        );
+    });
 });
