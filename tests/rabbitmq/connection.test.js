@@ -3,9 +3,9 @@ import { getRabbitMQ } from "../../src/rabbitmq/connection";
 
 // Mock rabbitmqConfig
 vi.mock("../../src/config/rabbitmqConfig", () => ({
-    rabbitMqUrl: "mocked_url",
-    rabbitMqUser: "mocked_user",
-    rabbitMqPassword: "mocked_password",
+    rabbitMqUrl: "localhost",
+    rabbitMqUser: "my_user",
+    rabbitMqPassword: "my_password",
 }));
 
 // Mock amqplib
@@ -27,20 +27,6 @@ vi.mock("amqplib", () => ({
 
 let mockConnection, mockChannel, mockConfirmChannel;
 
-beforeEach(() => {
-    mockConnection = {
-        createChannel: vi.fn(() => mockChannel),
-        createConfirmChannel: vi.fn(() => mockConfirmChannel),
-        on: vi.fn(),
-    };
-    mockChannel = {
-        consume: vi.fn(),
-    };
-    mockConfirmChannel = {};
-    vi.mocked(mockConnection.createChannel).mockReturnValue(mockChannel);
-    vi.mocked(mockConnection.createConfirmChannel).mockReturnValue(mockConfirmChannel);
-});
-
 describe("RabbitMQ Connection", () => {
     it("should initialize and return RabbitMQ connection, channel, and confirmChannel", async () => {
         const result = await getRabbitMQ();
@@ -49,8 +35,8 @@ describe("RabbitMQ Connection", () => {
         expect(result.channel).toBeDefined();
         expect(result.confirmChannel).toBeDefined();
 
-        expect(mockConnection.createChannel).toHaveBeenCalled();
-        expect(mockConnection.createConfirmChannel).toHaveBeenCalled();
+        expect(result.connection.createChannel).toHaveBeenCalled();
+        expect(result.connection.createConfirmChannel).toHaveBeenCalled();
     });
 
     it("should consume messages from the channel", async () => {
