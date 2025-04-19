@@ -2,12 +2,15 @@ import { prismaClient } from "../prisma-client.js"
 import axios from "axios";
 import { getAuthToken, isTokenValid, authToken } from "../helpers/getAuthentication.js";
 import { COMPANY as COMPANY_ALL, NODE1_URL, AUTH_URL, API_KEY } from "../../config/loadEnv.js";
-import { connection, channel } from "./connection.js";
+import { getRabbitMQ } from "./connection.js";
 
 const COMPANY = COMPANY_ALL.split(',');
 const nodeUrl = NODE1_URL;
 const authUrl = AUTH_URL;
 const apiKey = API_KEY;
+
+const channel = getRabbitMQ().channel;
+const connection = getRabbitMQ().connection;
 
 
 const consumeMessages = async () => {
