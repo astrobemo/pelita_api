@@ -18,10 +18,17 @@ const logLevels = isProd ? ['error', 'warn'] : ['query', 'info', 'warn', 'error'
 
 const prismaClient = {};
 function newClient(company) {
+
+    const dbUrlKey = `DATABASE_URL_${company.toUpperCase()}`;
+
+    if (!process.env[dbUrlKey]) {
+        throw new Error(`DATABASE_URL_${company.toUpperCase()} is not defined in the environment variables`);
+    }
+
     return new PrismaClient({
         datasources: {
             db: {
-                url: process.env[`DATABASE_URL_${company.toUpperCase()}`],
+                url: process.env[dbUrlKey],
             },
         },
         errorFormat: "pretty",
@@ -31,6 +38,14 @@ function newClient(company) {
 
 COMPANY.forEach((value) => {
     prismaClient[value.toLowerCase()] = newClient(value);
+});
+
+process.on('beforeExit', async () => {
+    console.log('Closing Prisma Client connections...');
+    for (const client of Object.values(prismaClient)) {
+        await client.$disconnect();
+    }
+    console.log('All Prisma Client connections closed.');
 });
 
 export { prismaClient };
