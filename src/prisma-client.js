@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { log } from "console";
 import dotenv from 'dotenv';
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -12,6 +13,9 @@ const ENVIRONMENT = process.env.NODE_ENV;
 dotenv.config({ path: path.resolve(__dirname, `../.env.${ENVIRONMENT}`) });
 const COMPANY = process.env.COMPANY.split(',');
 
+const isProd = ENVIRONMENT === 'production' ? true : false;
+const logLevels = isProd ? ['error', 'warn'] : ['query', 'info', 'warn', 'error'];
+
 const prismaClient = {};
 function newClient(company) {
     return new PrismaClient({
@@ -21,7 +25,7 @@ function newClient(company) {
             },
         },
         errorFormat: "pretty",
-        log: ["query", "info", "error", "warn"]
+        log: logLevels
     });
 }
 

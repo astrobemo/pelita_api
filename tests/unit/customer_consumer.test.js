@@ -5,6 +5,8 @@ import axios from "axios";
 import { getRabbitMQ } from "../../src/rabbitmq/connection.js";
 import { getAuthToken, isTokenValid } from "../../src/helpers/getAuthentication.js";
 
+
+
 vi.mock("../../src/prisma-client.js", () => ({
     prismaClient: {
         COMPANY1: {
@@ -60,7 +62,7 @@ describe("consumeMessages", () => {
     });
 
     it("should process 'customer.chosen' event and update customer data", async () => {
-        const mockChannel = getRabbitMQ().channel;
+        const {channel :mockChannel} = await getRabbitMQ();
 
         mockChannel.consume.mockImplementation((queue, callback) => {
             callback(mockMessage);

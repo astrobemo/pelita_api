@@ -3,7 +3,7 @@ import axios from "axios";
 import { getAuthToken, isTokenValid, authToken } from "../helpers/getAuthentication.js";
 import { COMPANY as COMPANY_ALL, NODE1_URL, AUTH_URL, API_KEY } from "../../config/loadEnv.js";
 import { getRabbitMQ } from "./connection.js";
-import { cp } from "fs";
+
 
 const COMPANY = COMPANY_ALL.split(',');
 const nodeUrl = NODE1_URL;
@@ -23,7 +23,6 @@ const consumeMessages = async () => {
     
     await channel.consume("customer_legacy_que", async (msg) => {
         const event = msg.fields.routingKey;
-        console.log('event', event);
         switch (event) {
             case 'customer.chosen': 
             try {
@@ -127,11 +126,15 @@ const consumeMessages = async () => {
                             [keyName]: keyValue
                         }
                     });
+
+                    console.log('existingCustomer', existingCustomer);
     
                     if (!existingCustomer.length) {
                         console.log(`Customer with ${keyName}: ${keyValue} not found in company index ${index}`);
                         continue;
                     }else{
+
+                        console.log('existingCustomer exist do backup');
                         
                         const backupData = existingCustomer[0];
                         await prismaClient[COMPANY[index]].customer_backup.create({
@@ -176,6 +179,8 @@ const consumeMessages = async () => {
                         console.log('keyName or keyValue is empty');
                         continue;
                     }else{
+
+                        console.log('update customer', COMPANY[index]);
                         await prismaClient[COMPANY[index]].customer.updateMany({
                             data: newData,
                             where: {
