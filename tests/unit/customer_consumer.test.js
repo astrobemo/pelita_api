@@ -26,14 +26,14 @@ vi.mock("axios", () => ({
 }));
 
 vi.mock("../../src/rabbitmq/connection.js", () => ({
-    getRabbitMQ: vi.fn(() => ({
+    getRabbitMQ: vi.fn().mockResolvedValue({
         channel: {
             consume: vi.fn(),
             ack: vi.fn(),
             nack: vi.fn(),
         },
         connection: true,
-    })),
+    }),
 }));
 
 vi.mock("../../src/helpers/getAuthentication.js", () => ({

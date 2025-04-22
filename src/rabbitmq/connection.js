@@ -1,7 +1,5 @@
 import { connect } from "amqplib";
-import { rabbitMqUrl, rabbitMqUser, rabbitMqPassword } from "../../config/rabbitmqConfig";
-
-console.log('rmq', rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
+import { RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD } from "../../config/loadEnv";
 
 let channel = null;
 let confirmChannel = null;
@@ -10,8 +8,8 @@ let connection = null;
 const initializeRabbitMQ = async () => {
     try {
         if (!connection) {
-            console.log('param status', rabbitMqUrl, rabbitMqUser, rabbitMqPassword);
-            connection = await connect(`amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqUrl}:5672/master`);
+            console.log('param status', RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD);
+            connection = await connect(`amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_URL}:5672/master`);
 
             connection.on('error', async (err) => {
                 console.error('Connection error:', err);
