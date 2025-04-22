@@ -40,12 +40,16 @@ COMPANY.forEach((value) => {
     prismaClient[value.toLowerCase()] = newClient(value);
 });
 
-process.on('beforeExit', async () => {
+const gracefulShutdown = async () => {
     console.log('Closing Prisma Client connections...');
     for (const client of Object.values(prismaClient)) {
         await client.$disconnect();
     }
     console.log('All Prisma Client connections closed.');
-});
+};
+
+process.on('beforeExit', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
 
 export { prismaClient };
