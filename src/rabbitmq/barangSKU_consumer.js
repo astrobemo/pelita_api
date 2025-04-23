@@ -27,13 +27,40 @@ export const barangMasterAssigned = async () =>{
                 const company = mContent.company.toString().toLowerCase(); 
                 const barangId = mContent.barang_id;
                 const namaBarang = mContent.nama_barang;
-                const satuanId = mContent.satuan_id;
+                const namaSatuan = mContent.nama_satuan;
+                const satuanIdMaster = mContent.satuan_id;
+                let satuanId = '';
 
                 const existingBarang = await prismaClient[company].master_barang.findMany({
                     where: {
                         barang_id_master: barangId
                     }
                 });
+
+                const existingSatuan = await prismaClient[company].satuan.findMany({
+                    where: {
+                        nama: namaSatuan
+                    }
+                });
+
+                if(existingSatuan.length === 0){
+                    const newSatuan = await prismaClient[company].satuan.create({
+                        data: {
+                            nama: namaSatuan
+                        }
+                    });
+                    satuanId = newSatuan.id;
+
+                    await prismaClient[company].master_satuan.create({
+                        data: {
+                            satuan_id_master: satuanIdMaster,
+                            nama_master: namaSatuan,
+                            satuan_id_toko: satuanId
+                        }
+                    });
+                }else{
+                    satuanId = existingSatuan[0].id;
+                }
     
                 // by SOP klo barang ga ada artinya harus dipastikan barang baru
                 if(existingBarang.length === 0){
