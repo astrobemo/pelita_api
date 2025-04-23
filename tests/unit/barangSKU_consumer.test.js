@@ -171,3 +171,166 @@ describe("barangMasterAssigned", () => {
         );
     });
 });
+
+describe("barangMasterSKUAssigned", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("should add a new barang SKU successfully", async () => {
+        const {channel } = await getRabbitMQ();
+        
+        const mockMsg = {
+            content: Buffer.from(
+                JSON.stringify({
+                    company: "test",
+                    barang_id: 1,
+                    satuan_id: 2,
+                    data:[
+                        {
+                            id: 1,
+                            nama_barang: "Test Barang HIJAU ROLL",
+                            nama_jual: "Test Barang HIJAU",
+                            warna_jual_master: "HIJAU",
+                            barang_id: 1,
+                            warna_id: 1,
+                            satuan_id: 2
+                        },
+                        {
+                            id: 2,
+                            nama_barang: "Test Barang HITAM ROLL",
+                            nama_jual: "Test Barang HITAM",
+                            warna_jual_master: "HITAM",
+                            barang_id: 1,
+                            warna_id: 2,
+                            satuan_id: 2
+                        },
+                        {
+                            id: 3,
+                            nama_barang: "Test Barang KETAN ROLL",
+                            nama_jual: "Test Barang KETAN",
+                            warna_jual_master: "KETAN",
+                            barang_id: 1,
+                            warna_id: 3,
+                            satuan_id: 2
+                        },
+                    ]
+                })
+            ),
+            properties: {
+                replyTo: "testQueue",
+                correlationId: "12345",
+            },
+        };
+
+        prismaClient.test.master_barang.findMany.mockResolvedValue([]);
+        prismaClient.test.barang.create.mockResolvedValue({ id: 10, nama_jual: "Test Barang", satuan_id: 2 });
+        
+        await barangMasterSKUAssigned();
+        const consumeCallback = channel.consume.mock.calls[0][1];
+        await consumeCallback(mockMsg);
+
+        expect(prismaClient["test"].barang.create).toHaveBeenCalledWith({
+            nama_jual: "Test Barang",
+            satuan_id: 2,
+        });
+
+
+        expect(prismaClient["test"].master_barang.create).toHaveBeenCalledWith({
+            data: {
+                barang_id_master: 1,
+                nama_master: "Test Barang",
+                barang_id_toko: 10,
+            },
+        });
+        expect(channel.sendToQueue).toHaveBeenCalledWith(
+            "testQueue",
+            Buffer.from(
+                JSON.stringify({
+                    status: "success",
+                    message: "Barang berhasil ditambahkan",
+                    data: { barang_id: 10 },
+                })
+            ),
+            { correlationId: "12345" }
+        );
+    });
+    it("should return a message if barang already exists", async () => {
+        const {channel } = await getRabbitMQ();
+
+        const mockMsg = {
+            content: Buffer.from(
+                JSON.stringify({
+                    company: "test",
+                    barang_id: 1,
+                    nama_barang: "Test Barang",
+                    satuan_id: 2,
+                })
+            ),
+            properties: {
+                replyTo: "testQueue",
+                correlationId: "12345",
+            },
+        };
+
+        prismaClient["test"] = {
+            master_barang: {
+                findMany: vi.fn().mockResolvedValue([{ nama_master: "Existing Barang" }]),
+            },
+        };
+
+        await barangMasterSKUAssigned();
+        const consumeCallback = channel.consume.mock.calls[0][1];
+        await consumeCallback(mockMsg);
+
+        expect(channel.sendToQueue).toHaveBeenCalledWith(
+            "testQueue",
+            Buffer.from(
+                JSON.stringify({
+                    status: "success",
+                    message: "Barang sudah pernah didaftarkan: Existing Barang",
+                })
+            ),
+            { correlationId: "12345" }
+        );
+    });
+
+    it("should handle errors gracefully", async () => {
+        const {channel } = await getRabbitMQ();
+        const mockMsg = {
+            content: Buffer.from(
+                JSON.stringify({
+                    company: "test",
+                    barang_id: 1,
+                    nama_barang: "Test Barang",
+                    satuan_id: 2,
+                })
+            ),
+            properties: {
+                replyTo: "testQueue",
+                correlationId: "12345",
+            },
+        };
+
+        prismaClient["test"] = {
+            master_barang: {
+                findMany: vi.fn().mockRejectedValue(new Error("Database error")),
+            },
+        };
+
+        await barangMasterSKUAssigned();
+        const consumeCallback = channel.consume.mock.calls[0][1];
+        await consumeCallback(mockMsg);
+
+        expect(channel.sendToQueue).toHaveBeenCalledWith(
+            "testQueue",
+            Buffer.from(
+                JSON.stringify({
+                    status: "failed",
+                    message: "Terjadi kesalahan pada server",
+                })
+            ),
+            { correlationId: "12345" }
+        );
+    });
+});

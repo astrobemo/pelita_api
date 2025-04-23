@@ -138,7 +138,12 @@ export const barangMasterSKUAssigned = async () =>{
                 const satuanId = mData.satuan_id;
                 const skuList = mData.data;
 
+                const warnaIdMaster = [];
+                const namaWarnaMaster = [];
+
                 const barangList = skuList.map(async (sku) => {
+                    warnaIdMaster.push(sku.warna_id);
+                    namaWarnaMaster.push(sku.warna_jual_master);
                     return {
                         barang_sku_id: sku.id,
                         nama_barang: sku.nama_barang,
@@ -147,6 +152,50 @@ export const barangMasterSKUAssigned = async () =>{
                         satuan_id_master: sku.satuan_id
                     }
                 });
+
+                const queryCheckWarna = await prismaClient[company].master_warna.findMany({
+                    where: {
+                        warna_id_master: {
+                            in: warnaIdMaster
+                        }
+                    }
+                });
+
+                const listedWarna = queryCheckWarna.map((item) => item.warna_id_master);
+                const newWarna = warnaIdMaster.filter((item) => !listedWarna.includes(item));
+
+                if(newWarna.length > 0){
+                    const newWarna = newWarna.map((item) => {
+                        return {
+                            nama_master: namaWarnaMaster[warnaIdMaster.indexOf(item)]
+                        }
+                    });
+
+                    await prismaClient[company].warna.createMany({
+                        data: newWarna
+                    });
+
+                    const newWarnaId = await prismaClient[company].warna.findMany({
+                        where: {
+                            nama: {
+                                in: newWarna.map((item) => item.nama_master)
+                            }
+                        }
+                    });
+
+                    const newWarnaList = newWarna.map((item) => {
+                        return {
+                            warna_id_toko: newWarnaId.find((warna) => warna.nama === item.nama_master).id,
+                            warna_id_master: item,
+                            nama_master: namaWarnaMaster[warnaIdMaster.indexOf(item)]
+                        }
+                    });
+
+                    await prismaClient[company].master_warna.createMany({
+                        data: newWarnaList
+                    });
+
+                }
 
                 const newList = await prismaClient[company].master_barang_sku.createMany({
                     data: barangList

@@ -216,6 +216,7 @@ model master_barang_sku{
   nama_barang String
   barang_id_master Int
   warna_id_master Int
+  satuan_id_master Int
   warna_id_toko Int
 
   @@map("nd_master_toko_sku")
