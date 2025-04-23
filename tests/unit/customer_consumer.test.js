@@ -9,7 +9,7 @@ import { getAuthToken, isTokenValid } from "../../src/helpers/getAuthentication.
 
 vi.mock("../../src/prisma-client.js", () => ({
     prismaClient: {
-        COMPANY1: {
+        TEST: {
             customer: {
                 findMany: vi.fn(),
                 updateMany: vi.fn(),
@@ -64,8 +64,8 @@ describe("consumeMessages", () => {
     it("should process 'customer.chosen' event and update customer data", async () => {
         const {channel :mockChannel} = await getRabbitMQ();
 
-        mockChannel.consume.mockImplementation((queue, callback) => {
-            callback(mockMessage);
+        mockChannel.consume.mockImplementation(async (queue, callback) => {
+            await callback(mockMessage);
         });
 
         axios.post.mockResolvedValue({
@@ -92,7 +92,8 @@ describe("consumeMessages", () => {
             },
         });
 
-        prismaClient.COMPANY1.customer.findMany.mockResolvedValue([
+
+        prismaClient.TEST.customer.findMany.mockResolvedValue([
             { id: 1, nama: "John Doe" },
         ]);
 
@@ -104,18 +105,20 @@ describe("consumeMessages", () => {
             { noAck: false }
         );
         expect(axios.post).toHaveBeenCalled();
-        expect(prismaClient.COMPANY1.customer.updateMany).toHaveBeenCalled();
+        expect(prismaClient.TEST.customer.updateMany).toHaveBeenCalled();
         expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
 
     it("should requeue message if token is invalid", async () => {
-        const mockChannel = getRabbitMQ().channel;
+        
+        const {channel :mockChannel} = await getRabbitMQ();
+        
 
         isTokenValid.mockReturnValue(false);
         getAuthToken.mockRejectedValue(new Error("Auth error"));
 
-        mockChannel.consume.mockImplementation((queue, callback) => {
-            callback(mockMessage);
+        mockChannel.consume.mockImplementation(async (queue, callback) => {
+            await callback(mockMessage);
         });
 
         await consumeMessages();
@@ -125,15 +128,16 @@ describe("consumeMessages", () => {
     });
 
     it("should discard message if redelivered and token retrieval fails", async () => {
-        const mockChannel = getRabbitMQ().channel;
+        const {channel :mockChannel} = await getRabbitMQ();
+
 
         isTokenValid.mockReturnValue(false);
         getAuthToken.mockRejectedValue(new Error("Auth error"));
 
         const redeliveredMessage = { ...mockMessage, fields: { ...mockMessage.fields, redelivered: true } };
 
-        mockChannel.consume.mockImplementation((queue, callback) => {
-            callback(redeliveredMessage);
+        mockChannel.consume.mockImplementation(async (queue, callback) => {
+            await callback(redeliveredMessage);
         });
 
         await consumeMessages();
