@@ -201,6 +201,15 @@ model master_warna{
   @@map("nd_master_toko_warna")
 }
 
+model master_satuan{
+  id Int @id @default(autoincrement())
+  satuan_id_master Int
+  satuan_id_toko Int
+  nama_master String
+
+  @@map("nd_master_toko_satuan")
+}
+
 model master_barang_sku{
   id Int @id @default(autoincrement())
   barang_sku_id Int
