@@ -24,6 +24,8 @@ function newClient(company) {
     });
 }
 
+console.log(COMPANY, 'COMPANY');
+
 COMPANY.forEach((value) => {
     prismaClient[value.toLowerCase()] = newClient(value);
 });

@@ -1,31 +1,35 @@
-import { prismaClient } from "../prisma-client";
-import {connection, channel} from "./connection";
+import { prismaClient } from "../prisma-client.js";
+import { getRabbitMQ } from "./connection.js";
+import { COMPANY } from "../../config/loadEnv.js";
 
 export const barangMasterAssigned = async () =>{
+
+    const { connection, channel } = await getRabbitMQ();
+
     if(!connection){
         throw new Error("RabbitMQ connection is not established");
     }
 
-    channel.consume("add_barang_master_toko", async (msg) => {
+    await channel.consume("add_barang_master_toko", async (msg) => {
     
+        console.log("Received message:", msg.content.toString());
+        const content = msg.content.toString();
+        const mContent = JSON.parse(content);
         if (msg !== null) {
-            const mContent = msg.content.toString();
-            console.log("Received message:", messageContent);
             // validate if barang_id and warna_id is known
+            // 1 barang 1 toko
 
             const replyTo = msg.properties.replyTo;
             const correlationId = msg.properties.correlationId;
             let response = {};
     
             try {
-                const company = mContent.company;
+                const company = mContent.company.toString().toLowerCase(); 
                 const barangId = mContent.barang_id;
                 const namaBarang = mContent.nama_barang;
                 const satuanId = mContent.satuan_id;
 
-                
-                
-                const existingBarang = await prismaClient[COMPANY[company]].master_barang.findMany({
+                const existingBarang = await prismaClient[company].master_barang.findMany({
                     where: {
                         barang_id_master: barangId
                     }
@@ -34,14 +38,14 @@ export const barangMasterAssigned = async () =>{
                 // by SOP klo barang ga ada artinya harus dipastikan barang baru
                 if(existingBarang.length === 0){
 
-                    const newBarang = await prismaClient[COMPANY[company]].barang.create({
+                    const newBarang = await prismaClient[company].barang.create({
                         nama_jual: namaBarang,
                         satuan_id: satuanId
                     });
 
-                    const insertedId = newBarang.barang_id;
+                    const insertedId = newBarang.id;
                     
-                    await prismaClient[COMPANY[company]].master_barang.create({
+                    await prismaClient[company].master_barang.create({
                         data: {
                             barang_id_master: barangId,
                             nama_master: namaBarang,
@@ -115,7 +119,7 @@ export const barangMasterSKUAssigned = async () =>{
                     }
                 });
 
-                const newList = await prismaClient[COMPANY[company]].master_barang_sku.createMany({
+                const newList = await prismaClient[company].master_barang_sku.createMany({
                     data: barangList
                 });
 

@@ -180,6 +180,7 @@ model toko{
   @@map("nd_toko")
 }
 
+// table normalization antara master dan toko
 model master_barang{
   
   id Int @id @default(autoincrement())
@@ -190,6 +191,7 @@ model master_barang{
   @@map("nd_master_toko_barang")
 }
 
+// table normalization antara master dan warna
 model master_warna{
   id Int @id @default(autoincrement())
   warna_id_master Int

@@ -116,15 +116,17 @@ const consumeMessages = async () => {
     
                 
                 for (const index of company_indexes) {
+
+                    const company = index.toString().toLowerCase();
     
                     console.log('new data', newData);
                     console.log('keyName', keyName);
                     console.log('keyValue', keyValue);
 
-                    console.log('cek existing customers',index, COMPANY[index]);
+                    console.log('cek existing customers',index, COMPANY[company]);
 
     
-                    const existingCustomer = await prismaClient[COMPANY[index]].customer.findMany({
+                    const existingCustomer = await prismaClient[COMPANY[company]].customer.findMany({
                         where: {
                             [keyName]: keyValue
                         }
@@ -140,7 +142,7 @@ const consumeMessages = async () => {
                         console.log('existingCustomer exist do backup');
                         
                         const backupData = existingCustomer[0];
-                        await prismaClient[COMPANY[index]].customer_backup.create({
+                        await prismaClient[COMPANY[company]].customer_backup.create({
                             data: {
                                 // Map the fields from existingCustomer to the customer_backup model
                                 id_original: backupData.id,
@@ -183,8 +185,8 @@ const consumeMessages = async () => {
                         continue;
                     }else{
 
-                        console.log('update customer', COMPANY[index]);
-                        await prismaClient[COMPANY[index]].customer.updateMany({
+                        console.log('update customer', COMPANY[company]);
+                        await prismaClient[COMPANY[company]].customer.updateMany({
                             data: newData,
                             where: {
                                 [keyName]: keyValue
@@ -290,7 +292,7 @@ const consumeMessages = async () => {
                     }
                     // console.log('company_index', company_indexes);
                     for (const index of company_indexes) {
-                        await prismaClient[COMPANY[index]].customer.updateMany({
+                        await prismaClient[COMPANY[company]].customer.updateMany({
                             data: newData,
                             where: {
                                 [keyName]: keyValue
@@ -361,8 +363,8 @@ const consumeMessages = async () => {
 
                     for (const index of company_indexes) {
 
-                        console.log('cek existing customers', company_indexes, COMPANY[index]);
-                        const existingCustomer = await prismaClient[COMPANY[index]].customer.findMany({
+                        console.log('cek existing customers', company_indexes, COMPANY[company]);
+                        const existingCustomer = await prismaClient[COMPANY[company]].customer.findMany({
                             where: {
                                 [keyName]: keyValue
                             }
@@ -375,7 +377,7 @@ const consumeMessages = async () => {
                             
                             console.log('existingCustomer exist do backup', existingCustomer);
                             const backupData = existingCustomer[0];
-                            await prismaClient[COMPANY[index]].customer_backup.create({
+                            await prismaClient[COMPANY[company]].customer_backup.create({
                                 data: {
                                     // Map the fields from existingCustomer to the customer_backup model
                                     id_original: backupData.id,
