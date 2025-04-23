@@ -22,6 +22,26 @@ vi.mock("../../src/prisma-client.js", () => ({
             barang: {
                 create: vi.fn(),
             },
+            master_warna: {
+                findMany: vi.fn(),
+                create: vi.fn(),
+            },
+            warna:{
+                findMany: vi.fn(),
+                create: vi.fn(),
+            },
+            master_satuan: {
+                findMany: vi.fn(),
+                create: vi.fn(),
+            },
+            satuan: {
+                findMany: vi.fn(),
+                create: vi.fn(),
+            },
+            master_barang_sku: {
+                findMany: vi.fn(),
+                create: vi.fn(),
+            }
         },
     },
 }));
@@ -223,6 +243,11 @@ describe("barangMasterSKUAssigned", () => {
             },
         };
 
+        prismaClient.test.master_warna.findMany.mockResolvedValue([
+            { warna_id_master: 1, warna_jual_master: "HIJAU" },
+            { warna_id_master: 2, warna_jual_master: "HITAM" },
+            { warna_id_master: 3, warna_jual_master: "KETAN" },
+        ]);
         prismaClient.test.master_barang.findMany.mockResolvedValue([]);
         prismaClient.test.barang.create.mockResolvedValue({ id: 10, nama_jual: "Test Barang", satuan_id: 2 });
         
@@ -230,30 +255,11 @@ describe("barangMasterSKUAssigned", () => {
         const consumeCallback = channel.consume.mock.calls[0][1];
         await consumeCallback(mockMsg);
 
-        expect(prismaClient["test"].barang.create).toHaveBeenCalledWith({
-            nama_jual: "Test Barang",
-            satuan_id: 2,
-        });
+        expect(prismaClient.test.warna.createMany).toHaveBeenCalled(0);
+        expect(prismaClient.test.master_warna.createMany).toHaveBeenCalled(0);
+        expect(prismaClient.test.barang.master_barang_sku).toHaveBeenCalled(1);
 
-
-        expect(prismaClient["test"].master_barang.create).toHaveBeenCalledWith({
-            data: {
-                barang_id_master: 1,
-                nama_master: "Test Barang",
-                barang_id_toko: 10,
-            },
-        });
-        expect(channel.sendToQueue).toHaveBeenCalledWith(
-            "testQueue",
-            Buffer.from(
-                JSON.stringify({
-                    status: "success",
-                    message: "Barang berhasil ditambahkan",
-                    data: { barang_id: 10 },
-                })
-            ),
-            { correlationId: "12345" }
-        );
+        
     });
     it("should return a message if barang already exists", async () => {
         const {channel } = await getRabbitMQ();

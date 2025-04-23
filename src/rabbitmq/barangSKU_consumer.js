@@ -177,7 +177,7 @@ export const barangMasterSKUAssigned = async () =>{
 
                     const newWarnaId = await prismaClient[company].warna.findMany({
                         where: {
-                            nama: {
+                            warna_jual: {
                                 in: newWarna.map((item) => item.nama_master)
                             }
                         }
