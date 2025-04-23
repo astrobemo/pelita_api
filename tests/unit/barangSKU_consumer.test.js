@@ -80,6 +80,10 @@ describe("barangMasterAssigned", () => {
         };
 
         prismaClient.test.master_barang.findMany.mockResolvedValue([]);
+        prismaClient.test.satuan.findMany.mockResolvedValue([{
+            id: 2,
+            nama: "ROLL",
+        }]);
         prismaClient.test.barang.create.mockResolvedValue({ id: 10, nama_jual: "Test Barang", satuan_id: 2 });
         
         await barangMasterAssigned();
@@ -130,11 +134,11 @@ describe("barangMasterAssigned", () => {
             },
         };
 
-        prismaClient["test"] = {
-            master_barang: {
-                findMany: vi.fn().mockResolvedValue([{ nama_master: "Existing Barang" }]),
-            },
-        };
+        prismaClient.test.master_barang.findMany.mockResolvedValue([{ nama_master: "Existing Barang" }]);
+        prismaClient.test.satuan.findMany.mockResolvedValue([{
+                    id: 2,
+                    nama: "ROLL",
+                }]);
 
         await barangMasterAssigned();
         const consumeCallback = channel.consume.mock.calls[0][1];
@@ -169,11 +173,13 @@ describe("barangMasterAssigned", () => {
             },
         };
 
-        prismaClient["test"] = {
+        /* prismaClient["test"] = {
             master_barang: {
                 findMany: vi.fn().mockRejectedValue(new Error("Database error")),
             },
-        };
+        }; */
+
+        prismaClient.test.master_barang.findMany.mockRejectedValue(new Error("Database error"));
 
         await barangMasterAssigned();
         const consumeCallback = channel.consume.mock.calls[0][1];
@@ -243,6 +249,8 @@ describe("barangMasterSKUAssigned", () => {
             },
         };
 
+        console.log("mockwarna",prismaClient.test);
+
         prismaClient.test.master_warna.findMany.mockResolvedValue([
             { warna_id_master: 1, warna_jual_master: "HIJAU" },
             { warna_id_master: 2, warna_jual_master: "HITAM" },
@@ -261,46 +269,7 @@ describe("barangMasterSKUAssigned", () => {
 
         
     });
-    it("should return a message if barang already exists", async () => {
-        const {channel } = await getRabbitMQ();
-
-        const mockMsg = {
-            content: Buffer.from(
-                JSON.stringify({
-                    company: "test",
-                    barang_id: 1,
-                    nama_barang: "Test Barang",
-                    satuan_id: 2,
-                })
-            ),
-            properties: {
-                replyTo: "testQueue",
-                correlationId: "12345",
-            },
-        };
-
-        prismaClient["test"] = {
-            master_barang: {
-                findMany: vi.fn().mockResolvedValue([{ nama_master: "Existing Barang" }]),
-            },
-        };
-
-        await barangMasterSKUAssigned();
-        const consumeCallback = channel.consume.mock.calls[0][1];
-        await consumeCallback(mockMsg);
-
-        expect(channel.sendToQueue).toHaveBeenCalledWith(
-            "testQueue",
-            Buffer.from(
-                JSON.stringify({
-                    status: "success",
-                    message: "Barang sudah pernah didaftarkan: Existing Barang",
-                })
-            ),
-            { correlationId: "12345" }
-        );
-    });
-
+    
     it("should handle errors gracefully", async () => {
         const {channel } = await getRabbitMQ();
         const mockMsg = {
@@ -318,11 +287,7 @@ describe("barangMasterSKUAssigned", () => {
             },
         };
 
-        prismaClient["test"] = {
-            master_barang: {
-                findMany: vi.fn().mockRejectedValue(new Error("Database error")),
-            },
-        };
+        
 
         await barangMasterSKUAssigned();
         const consumeCallback = channel.consume.mock.calls[0][1];

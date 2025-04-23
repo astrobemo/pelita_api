@@ -115,6 +115,8 @@ export const barangMasterAssigned = async () =>{
 }
 
 export const barangMasterSKUAssigned = async () =>{
+    const { connection, channel } = await getRabbitMQ();
+
     if(!connection){
         throw new Error("RabbitMQ connection is not established");
     }
