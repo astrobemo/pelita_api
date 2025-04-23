@@ -135,6 +135,7 @@ export const barangMasterSKUAssigned = async () =>{
             try {
                 const company = mData.company;
                 const barangId = mData.barang_id;
+                const satuanId = mData.satuan_id;
                 const skuList = mData.data;
 
                 const barangList = skuList.map(async (sku) => {
@@ -142,7 +143,8 @@ export const barangMasterSKUAssigned = async () =>{
                         barang_sku_id: sku.id,
                         nama_barang: sku.nama_barang,
                         barang_id_master: sku.barang_id,
-                        warna_id_master: sku.warna_id
+                        warna_id_master: sku.warna_id,
+                        satuan_id_master: sku.satuan_id
                     }
                 });
 
