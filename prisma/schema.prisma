@@ -171,6 +171,15 @@ model satuan{
   @@map("nd_satuan")
 }
 
+model warna{
+  id    Int @id @default(autoincrement())
+  warna_beli  String
+  warna_jual  String
+  status_aktif  Boolean
+
+  @@map("nd_warna")
+}
+
 model toko{
   id    Int @id @default(autoincrement())
   nama  String
@@ -212,13 +221,13 @@ model master_satuan{
 
 model master_barang_sku{
   id Int @id @default(autoincrement())
-  barang_sku_id Int
+  barang_sku_id String
   nama_barang String
   barang_id_master Int
   warna_id_master Int
   satuan_id_master Int
   warna_id_toko Int
 
-  @@map("nd_master_toko_sku")
+  @@map("nd_master_barang_sku")
 }
 

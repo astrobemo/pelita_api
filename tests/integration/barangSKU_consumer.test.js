@@ -37,10 +37,10 @@ describe('barangSKU_consumer Integration Tests', () => {
         it('should create new barang and satuan when they do not exist', async () => {
             const testData = {
                 company: company,
-                barang_id: '123',
+                barang_id: 123,
                 nama_barang: 'Test Barang',
                 nama_satuan: 'PCS',
-                satuan_id: '1'
+                satuan_id: 1
             };
 
             mockMessage = {
@@ -66,16 +66,16 @@ describe('barangSKU_consumer Integration Tests', () => {
             // Verify the database state
             const createdBarang = await prismaClient[company].barang.findFirst({
                 where: {
-                    nama_jual: 'Test Barang'
+                    nama_jual: 'Test Barang',
                 }
             });
 
-            expect(createdMasterBarang).toBeTruthy();
+            expect(createdBarang).toBeTruthy();
 
 
             const createdMasterBarang = await prismaClient[company].master_barang.findFirst({
                 where: {
-                    barang_id_master: '123'
+                    barang_id_master: 123
                 }
             });
 
@@ -112,12 +112,13 @@ describe('barangSKU_consumer Integration Tests', () => {
             const existingBarang = await prismaClient[company].barang.create({
                 data: {
                     nama_jual: 'Existing Barang',
+                    satuan_id: 1
                 }
             });
 
             await prismaClient[company].master_barang.create({
                 data: {
-                    barang_id_master: '123',
+                    barang_id_master: 123,
                     nama_master: 'Existing Barang',
                     barang_id_toko: existingBarang.id
                 }
@@ -125,10 +126,10 @@ describe('barangSKU_consumer Integration Tests', () => {
 
             const testData = {
                 company: company,
-                barang_id: '123',
+                barang_id: 123,
                 nama_barang: 'Test Barang',
                 nama_satuan: 'PCS',
-                satuan_id: '1'
+                satuan_id: 1
             };
 
             mockMessage = {
@@ -163,15 +164,16 @@ describe('barangSKU_consumer Integration Tests', () => {
         it('should create new SKU entries and warna', async () => {
             const testData = {
                 company: company,
-                barang_id: '123',
-                satuan_id: '1',
+                barang_id: 123,
+                satuan_id: 1,
                 data: [{
                     id: 'SKU1',
-                    nama_barang: 'Test Barang SKU',
-                    barang_id: '123',
-                    warna_id: 'W1',
+                    nama_barang: 'Test Barang Red Roll',
+                    nama_jual: 'Test Barang Red',
+                    barang_id: 123,
+                    warna_id: 5,
                     warna_jual_master: 'Red',
-                    satuan_id: '1'
+                    satuan_id: 1
                 }]
             };
 

@@ -30,7 +30,15 @@ export const barangMasterAssigned = async () =>{
                 const satuanIdMaster = mContent.satuan_id;
                 let satuanId = '';
 
-                const existingBarang = await prismaClient[company].master_barang.findMany({
+                const existingBarang = await prismaClient[company].barang.findMany({
+                    where: {
+                        nama_jual: namaBarang
+                    }
+                });
+
+                console.log(existingBarang, 'existingBarang');
+
+                const existingMasterBarang = await prismaClient[company].master_barang.findMany({
                     where: {
                         barang_id_master: barangId
                     }
@@ -45,7 +53,8 @@ export const barangMasterAssigned = async () =>{
                 if(existingSatuan.length === 0){
                     const newSatuan = await prismaClient[company].satuan.create({
                         data: {
-                            nama: namaSatuan
+                            nama: namaSatuan,
+                            status_aktif: true
                         }
                     });
                     satuanId = newSatuan.id;
@@ -62,14 +71,17 @@ export const barangMasterAssigned = async () =>{
                 }
     
                 // by SOP klo barang ga ada artinya harus dipastikan barang baru
-                if(existingBarang.length === 0){
+                if(existingMasterBarang.length === 0){
 
                     const newBarang = await prismaClient[company].barang.create({
-                        nama_jual: namaBarang,
-                        satuan_id: satuanId
+                        data: {
+                            nama_jual: namaBarang,
+                            satuan_id: satuanId
+                        }
                     });
 
                     const insertedId = newBarang.id;
+                    console.log(newBarang, 'newBarang');
                     
                     await prismaClient[company].master_barang.create({
                         data: {
@@ -89,7 +101,7 @@ export const barangMasterAssigned = async () =>{
 
                 }else{
                     
-                    const existingBarangNama = existingBarang[0].nama_master;
+                    const existingBarangNama = existingMasterBarang[0].nama_master;
                     console.log("Barang sudah ada");
                     response = {
                         status: "success",
@@ -113,7 +125,7 @@ export const barangMasterAssigned = async () =>{
     });
 }
 
-/* export const barangMasterSKUAssigned = async () =>{
+export const barangMasterSKUAssigned = async () =>{
     const { connection, channel } = await getRabbitMQ();
 
     if(!connection){
@@ -166,11 +178,11 @@ export const barangMasterAssigned = async () =>{
                 const newWarna = warnaIdMaster.filter((item) => !listedWarna.includes(item));
 
                 if(newWarna.length > 0){
-                    const newWarna = newWarna.map((item) => {
+                    /* const newWarna = newWarna.map((item) => {
                         return {
                             nama_master: namaWarnaMaster[warnaIdMaster.indexOf(item)]
                         }
-                    });
+                    }); */
 
                     await prismaClient[company].warna.createMany({
                         data: newWarna
@@ -223,4 +235,4 @@ export const barangMasterAssigned = async () =>{
             });
         }
     });
-} */
+}
