@@ -226,7 +226,6 @@ model master_barang_sku{
   barang_id_master Int
   warna_id_master Int
   satuan_id_master Int
-  warna_id_toko Int
 
   @@map("nd_master_barang_sku")
 }
