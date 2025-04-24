@@ -197,8 +197,10 @@ describe('barangSKU_consumer Integration Tests', () => {
                 }
             });
 
+            console.log(createdSKU, 'createdSKU');
+
             expect(createdSKU).toBeTruthy();
-            expect(createdSKU.barang_id_master).toBe('123');
+            expect(createdSKU.barang_id_master).toBe(123);
 
             // Verify response
             expect(mockChannel.sendToQueue).toHaveBeenCalledWith(

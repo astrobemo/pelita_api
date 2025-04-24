@@ -132,7 +132,7 @@ export const barangMasterSKUAssigned = async () =>{
         throw new Error("RabbitMQ connection is not established");
     }
 
-    channel.consume("add_barang_sku_master_toko", async (msg) => {
+    await channel.consume("add_barang_sku_master_toko", async (msg) => {
     
         if (msg !== null) {
             const mContent = msg.content.toString();
@@ -166,6 +166,10 @@ export const barangMasterSKUAssigned = async () =>{
                     }
                 });
 
+                console.log(skuList, 'skuList');
+                console.log(barangList, 'barangList');
+
+
                 const queryCheckWarna = await prismaClient[company].master_warna.findMany({
                     where: {
                         warna_id_master: {
@@ -176,22 +180,27 @@ export const barangMasterSKUAssigned = async () =>{
 
                 const listedWarna = queryCheckWarna.map((item) => item.warna_id_master);
                 const newWarna = warnaIdMaster.filter((item) => !listedWarna.includes(item));
+                const insertedWarna = [];
 
                 if(newWarna.length > 0){
-                    /* const newWarna = newWarna.map((item) => {
+                    const newDataWarna = newWarna.map((item) => {
+                        const namaWarna = namaWarnaMaster[warnaIdMaster.indexOf(item)];
+                        insertedWarna.push(namaWarna);
                         return {
-                            nama_master: namaWarnaMaster[warnaIdMaster.indexOf(item)]
+                            warna_jual: namaWarna,
+                            warna_beli: namaWarna,
+                            status_aktif: true,
                         }
-                    }); */
+                    });
 
                     await prismaClient[company].warna.createMany({
-                        data: newWarna
+                        data: newDataWarna
                     });
 
                     const newWarnaId = await prismaClient[company].warna.findMany({
                         where: {
                             warna_jual: {
-                                in: newWarna.map((item) => item.nama_master)
+                                in: insertedWarna
                             }
                         }
                     });
@@ -207,8 +216,8 @@ export const barangMasterSKUAssigned = async () =>{
                     await prismaClient[company].master_warna.createMany({
                         data: newWarnaList
                     });
-
                 }
+
 
                 const newList = await prismaClient[company].master_barang_sku.createMany({
                     data: barangList
