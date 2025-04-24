@@ -16,8 +16,15 @@ const __dirname = path.dirname(__filename);
 
 
 // Your application logic starts here
+
 export const ENVIRONMENT = process.env.NODE_ENV;
-dotenv.config({ path: path.resolve(__dirname, `../.env.${ENVIRONMENT}`) });
+const envConfig = dotenv.config({ path: path.resolve(__dirname, `../.env.${ENVIRONMENT}`) });
+
+if(envConfig.error) {
+    throw new Error(`Failed to load environment variables: ${envConfig.error}`);
+}else{
+    console.log(`Loaded environment variables from .env.${ENVIRONMENT}`);
+}
 
 export const LIFETIME = process.env.TOKEN_LIFETIME;
 export const TOKENSECRET = process.env.TOKEN_SECRET;
@@ -41,8 +48,6 @@ export const MACHINE_URL = process.env.MACHINE_URL;
 export const AUTH_URL = process.env.AUTH_URL;
 export const COMPANY = process.env.COMPANY;
 
-// Export the variables to be used in other modules
-console.log(ENVIRONMENT+' environment detected');
-console.log(LIFETIME, TOKENSECRET, FRONTEND_URL, PORT_APP, PORT_GATEWAY, ENVIRONMENT, API_KEY, MACHINE_URL);
+console.log(LIFETIME, TOKENSECRET, COMPANY, PORT_APP, PORT_GATEWAY, ENVIRONMENT, API_KEY, MACHINE_URL);
 
 

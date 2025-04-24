@@ -1,6 +1,5 @@
 import { prismaClient } from "../prisma-client.js";
 import { getRabbitMQ } from "./connection.js";
-import { COMPANY } from "../../config/loadEnv.js";
 
 export const barangMasterAssigned = async () =>{
 

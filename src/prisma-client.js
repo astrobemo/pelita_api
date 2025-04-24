@@ -1,8 +1,11 @@
 import { PrismaClient } from "@prisma/client"
-import { COMPANY, ENVIRONMENT } from "./config/loadEnv.js";
+import { COMPANY, ENVIRONMENT } from "../config/loadEnv.js";
 
 const isProd = ENVIRONMENT === 'production' ? true : false;
 const logLevels = isProd ? ['error', 'warn'] : ['query', 'info', 'warn', 'error'];
+
+console.log(COMPANY, 'COMPANY');
+console.log(ENVIRONMENT, 'ENVIRONMENT'); 
 
 const prismaClient = {};
 function newClient(company) {
@@ -25,8 +28,9 @@ function newClient(company) {
 }
 
 console.log(COMPANY, 'COMPANY');
+const companyList = COMPANY.split(',');
 
-COMPANY.forEach((value) => {
+companyList.forEach((value) => {
     prismaClient[value.toLowerCase()] = newClient(value);
 });
 
