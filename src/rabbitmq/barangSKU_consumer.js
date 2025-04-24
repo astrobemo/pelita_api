@@ -114,7 +114,7 @@ export const barangMasterAssigned = async () =>{
     });
 }
 
-export const barangMasterSKUAssigned = async () =>{
+/* export const barangMasterSKUAssigned = async () =>{
     const { connection, channel } = await getRabbitMQ();
 
     if(!connection){
@@ -125,7 +125,7 @@ export const barangMasterSKUAssigned = async () =>{
     
         if (msg !== null) {
             const mContent = msg.content.toString();
-            console.log("Received message:", messageContent);
+            console.log("Received message:", mContent);
             const mData = JSON.parse(mContent);
             // validate if barang_id and warna_id is known
 
@@ -224,4 +224,4 @@ export const barangMasterSKUAssigned = async () =>{
             });
         }
     });
-}
+} */

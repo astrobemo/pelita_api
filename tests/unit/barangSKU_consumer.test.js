@@ -25,10 +25,12 @@ vi.mock("../../src/prisma-client.js", () => ({
             master_warna: {
                 findMany: vi.fn(),
                 create: vi.fn(),
+                createMany: vi.fn(),
             },
             warna:{
                 findMany: vi.fn(),
                 create: vi.fn(),
+                createMany: vi.fn(),
             },
             master_satuan: {
                 findMany: vi.fn(),
@@ -41,6 +43,7 @@ vi.mock("../../src/prisma-client.js", () => ({
             master_barang_sku: {
                 findMany: vi.fn(),
                 create: vi.fn(),
+                createMany: vi.fn(),
             }
         },
     },
@@ -249,8 +252,6 @@ describe("barangMasterSKUAssigned", () => {
             },
         };
 
-        console.log("mockwarna",prismaClient.test);
-
         prismaClient.test.master_warna.findMany.mockResolvedValue([
             { warna_id_master: 1, warna_jual_master: "HIJAU" },
             { warna_id_master: 2, warna_jual_master: "HITAM" },
@@ -263,12 +264,13 @@ describe("barangMasterSKUAssigned", () => {
         const consumeCallback = channel.consume.mock.calls[0][1];
         await consumeCallback(mockMsg);
 
-        expect(prismaClient.test.warna.createMany).toHaveBeenCalled(0);
-        expect(prismaClient.test.master_warna.createMany).toHaveBeenCalled(0);
-        expect(prismaClient.test.barang.master_barang_sku).toHaveBeenCalled(1);
+        expect(prismaClient.test.warna.createMany).not.toHaveBeenCalled();
+        expect(prismaClient.test.master_warna.createMany).not.toHaveBeenCalled();
+        expect(prismaClient.test.master_barang_sku.createMany).toHaveBeenCalled(1);
 
         
     });
+
     
     it("should handle errors gracefully", async () => {
         const {channel } = await getRabbitMQ();
