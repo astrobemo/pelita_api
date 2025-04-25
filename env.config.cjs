@@ -15,8 +15,8 @@ const configuration = {
         ENV_FILE: `.env.development`,
       },
       env_testing: {
-        NODE_ENV: "testing",
-        ENV_FILE: `.env.testing`,
+        NODE_ENV: "test",
+        ENV_FILE: `.env.test`,
       },
       env_production: {
         NODE_ENV: "production",
