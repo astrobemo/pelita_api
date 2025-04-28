@@ -1,0 +1,232 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model customer{
+  id    Int @id @default(autoincrement())
+  nama  String
+  alias String?
+  alamat    String
+  telepon1  String?
+  telepon2  String?
+  npwp      String?
+  nik  String?
+  kota String?
+  provinsi  String?
+  kode_pos  String?
+  email     String?
+  contact_person  String?
+  tempo_kredit    Int?
+  warning_kredit  Int?
+  limit_warning_type Int?
+  limit_amount  Int?
+  limit_atas    Int?
+  limit_warning_amount Int?
+  status_aktif  Boolean
+  img_link      String?
+  npwp_link     String?
+  ktp_link      String?
+  medsos_link   String?
+  tipe_company  String?
+  blok    String
+  no      String
+  rt      String
+  rw      String
+  kecamatan   String
+  kelurahan   String
+  updated_at  DateTime
+  verified_time DateTime?
+  customer_id_central Int?
+  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
+  penjualan penjualan[]
+
+  @@map("nd_customer")
+}
+
+model rekam_faktur_pajak{
+  id    Int @id @default(autoincrement())
+  tanggal_awal DateTime
+  tanggal_akhir DateTime
+  status  Int
+  locked_date  DateTime
+  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
+
+  @@map("nd_rekam_faktur_pajak")
+}
+
+model rekam_faktur_pajak_detail{
+  id    Int @id @default(autoincrement())
+  rekam_faktur_pajak_id Int
+  penjualan_id Int @unique
+  customer_id Int
+  tanggal DateTime
+  nama_customer String
+  no_npwp String?
+  no_nik String?
+  alamat_lengkap String
+  no_faktur_pajak String?
+  no_faktur_jual String
+  ppn_berlaku Int
+  rekam_faktur_pajak rekam_faktur_pajak @relation(fields: [rekam_faktur_pajak_id], references: [id])
+  customer customer @relation(fields: [customer_id], references: [id])
+  penjualan penjualan @relation(fields: [penjualan_id], references: [id])
+  
+  @@map("nd_rekam_faktur_pajak_detail")
+}
+
+model customer_backup{
+  id    Int @id @default(autoincrement())
+  id_original Int
+  nama  String
+  alias String?
+  alamat    String
+  telepon1  String?
+  telepon2  String?
+  npwp      String?
+  nik  String?
+  kota String?
+  provinsi  String?
+  kode_pos  String?
+  email     String?
+  contact_person  String?
+  tempo_kredit    Int?
+  warning_kredit  Int?
+  limit_warning_type Int?
+  limit_amount  Int?
+  limit_atas    Int?
+  limit_warning_amount Int?
+  status_aktif  Boolean
+  img_link      String?
+  npwp_link     String?
+  ktp_link      String?
+  medsos_link   String?
+  tipe_company  String?
+  blok    String
+  no      String
+  rt      String
+  rw      String
+  kecamatan   String
+  kelurahan   String
+  updated_at  DateTime?
+  verified_time DateTime?
+  customer_id_central Int?
+
+  @@map("nd_customer_backup_original")
+}
+
+model penjualan{
+  id    Int @id @default(autoincrement())
+  tanggal DateTime
+  customer_id Int
+  status_aktif  Boolean
+  ppn Int
+  customer customer @relation(fields: [customer_id], references: [id])
+  rekam_faktur_pajak_detail rekam_faktur_pajak_detail?
+  penjualan_detail penjualan_detail[]
+
+  @@map("nd_penjualan")
+}
+
+model penjualan_detail{
+  id    Int @id @default(autoincrement())
+  penjualan_id Int
+  barang_id Int
+  qty Decimal @db.Decimal(15,2) @map("subqty")
+  harga Decimal @db.Decimal(15,2) @map("harga_jual")
+  barang barang @relation(fields: [barang_id], references: [id])
+  penjualan penjualan @relation(fields: [penjualan_id], references: [id])
+
+  @@map("nd_penjualan_detail")
+}
+
+
+model barang {
+  id    Int @id @default(autoincrement())
+  nama_jual  String
+  satuan_id   Int
+  satuan satuan @relation(fields: [satuan_id], references: [id])
+  penjualan_detail penjualan_detail[]
+
+  @@map("nd_barang")
+}
+
+
+model satuan{
+  id    Int @id @default(autoincrement())
+  nama  String
+  status_aktif  Boolean
+  barang barang[]
+
+  @@map("nd_satuan")
+}
+
+model warna{
+  id    Int @id @default(autoincrement())
+  warna_beli  String
+  warna_jual  String
+  status_aktif  Boolean
+
+  @@map("nd_warna")
+}
+
+model toko{
+  id    Int @id @default(autoincrement())
+  nama  String
+  alamat    String
+  npwp      String?
+
+  @@map("nd_toko")
+}
+
+// table normalization antara master dan toko
+model master_barang{
+  
+  id Int @id @default(autoincrement())
+  barang_id_master Int
+  barang_id_toko Int
+  nama_master String
+
+  @@map("nd_master_toko_barang")
+}
+
+// table normalization antara master dan warna
+model master_warna{
+  id Int @id @default(autoincrement())
+  warna_id_master Int
+  warna_id_toko Int
+  nama_master String
+
+  @@map("nd_master_toko_warna")
+}
+
+model master_satuan{
+  id Int @id @default(autoincrement())
+  satuan_id_master Int
+  satuan_id_toko Int
+  nama_master String
+
+  @@map("nd_master_toko_satuan")
+}
+
+model master_barang_sku{
+  id Int @id @default(autoincrement())
+  barang_sku_id String
+  nama_barang String
+  barang_id_master Int
+  warna_id_master Int
+  satuan_id_master Int
+
+  @@map("nd_master_barang_sku")
+}
+

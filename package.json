@@ -6,7 +6,13 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "test:file": "set:NODE_ENV=test && vitest run"
+    "test:file": "set:NODE_ENV=test && vitest run",
+    "validate:all": "node prisma/validate-schema.js",
+    "validate:sh": "./scripts/validate-schema.sh",
+    "validate:cmd": "./scripts/validate-schema.cmd",
+    "validate:dev": "dotenv -e .env.development -- npx prisma validate",
+    "validate:test": "dotenv -e .env.test -- npx prisma validate",
+    "validate:local": "dotenv -e .env -- npx prisma validate"
   },
   "repository": {
     "type": "git",
@@ -42,6 +48,7 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "dotenv-cli": "^8.0.0",
     "prisma": "^5.19.1",
     "supertest": "^7.0.0",
     "vitest": "^3.1.1"

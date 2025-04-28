@@ -352,6 +352,50 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
     
 });
 
+//==========================penerimaan barang====================================
+
+app.get('inventory/penerimaan_barang_by_tanggal/:company_index/:tanggal', async (req, res) => {
+    
+    const tgl = req.params.tanggal;
+    const company_index = parseInt(req.params.company_index);
+    console.log('get penerimaan barang by company index', tgl, company_index);
+    
+    try {
+        const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+        const pageNumber = parseInt(page, 10);
+        const pageSize = parseInt(limit, 10);
+
+        const penerimaan_barang = await prismaClient[COMPANY[company_index]].penerimaan_barang.findMany({
+            where: {
+                tanggal: {
+                    gte: new Date(tgl)
+                }
+            },
+            skip: (pageNumber - 1) * pageSize, // Calculate skip
+            take: pageSize,
+        });
+
+        const totalCount = await prismaClient[COMPANY[company_index]].penerimaan_barang.count({
+            where: {
+                tanggal: {
+                    gte: new Date(tgl)
+                }
+            },
+        });
+        const totalPages = Math.ceil(totalCount / pageSize);
+        
+        res.json({
+            data: penerimaan_barang,                // The paginated data
+            totalCount: totalCount,     // Total number of records
+            totalPages: totalPages,     // Total number of pages
+            currentPage: pageNumber,    // Current page number
+            pageSize: pageSize          // Number of records per page
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching customers' });
+    }
+});
+
 // Middleware to parse JSON bodies
 app.use(express.json());
 

@@ -54,7 +54,7 @@ export const barangMasterAssigned = async () =>{
                     const newSatuan = await prismaClient[company].satuan.create({
                         data: {
                             nama: namaSatuan,
-                            status_aktif: true
+                            status_aktif: 1
                         }
                     });
                     satuanId = newSatuan.id;
@@ -189,7 +189,7 @@ export const barangMasterSKUAssigned = async () =>{
                         return {
                             warna_jual: namaWarna,
                             warna_beli: namaWarna,
-                            status_aktif: true,
+                            status_aktif: 1,
                         }
                     });
 
