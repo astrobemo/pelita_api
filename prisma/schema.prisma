@@ -860,6 +860,7 @@ model nd_pembayaran_type {
 
 model nd_pembelian {
   id                    Int       @id @default(autoincrement())
+  penerimaan_barang_id  Int?
   no_nota               Int
   ockh_info             String?   @db.VarChar(100)
   no_faktur             String?   @db.VarChar(50)
@@ -948,6 +949,17 @@ model nd_pembelian_qty_detail {
   jumlah_roll         Int      @db.SmallInt
 
   @@index([pembelian_detail_id], map: "pembelian_detail_id")
+}
+
+model penerimaan_barang {
+  id        Int      @id @default(autoincrement())
+  no_plat   String   @default(dbgenerated("(0)")) @db.VarChar(50)
+  jam_input String   @default(dbgenerated("(0)")) @db.VarChar(50)
+  user_id   Int      @default(0) @db.SmallInt
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @default(now()) @db.DateTime(0)
+
+  @@map("nd_penerimaan_barang")
 }
 
 model nd_pengeluaran_stok_lain {
