@@ -860,10 +860,10 @@ model nd_pembayaran_type {
 
 model nd_pembelian {
   id                    Int       @id @default(autoincrement())
-  penerimaan_barang_id  Int?
   no_nota               Int
   ockh_info             String?   @db.VarChar(100)
   no_faktur             String?   @db.VarChar(50)
+  penerimaan_barang_id  Int?
   po_pembelian_batch_id Int?
   tanggal               DateTime? @db.Date
   toko_id               Int?

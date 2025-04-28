@@ -354,7 +354,9 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
 
 //==========================penerimaan barang====================================
 
-app.get('inventory/penerimaan_barang_by_tanggal/:company_index/:tanggal', async (req, res) => {
+app.get('inventory/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
+    
+    const { startDate, endDate, page = 1, limit = 10 } = req.query;
     
     const tgl = req.params.tanggal;
     const company_index = parseInt(req.params.company_index);
@@ -365,32 +367,50 @@ app.get('inventory/penerimaan_barang_by_tanggal/:company_index/:tanggal', async 
         const pageNumber = parseInt(page, 10);
         const pageSize = parseInt(limit, 10);
 
+        if (!startDate || !endDate) {
+            return res.status(400).json({ 
+                error: 'Start date and end date are required' 
+            });
+        }
+
+        const dateValidation = (date) => {
+            return new Date(date).toString() !== 'Invalid Date';
+        };
+
+        if (!dateValidation(startDate) || !dateValidation(endDate)) {
+            return res.status(400).json({ 
+                error: 'Invalid date format. Use YYYY-MM-DD' 
+            });
+        }
+
         const penerimaan_barang = await prismaClient[COMPANY[company_index]].penerimaan_barang.findMany({
             where: {
                 tanggal: {
-                    gte: new Date(tgl)
+                    gte: new Date(startDate),
+                    lte: new Date(endDate)
                 }
             },
             skip: (pageNumber - 1) * pageSize, // Calculate skip
             take: pageSize,
+            orderBy: {
+                tanggal: 'desc'
+            }
         });
 
-        const totalCount = await prismaClient[COMPANY[company_index]].penerimaan_barang.count({
-            where: {
-                tanggal: {
-                    gte: new Date(tgl)
-                }
-            },
-        });
-        const totalPages = Math.ceil(totalCount / pageSize);
         
         res.json({
-            data: penerimaan_barang,                // The paginated data
-            totalCount: totalCount,     // Total number of records
-            totalPages: totalPages,     // Total number of pages
-            currentPage: pageNumber,    // Current page number
-            pageSize: pageSize          // Number of records per page
+            success: true,
+            data: penerimaan_barang,
+            meta: {
+                page: pageNumber,
+                limit: pageSize,
+                dateRange: {
+                    start: startDate,
+                    end: endDate
+                }
+            }
         });
+        
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
