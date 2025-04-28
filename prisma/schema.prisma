@@ -35,6 +35,7 @@ model barang {
   updated_at     DateTime @default(now()) @db.DateTime(0)
   satuan satuan @relation(fields: [satuan_id], references: [id])
   penjualan_detail penjualan_detail[]
+  pembelian_detail pembelian_detail[]
 
   @@index([nama], map: "nama")
   @@index([nama_jual], map: "nama_jual")
@@ -42,7 +43,7 @@ model barang {
   @@map("nd_barang")
 }
 
-model nd_barang_beli {
+model barang_beli {
   id           Int      @id @default(autoincrement())
   nama         String?  @db.VarChar(100)
   barang_id    Int?
@@ -50,6 +51,9 @@ model nd_barang_beli {
   status_aktif Int      @default(1) @db.TinyInt
   created_at   DateTime @default(now()) @db.DateTime(0)
   updated_at   DateTime @default(now()) @db.DateTime(0)
+
+  pembelian_detail pembelian_detail[]
+
 }
 
 model nd_barang_forecasting_data {
@@ -858,12 +862,12 @@ model nd_pembayaran_type {
   nama String? @db.VarChar(100)
 }
 
-model nd_pembelian {
+model pembelian {
   id                    Int       @id @default(autoincrement())
   no_nota               Int
   ockh_info             String?   @db.VarChar(100)
   no_faktur             String?   @db.VarChar(50)
-  penerimaan_barang_id  Int?
+  penerimaan_barang_id  Int
   po_pembelian_batch_id Int?
   tanggal               DateTime? @db.Date
   toko_id               Int?
@@ -879,14 +883,18 @@ model nd_pembelian {
   cancelled_by          Int?
   cancelled_date        DateTime? @db.DateTime(0)
   updated_at            DateTime  @default(now()) @db.DateTime(0)
+  
+  penerimaan_barang penerimaan_barang @relation(fields: [penerimaan_barang_id], references: [id])
+  pembelian_detail pembelian_detail[]
 
   @@index([created_at], map: "created_at")
   @@index([po_pembelian_batch_id], map: "po_pembelian_batch_id")
   @@index([supplier_id], map: "supplier_id")
   @@index([tanggal], map: "tanggal")
+  @@map("nd_pembelian")
 }
 
-model nd_pembelian_barang_list {
+model pembelian_barang_list {
   id           Int     @id @default(autoincrement())
   pembelian_id Int?
   barang_id    Int?
@@ -896,15 +904,18 @@ model nd_pembelian_barang_list {
   harga_beli   Int?
   jumlah_roll  Float?  @db.Float
   gudang_id    String? @db.VarChar(50)
+
+  @@map("nd_pembelian_barang_list")
+
 }
 
-model nd_pembelian_detail {
+model pembelian_detail {
   id             Int      @id @default(autoincrement())
-  pembelian_id   Int?     @db.MediumInt
+  pembelian_id   Int     @db.MediumInt
   ockh           String?  @db.VarChar(100)
-  barang_beli_id Int?
-  barang_id      Int?     @db.SmallInt
-  warna_id       Int?     @db.SmallInt
+  barang_beli_id Int
+  barang_id      Int     @db.SmallInt
+  warna_id       Int     @db.SmallInt
   satuan_id      Int?     @db.TinyInt
   qty            Decimal? @db.Decimal(15, 2)
   jumlah_roll    Int?
@@ -912,9 +923,16 @@ model nd_pembelian_detail {
   gudang_id      Int?     @db.TinyInt
   updated_at     DateTime @default(now()) @db.DateTime(0)
 
+  pembelian pembelian @relation(fields:[pembelian_id], references: [id])
+  barang barang @relation(fields: [barang_id], references: [id])
+  barang_beli barang_beli @relation(fields: [barang_beli_id], references: [id])
+  warna warna @relation(fields: [warna_id], references: [id])
+
   @@index([barang_id], map: "barang_id")
   @@index([pembelian_id], map: "pembelian_id")
   @@index([warna_id], map: "warna_id")
+
+  @@map("nd_pembelian_detail")
 }
 
 model nd_pembelian_lain {
@@ -958,7 +976,9 @@ model penerimaan_barang {
   user_id   Int      @default(0) @db.SmallInt
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @default(now()) @db.DateTime(0)
+  pembelian pembelian[]
 
+  
   @@map("nd_penerimaan_barang")
 }
 
@@ -1862,6 +1882,8 @@ model warna {
   warna_jual   String? @db.VarChar(50)
   kode_warna   String? @db.VarChar(7)
   status_aktif Int     @default(1)
+
+  pembelian_detail pembelian_detail[]
 
   @@map("nd_warna")
 }

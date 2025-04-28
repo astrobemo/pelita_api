@@ -12,6 +12,8 @@ function newClient(company) {
 
     const dbUrlKey = `DATABASE_URL_${company.toUpperCase()}`;
 
+    console.log(dbUrlKey, 'dbUrlKey');
+
     if (!process.env[dbUrlKey]) {
         throw new Error(`DATABASE_URL_${company.toUpperCase()} is not defined in the environment variables`);
     }
@@ -32,6 +34,7 @@ const companyList = COMPANY.split(',');
 
 companyList.forEach((value) => {
     prismaClient[value.toLowerCase()] = newClient(value);
+    console.log('Prisma Client for', value, 'initialized');
 });
 
 
