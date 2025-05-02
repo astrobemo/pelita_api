@@ -1,4 +1,91 @@
 -- CreateTable
+CREATE TABLE `customer_email` (
+    `id` SMALLINT NOT NULL AUTO_INCREMENT,
+    `nama` VARCHAR(200) NULL,
+    `email` VARCHAR(500) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `customer_nik` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `customer_type_id` INTEGER NOT NULL DEFAULT 1,
+    `nama` VARCHAR(70) NULL,
+    `alias` VARCHAR(300) NOT NULL,
+    `alamat` VARCHAR(1000) NULL,
+    `telepon1` VARCHAR(500) NULL,
+    `telepon2` VARCHAR(50) NULL,
+    `npwp` VARCHAR(200) NULL,
+    `nik` VARCHAR(16) NULL,
+    `kota` VARCHAR(200) NULL,
+    `provinsi` VARCHAR(100) NULL,
+    `kode_pos` VARCHAR(20) NULL,
+    `email` VARCHAR(200) NULL,
+    `tempo_kredit` INTEGER NULL,
+    `warning_kredit` INTEGER NULL DEFAULT 0,
+    `limit_warning_type` TINYINT NULL,
+    `limit_amount` INTEGER NULL,
+    `limit_warning_amount` INTEGER NULL,
+    `status_aktif` INTEGER NOT NULL DEFAULT 1,
+    `img_link` VARCHAR(500) NULL,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `tipe_company` VARCHAR(3) NULL,
+    `blok` VARCHAR(100) NOT NULL DEFAULT '-',
+    `no` VARCHAR(100) NULL DEFAULT '-',
+    `rt` VARCHAR(4) NOT NULL DEFAULT '000',
+    `rw` VARCHAR(4) NOT NULL DEFAULT '000',
+    `kecamatan` VARCHAR(100) NOT NULL DEFAULT '-',
+    `kelurahan` VARCHAR(100) NOT NULL DEFAULT '-',
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `customer_npwp` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `customer_type_id` INTEGER NOT NULL DEFAULT 1,
+    `nama` VARCHAR(70) NULL,
+    `alias` VARCHAR(300) NOT NULL,
+    `alamat` VARCHAR(1000) NULL,
+    `telepon1` VARCHAR(500) NULL,
+    `telepon2` VARCHAR(50) NULL,
+    `npwp` VARCHAR(200) NULL,
+    `nik` VARCHAR(16) NULL,
+    `kota` VARCHAR(200) NULL,
+    `provinsi` VARCHAR(100) NULL,
+    `kode_pos` VARCHAR(20) NULL,
+    `email` VARCHAR(200) NULL,
+    `tempo_kredit` INTEGER NULL,
+    `warning_kredit` INTEGER NULL DEFAULT 0,
+    `limit_warning_type` TINYINT NULL,
+    `limit_amount` INTEGER NULL,
+    `limit_warning_amount` INTEGER NULL,
+    `status_aktif` INTEGER NOT NULL DEFAULT 1,
+    `img_link` VARCHAR(500) NULL,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `tipe_company` VARCHAR(3) NULL,
+    `blok` VARCHAR(100) NOT NULL DEFAULT '-',
+    `no` VARCHAR(100) NULL DEFAULT '-',
+    `rt` VARCHAR(4) NOT NULL DEFAULT '000',
+    `rw` VARCHAR(4) NOT NULL DEFAULT '000',
+    `kecamatan` VARCHAR(100) NOT NULL DEFAULT '-',
+    `kelurahan` VARCHAR(100) NOT NULL DEFAULT '-',
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `mutasi_temp` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `barang_id` INTEGER NULL,
+    `warna_id` INTEGER NULL,
+    `harga` DECIMAL(12, 2) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `nd_bank_list` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nama_bank` VARCHAR(100) NULL,
@@ -8,7 +95,7 @@ CREATE TABLE `nd_bank_list` (
     `status_default` BOOLEAN NULL,
     `status_aktif` BOOLEAN NULL DEFAULT true,
     `user_id` SMALLINT NOT NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -27,7 +114,7 @@ CREATE TABLE `nd_barang` (
     `status_aktif` INTEGER NULL DEFAULT 1,
     `tipe_qty` BOOLEAN NULL DEFAULT true,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `nama`(`nama`),
     INDEX `nama_jual`(`nama_jual`),
@@ -42,7 +129,7 @@ CREATE TABLE `nd_barang_beli` (
     `user_id` SMALLINT NULL,
     `status_aktif` TINYINT NOT NULL DEFAULT 1,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -82,7 +169,7 @@ CREATE TABLE `nd_barang_group` (
     `barang_id_induk` SMALLINT NULL,
     `user_id` SMALLINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `status_aktif` BOOLEAN NOT NULL DEFAULT true,
 
     PRIMARY KEY (`id`)
@@ -96,7 +183,7 @@ CREATE TABLE `nd_barang_harga_history` (
     `harga_beli` DECIMAL(15, 2) NULL,
     `harga_jual` DECIMAL(15, 2) NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `user_id` SMALLINT NULL,
 
     PRIMARY KEY (`id`)
@@ -173,7 +260,7 @@ CREATE TABLE `nd_customer` (
     `npwp_link` VARCHAR(500) NULL,
     `ktp_link` VARCHAR(500) NULL,
     `medsos_link` VARCHAR(2000) NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `tipe_company` VARCHAR(3) NULL,
     `blok` VARCHAR(100) NOT NULL DEFAULT '''-''',
     `no` VARCHAR(100) NULL DEFAULT '''-''',
@@ -197,7 +284,7 @@ CREATE TABLE `nd_customer_alamat_kirim` (
     `catatan` VARCHAR(100) NULL,
     `user_id` TINYINT UNSIGNED NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `status_aktif` TINYINT NOT NULL DEFAULT 1,
 
     PRIMARY KEY (`id`)
@@ -230,7 +317,7 @@ CREATE TABLE `nd_customer_backup` (
     `npwp_link` VARCHAR(500) NULL,
     `ktp_link` VARCHAR(500) NULL,
     `medsos_link` VARCHAR(2000) NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `tipe_company` VARCHAR(3) NULL,
     `blok` VARCHAR(100) NOT NULL DEFAULT '-',
     `no` VARCHAR(100) NULL DEFAULT '-',
@@ -245,6 +332,51 @@ CREATE TABLE `nd_customer_backup` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `nd_customer_backup_original` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_original` INTEGER NOT NULL,
+    `customer_type_id` BOOLEAN NOT NULL DEFAULT true,
+    `nama` VARCHAR(70) NULL,
+    `alias` VARCHAR(300) NULL,
+    `alamat` VARCHAR(1000) NULL,
+    `telepon1` VARCHAR(500) NULL,
+    `telepon2` VARCHAR(50) NULL,
+    `npwp` VARCHAR(200) NULL,
+    `nik` VARCHAR(16) NULL,
+    `kota` VARCHAR(200) NULL,
+    `provinsi` VARCHAR(100) NULL,
+    `kode_pos` VARCHAR(20) NULL,
+    `email` VARCHAR(200) NULL,
+    `contact_person` VARCHAR(500) NOT NULL,
+    `tempo_kredit` TINYINT NULL,
+    `warning_kredit` TINYINT NULL,
+    `limit_warning_type` TINYINT NULL,
+    `limit_amount` INTEGER NULL,
+    `limit_atas` INTEGER NULL,
+    `limit_warning_amount` INTEGER NULL,
+    `status_aktif` BOOLEAN NOT NULL DEFAULT true,
+    `img_link` VARCHAR(500) NULL,
+    `npwp_link` VARCHAR(500) NULL,
+    `ktp_link` VARCHAR(500) NULL,
+    `medsos_link` VARCHAR(2000) NULL,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `tipe_company` VARCHAR(3) NULL,
+    `blok` VARCHAR(100) NOT NULL DEFAULT '-',
+    `no` VARCHAR(100) NULL DEFAULT '-',
+    `rt` VARCHAR(4) NOT NULL DEFAULT '000',
+    `rw` VARCHAR(4) NOT NULL DEFAULT '000',
+    `kecamatan` VARCHAR(100) NOT NULL DEFAULT '-',
+    `kelurahan` VARCHAR(100) NOT NULL DEFAULT '-',
+    `locked_status` BOOLEAN NOT NULL DEFAULT true,
+    `user_id` TINYINT NOT NULL DEFAULT 0,
+    `created_register` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `verified_time` DATETIME(0) NULL,
+    `customer_id_central` VARCHAR(50) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `nd_customer_harga` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `customer_id` INTEGER NULL,
@@ -252,7 +384,7 @@ CREATE TABLE `nd_customer_harga` (
     `group_harga_barang_id` INTEGER NULL,
     `user_id` SMALLINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -267,7 +399,7 @@ CREATE TABLE `nd_customer_harga_detail` (
     `selisih_harga` DECIMAL(15, 2) NULL,
     `harga_total` DECIMAL(15, 2) NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -294,8 +426,21 @@ CREATE TABLE `nd_customer_harga_history_detail` (
     `harga_after` DECIMAL(15, 2) NULL,
     `user_id` INTEGER NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `nd_customer_source` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `customer_id` INTEGER NOT NULL,
+    `source_type` VARCHAR(100) NULL,
+    `source_detail` VARCHAR(100) NULL,
+    `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+
+    UNIQUE INDEX `nd_customer_source_customer_id_key`(`customer_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -461,7 +606,7 @@ CREATE TABLE `nd_group_harga_barang` (
     `isDefault` BOOLEAN NULL DEFAULT false,
     `user_id` INTEGER NULL,
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -474,7 +619,7 @@ CREATE TABLE `nd_group_harga_baru` (
     `harga_cash` DECIMAL(10, 2) NULL,
     `harga_kredit` DECIMAL(10, 2) NULL,
     `harga_baru` DECIMAL(15, 2) NULL,
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -488,7 +633,7 @@ CREATE TABLE `nd_group_harga_baru_info` (
     `launch_by` SMALLINT NULL,
     `launch_date` DATETIME(0) NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -501,7 +646,7 @@ CREATE TABLE `nd_group_harga_berlaku` (
     `harga_cash` DECIMAL(10, 2) NULL,
     `harga_kredit` DECIMAL(10, 2) NULL,
     `harga_berlaku` DECIMAL(15, 2) NULL,
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
@@ -517,7 +662,7 @@ CREATE TABLE `nd_group_harga_history` (
     `harga_kredit` DECIMAL(10, 2) NULL,
     `harga_history` DECIMAL(15, 2) NULL,
     `tanggal_archive` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -597,7 +742,7 @@ CREATE TABLE `nd_master_barang_sku` (
     `warna_id_master` INTEGER NOT NULL DEFAULT 0,
     `satuan_id_master` INTEGER NOT NULL DEFAULT 0,
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -609,7 +754,7 @@ CREATE TABLE `nd_master_toko_barang` (
     `barang_id_master` INTEGER NULL,
     `nama_master` VARCHAR(100) NULL,
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     UNIQUE INDEX `barang_id_toko_master`(`barang_id_toko`, `barang_id_master`),
     PRIMARY KEY (`id`)
@@ -622,7 +767,7 @@ CREATE TABLE `nd_master_toko_satuan` (
     `satuan_id_master` INTEGER NOT NULL DEFAULT 0,
     `nama_master` VARCHAR(50) NOT NULL DEFAULT '''''',
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     UNIQUE INDEX `satuan_id`(`satuan_id_toko`, `satuan_id_master`),
     PRIMARY KEY (`id`)
@@ -696,7 +841,7 @@ CREATE TABLE `nd_mutasi_barang` (
     `nama_kru` VARCHAR(100) NULL,
     `status_aktif` BOOLEAN NOT NULL DEFAULT true,
     `user_id` TINYINT NOT NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `barang_id`(`barang_id`),
@@ -713,7 +858,7 @@ CREATE TABLE `nd_mutasi_barang_qty` (
     `mutasi_barang_id` MEDIUMINT NULL,
     `qty` DECIMAL(15, 2) NULL,
     `jumlah_roll` SMALLINT NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `mutasi_barang_id`(`mutasi_barang_id`),
     PRIMARY KEY (`id`)
@@ -729,7 +874,7 @@ CREATE TABLE `nd_mutasi_persediaan_barang_tahunan` (
     `qty` DECIMAL(15, 2) NULL,
     `jumlah_roll` SMALLINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `user_id` TINYINT NULL,
 
     PRIMARY KEY (`id`)
@@ -742,7 +887,7 @@ CREATE TABLE `nd_mutasi_persediaan_barang_tahunan_detail` (
     `qty` DECIMAL(15, 2) NULL,
     `jumlah_roll` SMALLINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `user_id` TINYINT NULL,
 
     PRIMARY KEY (`id`)
@@ -756,7 +901,7 @@ CREATE TABLE `nd_no_faktur_pajak` (
     `no_fp_awal` VARCHAR(20) NULL,
     `no_fp_akhir` VARCHAR(20) NULL,
     `user_id` SMALLINT NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
@@ -815,7 +960,7 @@ CREATE TABLE `nd_number_tracker` (
     `number` INTEGER NULL,
     `tanggal` DATE NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -829,7 +974,7 @@ CREATE TABLE `nd_ockh_non_po` (
     `harga` MEDIUMINT NULL,
     `barang_id` INTEGER NOT NULL,
     `user_id` SMALLINT NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
@@ -842,7 +987,7 @@ CREATE TABLE `nd_ockh_non_po_warna` (
     `warna_id` SMALLINT NOT NULL,
     `qty` MEDIUMINT NOT NULL,
     `user_id` SMALLINT NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
@@ -926,7 +1071,9 @@ CREATE TABLE `nd_pembayaran_penjualan` (
     `dp_masuk_id` INTEGER NULL,
     `amount` INTEGER NOT NULL,
     `keterangan` VARCHAR(150) NULL,
-    `user_id` SMALLINT NULL,
+    `user_id` INTEGER NULL,
+    `created` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `updated` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `pembayaran_type_id`(`pembayaran_type_id`),
     INDEX `penjualan_id`(`penjualan_id`),
@@ -1056,13 +1203,15 @@ CREATE TABLE `nd_pembelian` (
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `cancelled_by` INTEGER NULL,
     `cancelled_date` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `created_at`(`created_at`),
-    INDEX `penerimaan_barang`(`penerimaan_barang_id`),
+    INDEX `gudang_id`(`gudang_id`),
     INDEX `po_pembelian_batch_id`(`po_pembelian_batch_id`),
+    INDEX `status_aktif`(`status_aktif`),
     INDEX `supplier_id`(`supplier_id`),
     INDEX `tanggal`(`tanggal`),
+    INDEX `penerimaan_barang`(`penerimaan_barang_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -1094,7 +1243,7 @@ CREATE TABLE `nd_pembelian_detail` (
     `jumlah_roll` INTEGER NULL,
     `harga_beli` DECIMAL(10, 2) NULL,
     `gudang_id` INTEGER NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `barang_id`(`barang_id`),
     INDEX `pembelian_id`(`pembelian_id`),
@@ -1128,7 +1277,7 @@ CREATE TABLE `nd_pembelian_lain_detail` (
     `keterangan_barang` VARCHAR(500) NULL,
     `qty` SMALLINT NULL,
     `harga_beli` INTEGER NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1151,7 +1300,7 @@ CREATE TABLE `nd_penerimaan_barang` (
     `jam_input` VARCHAR(50) NOT NULL DEFAULT '''''',
     `user_id` SMALLINT NOT NULL DEFAULT 0,
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1170,6 +1319,9 @@ CREATE TABLE `nd_pengeluaran_stok_lain` (
     `closed_by` SMALLINT NULL,
     `closed_date` DATETIME(0) NULL,
 
+    INDEX `created_at`(`created_at`),
+    INDEX `status_aktif`(`status_aktif`),
+    INDEX `user_id`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -1185,6 +1337,9 @@ CREATE TABLE `nd_pengeluaran_stok_lain_detail` (
     `created` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
+    INDEX `barang_id`(`barang_id`),
+    INDEX `gudang_id`(`gudang_id`),
+    INDEX `warna_id`(`warna_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -1232,6 +1387,8 @@ CREATE TABLE `nd_penjualan` (
     `fp_status` INTEGER NOT NULL DEFAULT 0,
     `is_custom_view` TINYINT NOT NULL DEFAULT 0,
 
+    INDEX `closed_date`(`closed_date`),
+    INDEX `created_at`(`created_at`),
     INDEX `customer_id`(`customer_id`),
     INDEX `no_faktur`(`no_faktur`),
     INDEX `penjualan_type_id`(`penjualan_type_id`),
@@ -1254,7 +1411,7 @@ CREATE TABLE `nd_penjualan_detail` (
     `subqty` DECIMAL(10, 2) NULL,
     `subjumlah_roll` SMALLINT NULL,
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `barang_id`(`barang_id`),
     INDEX `penjualan_id`(`penjualan_id`),
@@ -1325,7 +1482,7 @@ CREATE TABLE `nd_penjualan_remap_list` (
     `tanggal_tujuan` DATE NULL,
     `user_id` TINYINT NULL,
     `createdAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1353,6 +1510,7 @@ CREATE TABLE `nd_penyesuaian_stok` (
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `barang_id`(`barang_id`),
+    INDEX `created_at`(`created_at`),
     INDEX `gudang_id`(`gudang_id`),
     INDEX `tanggal`(`tanggal`),
     INDEX `tipe_transaksi`(`tipe_transaksi`),
@@ -1405,7 +1563,7 @@ CREATE TABLE `nd_planner_warna_status` (
     `status` TINYINT NULL,
     `warna_id` SMALLINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1527,7 +1685,7 @@ CREATE TABLE `nd_po_penjualan` (
     `closed_date` DATETIME(0) NULL,
     `status_aktif` TINYINT NOT NULL DEFAULT 1,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1546,7 +1704,7 @@ CREATE TABLE `nd_po_penjualan_detail` (
     `closed_by` SMALLINT NULL,
     `closed_date` DATETIME(0) NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1593,7 +1751,7 @@ CREATE TABLE `nd_ppo_lock_detail` (
     `warna_id` SMALLINT UNSIGNED NULL,
     `qty` MEDIUMINT UNSIGNED NULL,
     `user_id` TINYINT UNSIGNED NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1633,7 +1791,7 @@ CREATE TABLE `nd_ppo_to_po` (
     `po_pembelian_batch_id` SMALLINT UNSIGNED NULL,
     `user_id` SMALLINT UNSIGNED NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1674,7 +1832,7 @@ CREATE TABLE `nd_rekam_faktur_pajak` (
     `is_gunggung` TINYINT NOT NULL DEFAULT 0,
     `locked_date` DATETIME(0) NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1698,7 +1856,7 @@ CREATE TABLE `nd_rekam_faktur_pajak_detail` (
     `total_ppn` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     `no_faktur_pajak_id` INTEGER NULL,
     `keterangan` VARCHAR(200) NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `status` BOOLEAN NOT NULL DEFAULT true,
 
@@ -1715,7 +1873,7 @@ CREATE TABLE `nd_rekam_faktur_pajak_email` (
     `rekam_faktur_pajak_id` MEDIUMINT NULL,
     `customer_id` SMALLINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `email_stat` BOOLEAN NOT NULL DEFAULT false,
     `status_1` BOOLEAN NOT NULL DEFAULT false,
     `status_2` BOOLEAN NOT NULL DEFAULT false,
@@ -1751,7 +1909,7 @@ CREATE TABLE `nd_request_barang` (
     `closed_date` DATETIME(0) NULL,
     `user_id` TINYINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1767,7 +1925,7 @@ CREATE TABLE `nd_request_barang_batch` (
     `user_id` TINYINT NULL,
     `locked_by` TINYINT NULL,
     `locked_date` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `status_aktif` BOOLEAN NOT NULL DEFAULT true,
 
@@ -1787,7 +1945,7 @@ CREATE TABLE `nd_request_barang_detail` (
     `status_urgent` BOOLEAN NOT NULL DEFAULT false,
     `is_po_baru` TINYINT NOT NULL DEFAULT 1,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -1840,8 +1998,10 @@ CREATE TABLE `nd_retur_beli` (
     `closed_date` DATETIME(0) NULL,
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
+    INDEX `created_at`(`created_at`),
+    INDEX `supplier_id`(`supplier_id`),
     INDEX `tanggal`(`tanggal`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -2002,7 +2162,7 @@ CREATE TABLE `nd_stok_opname_report` (
     `closed_by` TINYINT NULL,
     `keterangan` VARCHAR(200) NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -2037,7 +2197,7 @@ CREATE TABLE `nd_surat_jalan` (
     `alamat_kirim_id` INTEGER NULL,
     `user_id` TINYINT NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `no_sj`(`no_sj`),
     INDEX `penjualan_id`(`penjualan_id`),
@@ -2174,7 +2334,7 @@ CREATE TABLE `nd_tutup_buku_stok` (
     `tanggal` DATETIME(0) NULL,
     `user_id` INTEGER NULL,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -2272,20 +2432,71 @@ CREATE TABLE `nd_warning_piutang_harian` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `nd_customer_source` (
+CREATE TABLE `switch_history` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `customer_id` INTEGER NOT NULL,
-    `source_type` VARCHAR(100) NULL,
-    `source_detail` VARCHAR(100) NULL,
-    `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `penjualan_id_asal` INTEGER NULL,
+    `penjualan_id_tujuan` INTEGER NULL,
+    `tanggal_asal` DATE NULL,
+    `no_faktur_asal` VARCHAR(50) NULL,
+    `no_faktur_fp_asal` VARCHAR(50) NULL,
+    `created_at_asal` DATETIME(0) NULL,
+    `closed_date_asal` DATETIME(0) NULL,
+    `tanggal_tujuan` DATE NULL,
+    `no_faktur_tujuan` VARCHAR(50) NULL,
+    `no_faktur_fp_tujuan` VARCHAR(50) NULL,
+    `created_at_tujuan` DATETIME(0) NULL,
+    `closed_date_tujuan` DATETIME(0) NULL,
 
-    UNIQUE INDEX `nd_customer_source_customer_id_key`(`customer_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `switch_temp_asal` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `penjualan_id_asal` INTEGER NULL,
+    `penjualan_id_tujuan` INTEGER NULL,
+    `tanggal_asal` DATE NULL,
+    `no_faktur_asal` VARCHAR(50) NULL,
+    `no_faktur_fp_asal` VARCHAR(50) NULL,
+    `created_at_asal` DATETIME(0) NULL,
+    `closed_date_asal` DATETIME(0) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `switch_temp_tujuan` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `penjualan_id_asal` INTEGER NULL,
+    `penjualan_id_tujuan` INTEGER NULL,
+    `tanggal_tujuan` DATE NULL,
+    `no_faktur_tujuan` VARCHAR(50) NULL,
+    `no_faktur_fp_tujuan` VARCHAR(50) NULL,
+    `created_at_tujuan` DATETIME(0) NULL,
+    `closed_date_tujuan` DATETIME(0) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `temp_customer_updgrade` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `customer_id` SMALLINT NOT NULL,
+    `alamat` VARCHAR(1000) NULL,
+    `npwp` VARCHAR(200) NULL,
+    `nik` VARCHAR(16) NULL,
+    `kota` VARCHAR(200) NULL,
+    `provinsi` VARCHAR(100) NULL,
+    `kode_pos` VARCHAR(20) NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
 ALTER TABLE `nd_barang` ADD CONSTRAINT `nd_barang_satuan_id_fkey` FOREIGN KEY (`satuan_id`) REFERENCES `nd_satuan`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `nd_customer_source` ADD CONSTRAINT `nd_customer_source_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `nd_customer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `nd_pembelian` ADD CONSTRAINT `nd_pembelian_penerimaan_barang_id_fkey` FOREIGN KEY (`penerimaan_barang_id`) REFERENCES `nd_penerimaan_barang`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -2320,5 +2531,3 @@ ALTER TABLE `nd_rekam_faktur_pajak_detail` ADD CONSTRAINT `nd_rekam_faktur_pajak
 -- AddForeignKey
 ALTER TABLE `nd_rekam_faktur_pajak_detail` ADD CONSTRAINT `nd_rekam_faktur_pajak_detail_rekam_faktur_pajak_id_fkey` FOREIGN KEY (`rekam_faktur_pajak_id`) REFERENCES `nd_rekam_faktur_pajak`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE `nd_customer_source` ADD CONSTRAINT `nd_customer_source_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `nd_customer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

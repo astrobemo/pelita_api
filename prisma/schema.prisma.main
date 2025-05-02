@@ -36,12 +36,12 @@ model customer_nik {
   img_link             String?  @db.VarChar(500)
   updated_at           DateTime @default(now()) @db.DateTime(0)
   tipe_company         String?  @db.VarChar(3)
-  blok                 String   @default("'-'") @db.VarChar(100)
-  no                   String?  @default("'-'") @db.VarChar(100)
-  rt                   String   @default("'000'") @db.VarChar(4)
-  rw                   String   @default("'000'") @db.VarChar(4)
-  kecamatan            String   @default("'-'") @db.VarChar(100)
-  kelurahan            String   @default("'-'") @db.VarChar(100)
+  blok                 String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?  @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
 }
 
 model customer_npwp {
@@ -67,12 +67,12 @@ model customer_npwp {
   img_link             String?  @db.VarChar(500)
   updated_at           DateTime @default(now()) @db.DateTime(0)
   tipe_company         String?  @db.VarChar(3)
-  blok                 String   @default("'-'") @db.VarChar(100)
-  no                   String?  @default("'-'") @db.VarChar(100)
-  rt                   String   @default("'000'") @db.VarChar(4)
-  rw                   String   @default("'000'") @db.VarChar(4)
-  kecamatan            String   @default("'-'") @db.VarChar(100)
-  kelurahan            String   @default("'-'") @db.VarChar(100)
+  blok                 String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?  @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
 }
 
 model mutasi_temp {
@@ -94,31 +94,26 @@ model nd_bank_list {
   updated_at     DateTime @default(now()) @db.DateTime(0)
 }
 
-model barang {
+model nd_barang {
   id             Int      @id @default(autoincrement())
-  jenis_barang   String?  @default("'POLYESTER'") @db.VarChar(100)
+  jenis_barang   String?  @default(dbgenerated("(POLYESTER)")) @db.VarChar(100)
   nama           String?  @db.VarChar(100)
   nama_jual      String?  @db.VarChar(100)
   harga_jual     Int?
   harga_beli     Decimal? @db.Decimal(10, 2)
-  satuan_id      Int
+  satuan_id      Int?
   qty_warning    Int      @default(500)
   deskripsi_info String?  @db.VarChar(500)
   status_aktif   Int?     @default(1)
   tipe_qty       Boolean? @default(true)
   created_at     DateTime @default(now()) @db.DateTime(0)
   updated_at     DateTime @default(now()) @db.DateTime(0)
-  satuan satuan @relation(fields: [satuan_id], references: [id])
-  penjualan_detail penjualan_detail[]
-  pembelian_detail pembelian_detail[]
 
   @@index([nama], map: "nama")
   @@index([nama_jual], map: "nama_jual")
-
-  @@map("nd_barang")
 }
 
-model barang_beli {
+model nd_barang_beli {
   id           Int      @id @default(autoincrement())
   nama         String?  @db.VarChar(100)
   barang_id    Int?
@@ -126,10 +121,6 @@ model barang_beli {
   status_aktif Int      @default(1) @db.TinyInt
   created_at   DateTime @default(now()) @db.DateTime(0)
   updated_at   DateTime @default(now()) @db.DateTime(0)
-  pembelian_detail pembelian_detail[]
-
-  @@map("nd_barang_beli")
-
 }
 
 model nd_barang_forecasting_data {
@@ -204,50 +195,46 @@ model nd_controller {
   name String? @db.VarChar(100)
 }
 
-model customer {
-  id                   Int       @id @default(autoincrement())
-  customer_type_id     Boolean   @default(true)
-  nama                 String?   @db.VarChar(70)
-  alias                String    @db.VarChar(300)
-  alamat               String?   @db.VarChar(1000)
-  telepon1             String?   @db.VarChar(500)
-  telepon2             String?   @db.VarChar(50)
-  npwp                 String?   @db.VarChar(200)
-  nik                  String?   @db.VarChar(16)
-  kota                 String?   @db.VarChar(200)
-  provinsi             String?   @db.VarChar(100)
-  kode_pos             String?   @db.VarChar(20)
-  email                String?   @db.VarChar(200)
-  contact_person       String    @db.VarChar(500)
-  tempo_kredit         Int?      @db.TinyInt
-  warning_kredit       Int?      @db.TinyInt
-  limit_warning_type   Int?      @db.TinyInt
+model nd_customer {
+  id                   Int                 @id @default(autoincrement())
+  customer_type_id     Boolean             @default(true)
+  nama                 String?             @db.VarChar(70)
+  alias                String              @db.VarChar(300)
+  alamat               String?             @db.VarChar(1000)
+  telepon1             String?             @db.VarChar(500)
+  telepon2             String?             @db.VarChar(50)
+  npwp                 String?             @db.VarChar(200)
+  nik                  String?             @db.VarChar(16)
+  kota                 String?             @db.VarChar(200)
+  provinsi             String?             @db.VarChar(100)
+  kode_pos             String?             @db.VarChar(20)
+  email                String?             @db.VarChar(200)
+  contact_person       String              @db.VarChar(500)
+  tempo_kredit         Int?                @db.TinyInt
+  warning_kredit       Int?                @db.TinyInt
+  limit_warning_type   Int?                @db.TinyInt
   limit_amount         Int?
   limit_atas           Int?
   limit_warning_amount Int?
-  status_aktif         Boolean   @default(true)
-  img_link             String?   @db.VarChar(500)
-  npwp_link            String?   @db.VarChar(500)
-  ktp_link             String?   @db.VarChar(500)
-  medsos_link          String?   @db.VarChar(2000)
-  updated_at           DateTime  @default(now()) @db.DateTime(0)
-  tipe_company         String?   @db.VarChar(3)
-  blok                 String    @default("'-'") @db.VarChar(100)
-  no                   String?   @default("'-'") @db.VarChar(100)
-  rt                   String    @default("000") @db.VarChar(4)
-  rw                   String    @default("000") @db.VarChar(4)
-  kecamatan            String    @default("'-'") @db.VarChar(100)
-  kelurahan            String    @default("'-'") @db.VarChar(100)
-  locked_status        Boolean   @default(true)
-  user_id              Int       @default(0) @db.TinyInt
-  verified_time        DateTime? @db.DateTime(0)
-  customer_id_central  String?   @db.VarChar(50)
-
-  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
-  penjualan penjualan[]
-  customer_source customer_source?
-
-  @@map("nd_customer")
+  status_aktif         Boolean             @default(true)
+  img_link             String?             @db.VarChar(500)
+  npwp_link            String?             @db.VarChar(500)
+  ktp_link             String?             @db.VarChar(500)
+  medsos_link          String?             @db.VarChar(2000)
+  updated_at           DateTime            @default(now()) @db.DateTime(0)
+  tipe_company         String?             @db.VarChar(3)
+  blok                 String              @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?             @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String              @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String              @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String              @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String              @default(dbgenerated("(-)")) @db.VarChar(100)
+  locked_status        Boolean             @default(true)
+  user_id              Int                 @default(0) @db.TinyInt
+  created_register     DateTime            @default(now()) @db.DateTime(0)
+  verified_time        DateTime?           @db.DateTime(0)
+  customer_id_central  String?             @db.VarChar(50)
+  nd_customer_source   nd_customer_source?
 }
 
 model nd_customer_alamat_kirim {
@@ -289,12 +276,12 @@ model nd_customer_backup {
   medsos_link          String?  @db.VarChar(2000)
   updated_at           DateTime @default(now()) @db.DateTime(0)
   tipe_company         String?  @db.VarChar(3)
-  blok                 String   @default(dbgenerated("'-'")) @db.VarChar(100)
-  no                   String?  @default(dbgenerated("'-'")) @db.VarChar(100)
-  rt                   String   @default(dbgenerated("'000'")) @db.VarChar(4)
-  rw                   String   @default(dbgenerated("'000'")) @db.VarChar(4)
-  kecamatan            String   @default(dbgenerated("'-'")) @db.VarChar(100)
-  kelurahan            String   @default(dbgenerated("'-'")) @db.VarChar(100)
+  blok                 String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?  @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
   locked_status        Boolean  @default(true)
   user_id              Int      @default(0) @db.TinyInt
 }
@@ -328,12 +315,12 @@ model nd_customer_backup_original {
   medsos_link          String?   @db.VarChar(2000)
   updated_at           DateTime  @default(now()) @db.DateTime(0)
   tipe_company         String?   @db.VarChar(3)
-  blok                 String    @default("'-'") @db.VarChar(100)
-  no                   String?   @default("'-'") @db.VarChar(100)
-  rt                   String    @default("'000'") @db.VarChar(4)
-  rw                   String    @default("'000'") @db.VarChar(4)
-  kecamatan            String    @default("'-'") @db.VarChar(100)
-  kelurahan            String    @default("'-'") @db.VarChar(100)
+  blok                 String    @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?   @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String    @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String    @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String    @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String    @default(dbgenerated("(-)")) @db.VarChar(100)
   locked_status        Boolean   @default(true)
   user_id              Int       @default(0) @db.TinyInt
   created_register     DateTime  @default(now()) @db.DateTime(0)
@@ -384,16 +371,14 @@ model nd_customer_harga_history_detail {
   updated_at   DateTime @default(now()) @db.DateTime(0)
 }
 
-model customer_source {
-  id           Int     @id @default(autoincrement())
-  customer_id  Int     @unique
-  source_type   String? @db.VarChar(100)
-  source_detail String? @db.VarChar(100)
-  created_at   DateTime @default(now()) @db.DateTime(0)
-  updated_at   DateTime @default(now()) @db.DateTime(0)
-
-  customer customer @relation(fields: [customer_id], references: [id])
-  @@map("nd_customer_source")
+model nd_customer_source {
+  id            Int         @id @default(autoincrement())
+  customer_id   Int         @unique
+  source_type   String?     @db.VarChar(100)
+  source_detail String?     @db.VarChar(100)
+  created_at    DateTime    @default(now()) @db.DateTime(0)
+  updated_at    DateTime    @default(now()) @db.DateTime(0)
+  nd_customer   nd_customer @relation(fields: [customer_id], references: [id])
 }
 
 model nd_dp_keluar {
@@ -575,14 +560,13 @@ model nd_group_harga_history {
 }
 
 model nd_gudang {
-  id              Int     @id @default(autoincrement())
-  nama            String? @db.VarChar(70)
-  lokasi          String? @db.VarChar(20)
-  status_default  Int     @default(0)
-  visible         Boolean @default(true)
-  gudang_group_id Int?    @db.SmallInt
-  urutan          Int
-  status_aktif    Int     @default(1)
+  id             Int     @id @default(autoincrement())
+  nama           String? @db.VarChar(70)
+  lokasi         String? @db.VarChar(20)
+  status_default Int     @default(0)
+  visible        Boolean @default(true)
+  urutan         Int
+  status_aktif   Int     @default(1)
 }
 
 model nd_gudang_group {
@@ -625,7 +609,7 @@ model nd_maintenance_list {
   status     Int       @default(1) @db.TinyInt
 }
 
-model master_barang_sku {
+model nd_master_barang_sku {
   id               Int      @id @default(autoincrement())
   barang_sku_id    String   @db.VarChar(100)
   nama_barang      String   @db.VarChar(100)
@@ -634,11 +618,9 @@ model master_barang_sku {
   satuan_id_master Int      @default(0)
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
-
-  @@map("nd_master_barang_sku")
 }
 
-model master_barang {
+model nd_master_toko_barang {
   id               Int      @id @default(autoincrement())
   barang_id_toko   Int?
   barang_id_master Int?
@@ -647,22 +629,20 @@ model master_barang {
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   @@unique([barang_id_toko, barang_id_master], map: "barang_id_toko_master")
-  @@map("nd_master_toko_barang")
 }
 
-model master_satuan {
+model nd_master_toko_satuan {
   id               Int      @id @default(autoincrement())
   satuan_id_toko   Int      @default(0)
   satuan_id_master Int      @default(0)
-  nama_master      String   @default("''") @db.VarChar(50)
+  nama_master      String   @default("") @db.VarChar(50)
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   @@unique([satuan_id_toko, satuan_id_master], map: "satuan_id")
-  @@map("nd_master_toko_satuan")
 }
 
-model master_warna {
+model nd_master_toko_warna {
   id              Int       @id @default(autoincrement())
   warna_id_toko   Int
   warna_id_master Int
@@ -671,7 +651,6 @@ model master_warna {
   updatedAt       DateTime? @default(now()) @db.DateTime(0)
 
   @@unique([warna_id_toko, warna_id_master], map: "warna_id_master_toko")
-  @@map("nd_master_toko_warna")
 }
 
 model nd_menu {
@@ -701,27 +680,24 @@ model nd_menu_detail {
 model nd_menu_posisi {
   id             Int     @id @default(autoincrement())
   posisi_id      Int?
-  menu_id        String? @db.Text
-  menu_detail_id String  @db.Text
+  menu_id        String? @db.VarChar(10000)
+  menu_detail_id String  @db.VarChar(10000)
 }
 
 model nd_mutasi_barang {
-  id                Int       @id @default(autoincrement())
-  toko_id           Int       @default(1) @db.UnsignedInt
-  tanggal           DateTime? @db.Date
-  no_mutasi         Int?      @db.MediumInt
-  no_mutasi_lengkap String?   @db.VarChar(50)
-  barang_id         Int?      @db.SmallInt
-  warna_id          Int?      @db.SmallInt
-  gudang_id_before  Int?      @db.TinyInt
-  gudang_id_after   Int?      @db.TinyInt
-  qty               Decimal?  @db.Decimal(15, 2)
-  jumlah_roll       Int?
-  nama_kru          String?   @db.VarChar(100)
-  status_aktif      Boolean   @default(true)
-  user_id           Int       @db.TinyInt
-  updated_at        DateTime  @default(now()) @db.DateTime(0)
-  created_at        DateTime  @default(now()) @db.DateTime(0)
+  id               Int       @id @default(autoincrement())
+  tanggal          DateTime? @db.Date
+  barang_id        Int?      @db.SmallInt
+  warna_id         Int?      @db.SmallInt
+  gudang_id_before Int?      @db.TinyInt
+  gudang_id_after  Int?      @db.TinyInt
+  qty              Decimal?  @db.Decimal(15, 2)
+  jumlah_roll      Int?
+  nama_kru         String?   @db.VarChar(100)
+  status_aktif     Boolean   @default(true)
+  user_id          Int       @db.TinyInt
+  updated_at       DateTime  @default(now()) @db.DateTime(0)
+  created_at       DateTime  @default(now()) @db.DateTime(0)
 
   @@index([barang_id], map: "barang_id")
   @@index([gudang_id_after], map: "gudang_id_after")
@@ -898,13 +874,13 @@ model nd_pembayaran_pengeluaran_stok_lain {
 }
 
 model nd_pembayaran_penjualan {
-  id                 Int     @id @default(autoincrement())
+  id                 Int      @id @default(autoincrement())
   penjualan_id       Int?
   pembayaran_type_id Int?
   dp_masuk_id        Int?
   amount             Int
-  keterangan         String? @db.VarChar(150)
-  user_id            Int?
+  keterangan         String?  @db.VarChar(150)
+  user_id            Int?     @db.SmallInt
   created            DateTime @default(now()) @db.DateTime(0)
   updated            DateTime @default(now()) @db.DateTime(0)
 
@@ -995,14 +971,13 @@ model nd_pembayaran_type {
   nama String? @db.VarChar(100)
 }
 
-model pembelian {
+model nd_pembelian {
   id                    Int       @id @default(autoincrement())
   no_nota               Int
   ockh_info             String?   @db.VarChar(100)
   no_faktur             String?   @db.VarChar(50)
-  penerimaan_barang_id  Int?
   po_pembelian_batch_id Int?
-  tanggal               DateTime @db.Date
+  tanggal               DateTime? @db.Date
   toko_id               Int?
   supplier_id           Int?
   gudang_id             Int?
@@ -1016,8 +991,6 @@ model pembelian {
   cancelled_by          Int?
   cancelled_date        DateTime? @db.DateTime(0)
   updated_at            DateTime  @default(now()) @db.DateTime(0)
-  pembelian_detail pembelian_detail[]
-  penerimaan_barang  penerimaan_barang? @relation(fields: [penerimaan_barang_id], references: [id])
 
   @@index([created_at], map: "created_at")
   @@index([gudang_id], map: "gudang_id")
@@ -1025,11 +998,9 @@ model pembelian {
   @@index([status_aktif], map: "status_aktif")
   @@index([supplier_id], map: "supplier_id")
   @@index([tanggal], map: "tanggal")
-  @@index([penerimaan_barang_id], map: "penerimaan_barang")
-  @@map("nd_pembelian")
 }
 
-model pembelian_barang_list {
+model nd_pembelian_barang_list {
   id           Int     @id @default(autoincrement())
   pembelian_id Int?
   barang_id    Int?
@@ -1039,35 +1010,25 @@ model pembelian_barang_list {
   harga_beli   Int?
   jumlah_roll  Float?  @db.Float
   gudang_id    String? @db.VarChar(50)
-
-  @@map("nd_pembelian_barang_list")
-
 }
 
-model pembelian_detail {
+model nd_pembelian_detail {
   id             Int      @id @default(autoincrement())
-  pembelian_id   Int
+  pembelian_id   Int?     @db.MediumInt
   ockh           String?  @db.VarChar(100)
-  barang_beli_id Int
-  barang_id      Int     
-  warna_id       Int     
-  satuan_id      Int?     
+  barang_beli_id Int?
+  barang_id      Int?     @db.SmallInt
+  warna_id       Int?     @db.SmallInt
+  satuan_id      Int?     @db.TinyInt
   qty            Decimal? @db.Decimal(15, 2)
   jumlah_roll    Int?
   harga_beli     Decimal? @db.Decimal(10, 2)
-  gudang_id      Int?     
+  gudang_id      Int?     @db.TinyInt
   updated_at     DateTime @default(now()) @db.DateTime(0)
-
-  pembelian pembelian @relation(fields:[pembelian_id], references: [id])
-  barang barang @relation(fields: [barang_id], references: [id])
-  barang_beli barang_beli @relation(fields: [barang_beli_id], references: [id])
-  warna warna @relation(fields: [warna_id], references: [id])
 
   @@index([barang_id], map: "barang_id")
   @@index([pembelian_id], map: "pembelian_id")
   @@index([warna_id], map: "warna_id")
-
-  @@map("nd_pembelian_detail")
 }
 
 model nd_pembelian_lain {
@@ -1104,16 +1065,13 @@ model nd_pembelian_qty_detail {
   @@index([pembelian_detail_id], map: "pembelian_detail_id")
 }
 
-model penerimaan_barang {
+model nd_penerimaan_barang {
   id        Int      @id @default(autoincrement())
-  no_plat   String   @default("''") @db.VarChar(50)
-  jam_input String   @default("''") @db.VarChar(50)
+  no_plat   String   @default("") @db.VarChar(50)
+  jam_input String   @default("") @db.VarChar(50)
   user_id   Int      @default(0) @db.SmallInt
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @default(now()) @db.DateTime(0)
-  pembelian pembelian[]
-  
-  @@map("nd_penerimaan_barang")
 }
 
 model nd_pengeluaran_stok_lain {
@@ -1157,7 +1115,7 @@ model nd_pengeluaran_stok_lain_qty_detail {
   jumlah_roll                     Int? @db.SmallInt
 }
 
-model penjualan {
+model nd_penjualan {
   id                Int       @id @default(autoincrement())
   toko_id           Int
   penjualan_type_id Int       @default(3)
@@ -1173,11 +1131,11 @@ model penjualan {
   keterangan        String?   @db.VarChar(100)
   nama_keterangan   String    @db.VarChar(200)
   alamat_keterangan String    @db.VarChar(200)
-  nama_cust_fp      String    @default("''") @db.VarChar(150)
-  alamat_cust_fp    String    @default("''") @db.VarChar(300)
-  npwp_cust_fp      String    @default("''") @db.VarChar(100)
-  nik_cust_fp       String    @default("''") @db.VarChar(100)
-  no_faktur_fp      String    @default("''") @db.VarChar(50)
+  nama_cust_fp      String    @default(dbgenerated("()")) @db.VarChar(150)
+  alamat_cust_fp    String    @default(dbgenerated("()")) @db.VarChar(300)
+  npwp_cust_fp      String    @default(dbgenerated("()")) @db.VarChar(100)
+  nik_cust_fp       String    @default(dbgenerated("()")) @db.VarChar(100)
+  no_faktur_fp      String    @default(dbgenerated("()")) @db.VarChar(50)
   tipe_po           Int?      @db.TinyInt
   po_penjualan_id   Int?
   status            Int       @default(1)
@@ -1190,11 +1148,6 @@ model penjualan {
   fp_status         Int       @default(0)
   is_custom_view    Int       @default(0) @db.TinyInt
 
-  customer customer? @relation(fields: [customer_id], references: [id])
-  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
-  penjualan_detail penjualan_detail[]
-
-
   @@index([closed_date], map: "closed_date")
   @@index([created_at], map: "created_at")
   @@index([customer_id], map: "customer_id")
@@ -1202,28 +1155,23 @@ model penjualan {
   @@index([penjualan_type_id], map: "penjualan_type_id")
   @@index([status_aktif], map: "status_aktif")
   @@index([tanggal], map: "tanggal")
-
-  @@map("nd_penjualan")
 }
 
-model penjualan_detail {
+model nd_penjualan_detail {
   id                 Int      @id @default(autoincrement())
-  penjualan_id       Int
-  barang_id          Int      
+  penjualan_id       Int?
+  barang_id          Int?     @db.SmallInt
   kode_beli          String?  @db.VarChar(100)
   nama_jual_tercetak String?  @db.VarChar(100)
-  warna_id           Int?     
-  satuan_id          Int?     
+  warna_id           Int?     @db.SmallInt
+  satuan_id          Int?     @db.TinyInt
   harga_jual         Int?
   gudang_id          String?  @db.VarChar(50)
   subqty             Decimal? @db.Decimal(10, 2)
   subjumlah_roll     Int?     @db.SmallInt
   createdAt          DateTime @default(now()) @db.DateTime(0)
   updatedAt          DateTime @default(now()) @db.DateTime(0)
-  barang barang @relation(fields: [barang_id], references: [id])
-  penjualan penjualan @relation(fields: [penjualan_id], references: [id])
 
-  @@map("nd_penjualan_detail")
   @@index([barang_id], map: "barang_id")
   @@index([penjualan_id], map: "penjualan_id")
   @@index([warna_id], map: "warna_id")
@@ -1241,7 +1189,7 @@ model nd_penjualan_posisi_barang {
   penjualan_id         Int?
   tipe_ambil_barang_id Int?      @db.TinyInt
   tanggal_pengambilan  DateTime? @db.Date
-  alamat_pengiriman    String?   @default("''") @db.VarChar(500)
+  alamat_pengiriman    String?   @default(dbgenerated("()")) @db.VarChar(500)
   user_id              Int?      @db.TinyInt
   status               Int       @default(1) @db.TinyInt
   closed_by            Int?      @db.TinyInt
@@ -1373,7 +1321,7 @@ model nd_po_pembelian_batch {
   tanggal          DateTime? @db.Date
   po_pembelian_id  Int?
   batch            Int?      @db.TinyInt
-  keterangan_batch String    @default("''") @db.VarChar(100)
+  keterangan_batch String    @default(dbgenerated("()")) @db.VarChar(100)
   status           Int       @default(1) @db.TinyInt
   revisi           Int       @default(1) @db.TinyInt
   revisi_by        Int?      @db.TinyInt
@@ -1547,7 +1495,7 @@ model nd_profile {
   token     String? @db.VarChar(100)
 }
 
-model rekam_faktur_pajak {
+model nd_rekam_faktur_pajak {
   id            Int       @id @default(autoincrement())
   tanggal_awal  DateTime? @db.Date
   tanggal_akhir DateTime? @db.Date
@@ -1557,25 +1505,21 @@ model rekam_faktur_pajak {
   no_fp_awal    String?   @db.VarChar(50)
   no_fp_akhir   String?   @db.VarChar(50)
   user_id       Int?      @db.SmallInt
+  updated_at    DateTime  @default(now()) @db.DateTime(0)
+  created_at    DateTime  @default(now()) @db.DateTime(0)
   status        Int       @default(1) @db.TinyInt
   status_email  Boolean   @default(true)
-  no_surat      Int?      @db.SmallInt
   is_gunggung   Int       @default(0) @db.TinyInt
+  no_surat      Int?      @db.SmallInt
   locked_date   DateTime? @db.DateTime(0)
-  created_at    DateTime  @default(now()) @db.DateTime(0)
-  updated_at    DateTime  @default(now()) @db.DateTime(0)
-
-  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
-
-  @@map("nd_rekam_faktur_pajak")
 }
 
-model rekam_faktur_pajak_detail {
+model nd_rekam_faktur_pajak_detail {
   id                    Int       @id @default(autoincrement())
-  rekam_faktur_pajak_id Int
-  penjualan_id          Int
+  rekam_faktur_pajak_id Int?
+  penjualan_id          Int?
   tanggal               DateTime? @db.Date
-  customer_id           Int
+  customer_id           Int?
   nama_customer         String?   @db.VarChar(200)
   no_npwp               String?   @db.VarChar(20)
   no_nik                String?   @db.VarChar(20)
@@ -1591,17 +1535,11 @@ model rekam_faktur_pajak_detail {
   updated_at            DateTime  @default(now()) @db.DateTime(0)
   created_at            DateTime  @default(now()) @db.DateTime(0)
   status                Boolean   @default(true)
-  customer customer @relation(fields: [customer_id], references: [id])
-  penjualan penjualan @relation(fields: [penjualan_id], references: [id])
-  rekam_faktur_pajak rekam_faktur_pajak @relation(fields: [rekam_faktur_pajak_id], references: [id])
 
   @@index([penjualan_id], map: "penjualan_id")
   @@index([penjualan_id], map: "penjualan_id_2")
   @@index([rekam_faktur_pajak_id], map: "rekam_faktur_pajak_id")
   @@index([rekam_faktur_pajak_id], map: "rekam_faktur_pajak_id_2")
-
-  
-  @@map("nd_rekam_faktur_pajak_detail")
 }
 
 model nd_rekam_faktur_pajak_email {
@@ -1777,14 +1715,10 @@ model nd_retur_jual_qty {
   jumlah_roll          Int?
 }
 
-model satuan {
+model nd_satuan {
   id           Int     @id @default(autoincrement())
   nama         String? @db.VarChar(100)
   status_aktif Int?    @default(1)
-
-  barang barang[]
-  @@map("nd_satuan")
-  
 }
 
 model nd_setting {
@@ -1889,7 +1823,7 @@ model nd_surat_jalan {
 model nd_toko {
   id           Int     @id @default(autoincrement())
   nama         String? @db.VarChar(70)
-  alias        String? @db.VarChar(70)
+  alias        String? @db.VarChar(20)
   alamat       String? @db.VarChar(100)
   telepon      String? @db.VarChar(50)
   email        String? @db.VarChar(100)
@@ -2010,8 +1944,8 @@ model nd_user {
   alamat          String?  @db.VarChar(100)
   telepon         String?  @db.VarChar(50)
   posisi_id       Int?
-  time_start      DateTime @default(dbgenerated("'07:00:00'")) @db.Time(0)
-  time_end        DateTime @default(dbgenerated("'18:00:00'")) @db.Time(0)
+  time_start      DateTime @default(dbgenerated("(07:00:00)")) @db.Time(0)
+  time_end        DateTime @default(dbgenerated("(18:00:00)")) @db.Time(0)
   printer_list_id Int?
   status_aktif    Int?     @default(0)
   PIN             String?  @db.VarChar(10)
@@ -2024,16 +1958,12 @@ model nd_user_access_time {
   time_end   DateTime? @db.Time(0)
 }
 
-model warna {
+model nd_warna {
   id           Int     @id @default(autoincrement())
   warna_beli   String? @db.VarChar(50)
   warna_jual   String? @db.VarChar(50)
   kode_warna   String? @db.VarChar(7)
   status_aktif Int     @default(1)
-
-  pembelian_detail pembelian_detail[]
-
-  @@map("nd_warna")
 }
 
 model nd_warning_jatuh_tempo_harian {
@@ -2128,4 +2058,3 @@ model temp_customer_updgrade {
   provinsi    String? @db.VarChar(100)
   kode_pos    String? @db.VarChar(20)
 }
-
