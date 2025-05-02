@@ -1,6 +1,5 @@
 import express from 'express';
 import { COMPANY, ALLOWED_IPS, ALLOWED_ORIGINS, ENVIRONMENT } from '../config/loadEnv.js';
-import { prismaClient } from './prisma-client.js';
 import { checkMemoryUsage } from './check-memory-usage.js';
 import { expressjwt } from "express-jwt";
 import cors from "cors";
@@ -9,6 +8,7 @@ import fs from 'fs';
 import path, { join } from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import { prismaClient } from './prisma-client.js';
 
 import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
 import { warn } from 'console';
@@ -354,13 +354,20 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
 
 app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     
-    const company_index = parseInt(req.params.company_index);
-    console.log('get penerimaan barang by company index', company_index);
+    let company_index ='';
+    if(ENVIRONMENT !== 'test'){
+        company_index = parseInt(req.params.company_index);
+    }else{
+        company_index = req.params.company_index.toLowerCase();
+    }
+    
+    const { tanggal_start, tanggal_end } = req.query;
+    console.log(tanggal_start, tanggal_end);
+    
     
     try {
         
-        const { tanggal_start, tanggal_end } = req.query;
-        if (!startDate || !endDate) {
+        if (!tanggal_start || !tanggal_end) {
             return res.status(400).json({ 
                 error: 'Start date and end date are required' 
             });
@@ -376,22 +383,70 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
             });
         }
 
-        const penerimaan_barang = await prismaClient[COMPANY_LIST[company_index]].penerimaan_barang.findMany({
-            where: {
-                tanggal: {
-                    gte: new Date(tanggal_start),
-                    lte: new Date(tanggal_end)
+        const penerimaan_barang = await prismaClient[company_index].penerimaan_barang.findMany({
+            where:{
+                pembelian:{
+                    some:{
+                        tanggal:{
+                            gte: new Date(tanggal_start),
+                            lte: new Date(tanggal_end)
+                        }
+                    }
                 }
             },
-            orderBy: {
-                tanggal: 'desc'
+            select: {
+                pembelian:{
+                    select:{
+                        tanggal: true
+                    }
+                }
             }
         });
+
+        const daftarBarang = await prismaClient[company_index].pembelian_detail.groupBy({
+            by: ['barang_id', 'warna_id', 'penerimaan_barang_id'],
+            where: {
+                pembelian: {
+                        tanggal:{
+                            gte: new Date(tanggal_start),
+                            lte: new Date(tanggal_end)
+                        }
+                }
+            },
+            _sum: {
+                qty: true,
+                jumlah_roll: true
+            }
+        });
+
+        console.log('daftar barang',daftarBarang);
+
+        const joinBarang = await Promise.all(
+            daftarBarang.map(async (item) => {
+                const barang = await prismaClient[company_index].barang.findUnique({
+                    select:{nama_jual:true},
+                    where: {id: item.barang_id}
+                });
+                const warna = await prismaClient[company_index].warna.findUnique({
+                    select:{warna_jual:true},
+                    where: {id: item.warna_id}
+                });
+                return {
+                    nama_barang: barang.nama_jual,
+                    nama_warna: warna.warna_jual,
+                    qty: item._sum.qty,
+                    jumlah_roll: item._sum.jumlah_roll
+                };
+            }),
+        );
+        
+
+        console.log('penerimaan_barang', penerimaan_barang);
 
         
         res.json({
             success: true,
-            data: penerimaan_barang
+            data: { ...penerimaan_barang, daftarBarang: joinBarang}
         });
 
     } catch (error) {
@@ -433,17 +488,18 @@ app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
         const joinBarang = await Promise.all(
             daftarBarang.map(async (item) => {
                 const barang = await prismaClient[company_index].barang.findUnique({
-                    select:{nama_jual:true, _alias:'nama_barang'},
+                    select:{nama_jual:true},
                     where: {id: item.barang_id}
                 });
                 const warna = await prismaClient[company_index].warna.findUnique({
-                    select:{warna_jual:true, _alias:'_nama_warna'},
+                    select:{warna_jual:true},
                     where: {id: item.warna_id}
                 });
                 return {
-                    barang: barang,
-                    warna: warna,
-                    ...item
+                    nama_barang: barang.nama_jual,
+                    nama_warna: warna.warna_jual,
+                    qty: item._sum.qty,
+                    jumlah_roll: item._sum.jumlah_roll
                 };
             }),
         );
@@ -454,13 +510,12 @@ app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
         
         res.json({
             success: true,
-            data: penerimaan_barang,
-            daftarBarang: joinBarang
+            data: { ...penerimaan_barang, daftarBarang: joinBarang}
         });
         
     } catch (error) {
         console.error('Error fetching penerimaan barang:', error);
-        res.status(500).json({ error: 'An error occurred while fetching customers' });
+        res.status(500).json({ error: 'An error occurred while fetching barang' });
     }
 });
 
