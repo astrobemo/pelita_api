@@ -1,5 +1,5 @@
 import { connect } from "amqplib";
-import { RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD } from "../../config/loadEnv";
+import { RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD } from "../../config/loadEnv.js";
 
 let channel = null;
 let confirmChannel = null;

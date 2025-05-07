@@ -426,7 +426,8 @@ const consumeMessages = async () => {
     }, { noAck: false });
 }
 
-export { consumeMessages, rabbitMqParam };
+//rabbitMqParam
+export { consumeMessages };
 
 // await channel.close();
 // await connection.close();

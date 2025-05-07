@@ -18,6 +18,10 @@ const configuration = {
         NODE_ENV: "test",
         ENV_FILE: `.env.test`,
       },
+      env_staging: {
+        NODE_ENV: "staging",
+        ENV_FILE: `.env.staging`,
+      },
       env_production: {
         NODE_ENV: "production",
         ENV_FILE: `.env.production`,
