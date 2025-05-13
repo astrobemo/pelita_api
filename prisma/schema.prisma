@@ -646,6 +646,8 @@ model master_barang {
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
+  barang barang @relation(fields:[barang_id_toko], references: [id])
+  master_barang_sku master_barang_sku @relation(fields:[barang_id_master], references: [barang_id_master])
   @@unique([barang_id_toko, barang_id_master], map: "barang_id_toko_master")
   @@map("nd_master_toko_barang")
 }
@@ -658,6 +660,8 @@ model master_satuan {
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
+  satuan satuan @relation(fields:[satuan_id_toko], references: [id])
+  master_barang_sku master_barang_sku @relation(fields:[satuan_id_master], references: [satuan_id_master])
   @@unique([satuan_id_toko, satuan_id_master], map: "satuan_id")
   @@map("nd_master_toko_satuan")
 }
@@ -670,6 +674,8 @@ model master_warna {
   createdAt       DateTime? @default(now()) @db.DateTime(0)
   updatedAt       DateTime? @default(now()) @db.DateTime(0)
 
+  warna warna @relation(fields:[warna_id_toko], references: [id])
+  master_barang_sku master_barang_sku @relation(fields:[warna_id_master], references: [warna_id_master])
   @@unique([warna_id_toko, warna_id_master], map: "warna_id_master_toko")
   @@map("nd_master_toko_warna")
 }
