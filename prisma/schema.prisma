@@ -112,6 +112,7 @@ model barang {
   penjualan_detail penjualan_detail[]
   pembelian_detail pembelian_detail[]
 
+  master_barang master_barang[]
   @@index([nama], map: "nama")
   @@index([nama_jual], map: "nama_jual")
 
@@ -635,19 +636,20 @@ model master_barang_sku {
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
+  @@unique([barang_id_master, warna_id_master, satuan_id_master], map: "sku_master")
+  @@unique([barang_sku_id], map: "barang_sku_id")
   @@map("nd_master_barang_sku")
 }
 
 model master_barang {
   id               Int      @id @default(autoincrement())
-  barang_id_toko   Int?
-  barang_id_master Int?
+  barang_id_toko   Int
+  barang_id_master Int
   nama_master      String?  @db.VarChar(100)
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   barang barang @relation(fields:[barang_id_toko], references: [id])
-  master_barang_sku master_barang_sku @relation(fields:[barang_id_master], references: [barang_id_master])
   @@unique([barang_id_toko, barang_id_master], map: "barang_id_toko_master")
   @@map("nd_master_toko_barang")
 }
@@ -661,7 +663,6 @@ model master_satuan {
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   satuan satuan @relation(fields:[satuan_id_toko], references: [id])
-  master_barang_sku master_barang_sku @relation(fields:[satuan_id_master], references: [satuan_id_master])
   @@unique([satuan_id_toko, satuan_id_master], map: "satuan_id")
   @@map("nd_master_toko_satuan")
 }
@@ -675,7 +676,6 @@ model master_warna {
   updatedAt       DateTime? @default(now()) @db.DateTime(0)
 
   warna warna @relation(fields:[warna_id_toko], references: [id])
-  master_barang_sku master_barang_sku @relation(fields:[warna_id_master], references: [warna_id_master])
   @@unique([warna_id_toko, warna_id_master], map: "warna_id_master_toko")
   @@map("nd_master_toko_warna")
 }
@@ -1789,6 +1789,7 @@ model satuan {
   status_aktif Int?    @default(1)
 
   barang barang[]
+  master_satuan master_satuan[]
   @@map("nd_satuan")
   
 }
@@ -2038,6 +2039,7 @@ model warna {
   status_aktif Int     @default(1)
 
   pembelian_detail pembelian_detail[]
+  master_warna      master_warna[]
 
   @@map("nd_warna")
 }
