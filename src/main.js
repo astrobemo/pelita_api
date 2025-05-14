@@ -355,7 +355,8 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
 app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     
     let company_index ='';
-    if(ENVIRONMENT !== 'test'){
+    console.log('ENV', ENVIRONMENT);
+    if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
         company_index = parseInt(req.params.company_index);
     }else{
         company_index = req.params.company_index.toLowerCase();
@@ -383,73 +384,73 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
             });
         }
 
-        const penerimaan_barang = await prismaClient[company_index].penerimaan_barang.findMany({
-            where:{
-                pembelian:{
-                    some:{
-                        tanggal:{
-                            gte: new Date(tanggal_start),
-                            lte: new Date(tanggal_end)
-                        }
-                    }
-                }
-            },
-            select: {
-                pembelian:{
-                    select:{
-                        tanggal: true
-                    }
-                }
-            }
-        });
+        console.log('company client', company_index);
+        const penerimaan = await prismaClient[company_index].$queryRaw`
+            SELECT tanggal_input, no_plat, penerimaan_barang_id 
+            FROM 
+                (
+                    SELECT * FROM nd_pembelian
+                    WHERE 
+                        tanggal >= ${tanggal_start} 
+                        AND tanggal <= ${tanggal_end}
+                ) AS pembelian
+            LEFT JOIN nd_penerimaan_barang
+            ON pembelian.penerimaan_barang_id = nd_penerimaan_barang.id
+            WHERE pembelian.penerimaan_barang_id IS NOT NULL
+            GROUP BY pembelian.penerimaan_barang_id
+        `;
 
-        const daftarBarang = await prismaClient[company_index].pembelian_detail.groupBy({
-            by: ['barang_id', 'warna_id', 'penerimaan_barang_id'],
-            where: {
-                pembelian: {
-                        tanggal:{
-                            gte: new Date(tanggal_start),
-                            lte: new Date(tanggal_end)
-                        }
-                }
-            },
-            _sum: {
-                qty: true,
-                jumlah_roll: true
-            }
-        });
-
-        console.log('daftar barang',daftarBarang);
-
-        const joinBarang = await Promise.all(
-            daftarBarang.map(async (item) => {
-                const barang = await prismaClient[company_index].barang.findUnique({
-                    select:{nama_jual:true},
-                    where: {id: item.barang_id}
-                });
-                const warna = await prismaClient[company_index].warna.findUnique({
-                    select:{warna_jual:true},
-                    where: {id: item.warna_id}
-                });
-                return {
-                    nama_barang: barang.nama_jual,
-                    nama_warna: warna.warna_jual,
-                    qty: item._sum.qty,
-                    jumlah_roll: item._sum.jumlah_roll
-                };
-            }),
-        );
+        const daftar_barang = await prismaClient[company_index].$queryRaw`
+            SELECT barang_sku_id, tSKU.barang_id_master, tSKU.warna_id_master, tSKU.satuan_id_master,
+                tSKU.nama_barang as nama_barang, sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, penerimaan_barang_id
+            FROM 
+                (
+                    SELECT * FROM nd_pembelian
+                    WHERE 
+                        tanggal >= ${tanggal_start} 
+                        AND tanggal <= ${tanggal_end}
+                ) AS pembelian
+            LEFT JOIN nd_pembelian_detail
+            ON pembelian.id = nd_pembelian_detail.pembelian_id
+            LEFT JOIN nd_gudang 
+            ON pembelian.gudang_id = nd_gudang.id
+            LEFT JOIN nd_barang
+            ON nd_pembelian_detail.barang_id = nd_barang.id
+            LEFT JOIN nd_penerimaan_barang
+            ON pembelian.penerimaan_barang_id = nd_penerimaan_barang.id
+            LEFT JOIN nd_master_toko_barang tBarang
+            ON nd_pembelian_detail.barang_id = tBarang.barang_id_toko
+            LEFT JOIN nd_master_toko_warna tWarna
+            ON nd_pembelian_detail.warna_id = tWarna.warna_id_toko
+            LEFT JOIN nd_master_toko_satuan tSatuan
+            ON nd_barang.satuan_id = tSatuan.satuan_id_toko
+            LEFT JOIN nd_master_barang_sku tSKU
+            ON tBarang.barang_id_master = tSKU.barang_id_master
+            AND tWarna.warna_id_master = tSKU.warna_id_master
+            AND tSatuan.satuan_id_master = tSKU.satuan_id_master
+            GROUP BY barang_sku_id, penerimaan_barang_id
+            ORDER BY nama_barang
+        `;
         
-
-        console.log('penerimaan_barang', penerimaan_barang);
+        
+        const penerimaan_barang = penerimaan.map((penerimaan) => {
+            const barangList = daftar_barang.filter(
+            (barang) => barang.penerimaan_barang_id === penerimaan.penerimaan_barang_id
+            );
+            return {
+            ...penerimaan,
+            daftarBarang: barangList,
+            };
+        });
 
         
         res.json({
             success: true,
-            data: { ...penerimaan_barang, daftarBarang: joinBarang}
+            data: { penerimaan_barang}
         });
 
     } catch (error) {
+        console.log('Error fetching penerimaan barang:', error, error.message);
         res.status(500).json({ error: 'An error occurred while fetching customers' });
     }
 });
