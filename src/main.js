@@ -540,15 +540,28 @@ app.get('/penerimaan_barang_status/:company_index', async (req, res) => {
             company_index = req.params.company_index.toLowerCase();
         }
 
+        const penerimaan = await prismaClient[company_index].penerimaan_barang.findUnique({
+            where: {
+                id: parseInt(id)
+            }
+        });
+
         const respond = await prismaClient[company_index].penerimaan_barang_status.findMany({
             where: {
                 penerimaan_barang_id: parseInt(id)
             }
         });
 
+        const statusPenerimaan = {
+            id: penerimaan.id,
+            no_plat: penerimaan.no_plat,
+            tanggal_input: penerimaan.tanggal_input,
+            daftar_status: respond
+        }
+
         res.json({
             success: true,
-            data: respond
+            data: statusPenerimaan
         });
 
         
@@ -570,7 +583,7 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
         }
 
         if(status === 'SUDAH_KONFIRMASI'){
-            res.status(403).json({ error: 'UpStatus SUDAH_KONFIRMASI hanya oleh admin/akunting' });
+            res.status(403).json({ error: 'Status SUDAH_KONFIRMASI dilakukan oleh admin/akunting' });
             throw new Error('Update Status SUDAH_KONFIRMASI hanya oleh admin/akunting');
         }
 
