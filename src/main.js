@@ -363,7 +363,7 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     let company_index ='';
     console.log('ENV', ENVIRONMENT);
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-        company_index = parseInt(req.params.company_index);
+        company_index = req.params.company_index;
     }else{
         company_index = req.params.company_index.toLowerCase();
     }
@@ -467,7 +467,7 @@ app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
     const { id } = req.query;
     let company_index ='';
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-        company_index = parseInt(req.params.company_index);
+        company_index = req.params.company_index;
     }else{
         company_index = req.params.company_index.toLowerCase();
     }
@@ -535,7 +535,7 @@ app.get('/penerimaan_barang_status/:company_index', async (req, res) => {
     
     try {
         if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-            company_index = parseInt(req.params.company_index);
+            company_index = (req.params.company_index);
         }else{
             company_index = req.params.company_index.toLowerCase();
         }
@@ -577,7 +577,7 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
     
     try {
         if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-            company_index = parseInt(req.params.company_index);
+            company_index = (req.params.company_index);
         }else{
             company_index = req.params.company_index.toLowerCase();
         }
