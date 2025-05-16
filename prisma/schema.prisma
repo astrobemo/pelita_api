@@ -1113,13 +1113,24 @@ model nd_pembelian_qty_detail {
 model penerimaan_barang {
   id        Int      @id @default(autoincrement())
   no_plat   String   @default("''") @db.VarChar(50)
-  jam_input String   @default("''") @db.VarChar(50)
+  tanggal_input DateTime?
   user_id   Int      @default(0) @db.SmallInt
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @default(now()) @db.DateTime(0)
   pembelian pembelian[]
   
+  penerimaan_barang_status penerimaan_barang_status[]
   @@map("nd_penerimaan_barang")
+}
+
+model penerimaan_barang_status {
+  id        Int      @id @default(autoincrement())
+  penerimaan_barang_id   Int
+  status_penerimaan String
+  createdAt DateTime @default(now()) @db.DateTime(0)
+
+  penerimaan_barang penerimaan_barang @relation(fields: [penerimaan_barang_id], references: [id])  
+  @@map("nd_penerimaan_barang_status")
 }
 
 model nd_pengeluaran_stok_lain {
