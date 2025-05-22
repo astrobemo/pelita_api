@@ -158,7 +158,7 @@ export const barangMasterSKUAssigned = async () =>{
                     warnaIdMaster.push(sku.warna_id);
                     namaWarnaMaster.push(sku.warna_jual_master);
                     return {
-                        barang_sku_id: sku.id,
+                        barang_sku_id: sku.barang_sku_id,
                         nama_barang: sku.nama_barang,
                         barang_id_master: sku.barang_id,
                         warna_id_master: sku.warna_id,
