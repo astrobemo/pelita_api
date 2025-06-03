@@ -353,7 +353,8 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
         res.send(fileXML);
 
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching customers' });
+        console.log('Error generating faktur pajak:', error);
+        res.status(500).json({ error: 'An error occurred while fetching pajak' });
     }
     
 });

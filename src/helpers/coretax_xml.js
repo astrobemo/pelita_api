@@ -57,7 +57,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
         return; // or handle the error as needed
     }
 
-    const npwp_toko = toko[0].npwp;
+    const npwp_toko = toko[0].NPWP;
     const npwp_filtered = npwp_toko.replace(/[.-]/g, '');
     const tin_toko = (npwp_filtered.length === 15) ? "0"+npwp_filtered : npwp_filtered;
     const idtku_toko = tin_toko + "000000";
@@ -262,12 +262,13 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
     let toko;
     try {
         toko = await prismaClient[company].toko.findMany(); 
+        console.log('toko', toko[0].NPWP);
     } catch (error) {
         console.error('Error fetching toko:', error);
         return; // or handle the error as needed
     }
 
-    const npwp_toko = toko[0].npwp;
+    const npwp_toko = toko[0].NPWP;
     const npwp_filtered = npwp_toko.replace(/[.-]/g, '');
     const tin_toko = (npwp_filtered.length === 15) ? "0"+npwp_filtered : npwp_filtered;
     const idtku_toko = tin_toko + "000000";
