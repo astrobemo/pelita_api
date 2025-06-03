@@ -12,7 +12,7 @@ import { prismaClient } from './prisma-client.js';
 
 import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
 import http from 'http';
-import { Server as WebSocketServer } from 'ws';
+// import { Server as WebSocketServer } from 'ws';
 
 const COMPANY_LIST = COMPANY.split(',');
 // const secret = process.env.TOKEN_SECRET || 'development';
