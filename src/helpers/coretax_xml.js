@@ -220,6 +220,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
     let fakturPajakXml = null;
     const company = company_name.toLowerCase();    
     let fakturPajak;
+
     try {
         fakturPajak = await prismaClient[company].rekam_faktur_pajak_detail.findMany({
             where: {

@@ -1904,7 +1904,7 @@ model nd_surat_jalan {
   @@index([tanggal], map: "tanggal")
 }
 
-model nd_toko {
+model toko {
   id           Int     @id @default(autoincrement())
   nama         String? @db.VarChar(70)
   alias        String? @db.VarChar(70)
@@ -1920,6 +1920,8 @@ model nd_toko {
   status_aktif Int     @default(1)
   host         String? @db.VarChar(100)
   relay_mail   String? @db.VarChar(100)
+
+  @@map("nd_toko")
 }
 
 model nd_tutup_buku {

@@ -11,6 +11,8 @@ import axios from 'axios';
 import { prismaClient } from './prisma-client.js';
 
 import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
+import http from 'http';
+import { Server as WebSocketServer } from 'ws';
 
 const COMPANY_LIST = COMPANY.split(',');
 // const secret = process.env.TOKEN_SECRET || 'development';
@@ -638,8 +640,30 @@ app.use((err, req, res, next) => {
     }else{
         next(err);
     }
-
     
+});
+
+const server = http.createServer(app);
+
+const wss = new WebSocketServer({ server, path: '/ws' });
+
+wss.on('connection', (ws, req) => {
+    console.log('WebSocket client connected');
+    ws.on('message', (message) => {
+        console.log('Received:', message.toString());
+        // Echo message back
+        ws.send(`Echo: ${message}`);
+    });
+    ws.on('close', () => {
+        console.log('WebSocket client disconnected');
+    });
+});
+
+// Start HTTP + WebSocket server
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`WebSocket server running at ws://localhost:${port}/ws`);
 });
 
 // Error handling middleware

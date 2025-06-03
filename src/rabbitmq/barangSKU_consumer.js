@@ -157,8 +157,9 @@ export const barangMasterSKUAssigned = async () =>{
                 const barangList = skuList.map((sku) => {
                     warnaIdMaster.push(sku.warna_id);
                     namaWarnaMaster.push(sku.warna_jual_master);
+                    console.log(sku);
                     return {
-                        barang_sku_id: sku.barang_sku_id,
+                        barang_sku_id: sku.sku_id,
                         nama_barang: sku.nama_barang,
                         barang_id_master: sku.barang_id,
                         warna_id_master: sku.warna_id,
