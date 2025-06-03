@@ -643,7 +643,7 @@ app.use((err, req, res, next) => {
     
 });
 
-const server = http.createServer(app);
+/* const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server, path: '/ws' });
 
@@ -664,7 +664,7 @@ const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
     console.log(`WebSocket server running at ws://localhost:${port}/ws`);
-});
+}); */
 
 // Error handling middleware
 /* app.use((err, req, res, next) => {
