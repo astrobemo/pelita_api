@@ -119,9 +119,9 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     
                 
-                let dpp = pd.harga / (1 + (ppn_berlaku / 100));
+                let dpp = pd.harga_jual / (1 + (ppn_berlaku / 100));
                 // dpp = dpp.toFixed(2);
-                const subTotal = pd.harga * pd.qty;
+                const subTotal = pd.harga_jual * pd.qty;
                 const taxBase = (dpp * pd.qty).toFixed(2);
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
                 otherTaxBase = otherTaxBase.toFixed(2);
@@ -339,9 +339,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
             let totalVAT = 0;
             fp.penjualan.penjualan_detail.map(pd => {
     
-                let dpp = pd.harga / (1 + (ppn_berlaku / 100));
+                let dpp = pd.harga_jual / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
-                const subTotal = pd.harga * pd.qty;
+                const subTotal = pd.harga_jual * pd.qty;
                 const taxBase = (dpp * pd.qty).toFixed(2);
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
                 otherTaxBase = otherTaxBase.toFixed(2);

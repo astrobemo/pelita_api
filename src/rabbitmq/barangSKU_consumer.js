@@ -166,6 +166,7 @@ export const barangMasterSKUAssigned = async () =>{
                         satuan_id_master: sku.satuan_id
                     }
                 });
+                
 
                 console.log(skuList, 'skuList');
                 console.log(barangList, 'barangList');
