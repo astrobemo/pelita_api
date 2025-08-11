@@ -344,7 +344,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
     
                 let dpp = pd.harga_jual / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
-                const subTotal = pd.harga_jual * pd.qty;
+                const subTotal = pd.harga_jual * qty;
                 const taxBase = (dpp * qty).toFixed(2);
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
                 otherTaxBase = otherTaxBase.toFixed(2);
