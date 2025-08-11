@@ -106,6 +106,9 @@ app.get('/testing-consumer', (req, res) => {
     res.send('Testing World!');
 });
 
+//==========================customers data====================================
+
+
 app.get('/customers_bounce_back', async (req, res) => {
     
 });
@@ -322,6 +325,27 @@ app.get('/customers/:company_index/:id', async (req, res) => {
     }
 });
 
+app.put('/customers/:company_index/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const company_index = parseInt(req.params.company_index);
+    const updateData = req.body;
+
+    try {
+        console.log(updateData)
+        const updatedCustomer = await prismaClient[COMPANY_LIST[company_index]].customer.update({
+            data: updateData,
+            where: {
+                id: id
+            },
+        });
+        res.json(updatedCustomer);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while updating the customer' });
+    }
+});
+
+//==========================pajak coretax====================================
+
 
 app.get('/pajak/generate_faktur_pajak_coretax', async (req, res) => {
     const company_name = req.query.company_name;
@@ -342,6 +366,7 @@ app.get('/pajak/generate_faktur_pajak_coretax', async (req, res) => {
 });
 
 app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
+
     const company_name = req.query.company_name;
     const rekam_faktur_pajak_id = req.query.rekam_faktur_pajak_id;
 
@@ -353,6 +378,7 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
         res.send(fileXML);
 
     } catch (error) {
+
         console.log('Error generating faktur pajak:', error);
         res.status(500).json({ error: 'An error occurred while fetching pajak' });
     }
@@ -608,24 +634,32 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
     }
 });
 
-app.put('/customers/:company_index/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-    const company_index = parseInt(req.params.company_index);
-    const updateData = req.body;
+//==========================mutasi barang====================================
 
-    try {
-        console.log(updateData)
-        const updatedCustomer = await prismaClient[COMPANY_LIST[company_index]].customer.update({
-            data: updateData,
-            where: {
-                id: id
-            },
-        });
-        res.json(updatedCustomer);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while updating the customer' });
+app.post('/mutasi_barang_keluar/:company_index', async (req, res) => {
+    const { barang_sku_id, barcode_id, qty, tanggal, gudang_id_tujuan } = req.body;
+
+    let company_index ='';
+    if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
+        company_index = req.params.company_index;
+    }else{
+        company_index = req.params.company_index.toLowerCase();
     }
+
+    if(company_index === ''){
+        return res.status(400).json({ error: 'Company index is required' });
+    }
+
+    if(!barang_sku_id || !barcode_id || !qty || !tanggal || !gudang_id_tujuan){
+        return res.status(400).json({ error: 'barang_sku_id, sku_id, qty, tanggal_mutasi, gudang_id_asal, gudang_id_tujuan (tujuan) are required' });
+    }
+
 });
+
+
+
+
+//==========================middleware====================================
 
 // Middleware to handle non-existent endpoints
 app.use((err, req, res, next) => {
@@ -641,6 +675,8 @@ app.use((err, req, res, next) => {
     }else{
         next(err);
     }
+
+
     
 });
 
