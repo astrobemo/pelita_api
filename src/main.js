@@ -12,6 +12,7 @@ import { prismaClient } from './prisma-client.js';
 
 import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
 import http from 'http';
+import { type } from 'os';
 // import { Server as WebSocketServer } from 'ws';
 
 const COMPANY_LIST = COMPANY.split(',');
@@ -98,7 +99,8 @@ app.use((req, res, next) => {
         console.log('testing/staging environment');
         next();
     }else {
-        ipFilter(req, res, next);
+        next();
+        // ipFilter(req, res, next);
     }
 });
 
@@ -393,6 +395,10 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     console.log('ENV', ENVIRONMENT);
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
         company_index = req.params.company_index;
+        
+        if(ENVIRONMENT === 'development'){
+            company_index = COMPANY_LIST[company_index].toLowerCase();
+        }
     }else{
         company_index = req.params.company_index.toLowerCase();
     }
@@ -400,6 +406,7 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     const { tanggal_start, tanggal_end } = req.query;
     console.log(tanggal_start, tanggal_end);
     let penerimaanBarang = [];
+    let penerimaanData = [];
     
     if (!tanggal_start || !tanggal_end) {
         return res.status(400).json({ 
@@ -418,9 +425,11 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     }
     
     try {
+
+        const daftarSupplier = await prismaClient[company_index].$queryRaw`SELECT id, kode, nama FROM nd_supplier`;
         
         const penerimaan = await prismaClient[company_index].$queryRaw`
-            SELECT tanggal_input, no_plat, penerimaan_barang_id 
+            SELECT tanggal_input, no_plat, penerimaan_barang_id, supplier_id 
             FROM 
                 (
                     SELECT * FROM nd_pembelian
@@ -428,16 +437,26 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
                         tanggal >= ${tanggal_start} 
                         AND tanggal <= ${tanggal_end}
                 ) AS pembelian
+                
             LEFT JOIN nd_penerimaan_barang
             ON pembelian.penerimaan_barang_id = nd_penerimaan_barang.id
             WHERE pembelian.penerimaan_barang_id IS NOT NULL
             GROUP BY pembelian.penerimaan_barang_id
         `;
 
+        penerimaanData = penerimaan.map((penerimaan) => {
+            const supplier = daftarSupplier.find(supplier => supplier.id === penerimaan.supplier_id);
+            return {
+                ...penerimaan,
+                supplier: supplier ? supplier : null
+            };
+        });
+
+
         const daftarBarang = await prismaClient[company_index].$queryRaw`
             SELECT barang_sku_id, tSKU.barang_id_master as barang_id, tSKU.warna_id_master as warna_id, tSKU.satuan_id_master as satuan_id, 
                 tSKU.nama_barang as nama_barang, sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, penerimaan_barang_id
-            FROM 
+            FROM
                 (
                     SELECT * FROM nd_pembelian
                     WHERE 
@@ -472,7 +491,7 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
             (barang) => barang.penerimaan_barang_id === penerimaan.penerimaan_barang_id
             );
             return {
-            ...penerimaan,
+            ...penerimaanData,
             daftarBarang: barangList,
             };
         });
@@ -609,6 +628,11 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
             company_index = (req.params.company_index);
         }else{
             company_index = req.params.company_index.toLowerCase();
+        }
+
+        if(status === '' || typeof status === 'undefined'){
+            res.status(400).json({ error: 'Status is required' });
+            throw new Error('Status is required');
         }
 
         if(status === 'SUDAH_KONFIRMASI'){

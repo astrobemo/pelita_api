@@ -1887,6 +1887,9 @@ model nd_supplier {
   status_aktif   Int     @default(1)
   faktur_inisial String? @db.VarChar(2)
   tipe_supplier  Boolean @default(true)
+
+  @@map("supplier")
+
 }
 
 model nd_surat_jalan {

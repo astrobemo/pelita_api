@@ -341,7 +341,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
 
                 const qty = pd.subqty;    
 
-    
+        
                 let dpp = pd.harga_jual / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
                 const subTotal = pd.harga_jual * qty;

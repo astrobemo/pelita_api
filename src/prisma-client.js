@@ -10,6 +10,7 @@ console.log(ENVIRONMENT, 'ENVIRONMENT');
 const prismaClient = {};
 function newClient(company) {
 
+    console.log(company, 'company');
     const dbUrlKey = `DATABASE_URL_${company.toUpperCase()}`;
 
     console.log(dbUrlKey, 'dbUrlKey');
