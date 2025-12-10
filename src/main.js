@@ -393,20 +393,30 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     
     let company_index ='';
     console.log('ENV', ENVIRONMENT);
+    company_index = req.params.company_index;
+    console.log('param', req.params);
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-        company_index = req.params.company_index;
         
-        if(ENVIRONMENT === 'development'){
-            company_index = COMPANY_LIST[company_index].toLowerCase();
+        if(ENVIRONMENT === 'development' && typeof COMPANY_LIST[company_index] !== 'undefined'){
+            company_index = company_index.toLowerCase();
+        }else if(ENVIRONMENT === 'development' && COMPANY_LIST.includes(company_index.toLowerCase())){
+            company_index = company_index.toLowerCase();
         }
-    }else{
+    }else if(typeof req.params.company_index !== 'undefined'){
         company_index = req.params.company_index.toLowerCase();
     }
     
+
+    if(typeof prismaClient[company_index] === 'undefined'){
+        console.log('COMPANY_LIST', COMPANY_LIST);
+        return  res.status(400).json({ error: 'Invalid company or client id' });
+    }
+
+    
+    console.log('isPrismaClient', typeof prismaClient[company_index]);
     const { tanggal_start, tanggal_end } = req.query;
     console.log(tanggal_start, tanggal_end);
     let penerimaanBarang = [];
-    let penerimaanData = [];
     
     if (!tanggal_start || !tanggal_end) {
         return res.status(400).json({ 
@@ -429,7 +439,8 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
         const daftarSupplier = await prismaClient[company_index].$queryRaw`SELECT id, kode, nama FROM nd_supplier`;
         
         const penerimaan = await prismaClient[company_index].$queryRaw`
-            SELECT tanggal_input, no_plat, penerimaan_barang_id, supplier_id 
+            SELECT nd_penerimaan_barang.id, tanggal_input, no_plat, penerimaan_barang_id, supplier_id, 
+            no_penerimaan_lengkap as no_penerimaan
             FROM 
                 (
                     SELECT * FROM nd_pembelian
@@ -443,14 +454,6 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
             WHERE pembelian.penerimaan_barang_id IS NOT NULL
             GROUP BY pembelian.penerimaan_barang_id
         `;
-
-        penerimaanData = penerimaan.map((penerimaan) => {
-            const supplier = daftarSupplier.find(supplier => supplier.id === penerimaan.supplier_id);
-            return {
-                ...penerimaan,
-                supplier: supplier ? supplier : null
-            };
-        });
 
 
         const daftarBarang = await prismaClient[company_index].$queryRaw`
@@ -481,10 +484,44 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
             ON tBarang.barang_id_master = tSKU.barang_id_master
             AND tWarna.warna_id_master = tSKU.warna_id_master
             AND tSatuan.satuan_id_master = tSKU.satuan_id_master
+            WHERE pembelian.penerimaan_barang_id IS NOT NULL
+            AND qty IS NOT NULL
             GROUP BY barang_sku_id, penerimaan_barang_id
             ORDER BY nama_barang
         `;
         
+
+        const barangMap = new Map();
+        daftarBarang.forEach((barang) => {
+            const penerimaanId = barang.penerimaan_barang_id;
+            if (!barangMap.has(penerimaanId)) {
+                barangMap.set(penerimaanId, []);
+            }
+            barangMap.get(penerimaanId).push(barang);
+        });
+
+        const supplierMap = new Map();
+        daftarSupplier.forEach((supplier) => {
+            supplierMap.set(supplier.id, supplier);
+        });
+
+        penerimaanBarang = penerimaan.map((penerimaanItem) => {
+            return {
+                ...penerimaanItem,
+                supplier: supplierMap.get(penerimaanItem.supplier_id) || null,
+                daftarBarang: barangMap.get(penerimaanItem.penerimaan_barang_id) || []
+            };
+            
+        });
+
+
+        /* penerimaanData = penerimaan.map((penerimaan) => {
+            const supplier = daftarSupplier.find(supplier => supplier.id === penerimaan.supplier_id);
+            return {
+                ...penerimaan,
+                supplier: supplier ? supplier : null
+            };
+        });
         
         penerimaanBarang = penerimaan.map((penerimaan) => {
             const barangList = daftarBarang.filter(
@@ -494,12 +531,12 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
             ...penerimaanData,
             daftarBarang: barangList,
             };
-        });
+        }); */
 
         
         res.json({
             success: true,
-            data: { penerimaanBarang}
+            data: { penerimaanBarang }
         });
 
     } catch (error) {
@@ -524,7 +561,7 @@ app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
     
     try {
         const penerimaan = await prismaClient[company_index].$queryRaw`
-            SELECT tanggal_input, no_plat, id as penerimaan_barang_id 
+            SELECT tanggal_input, no_plat, id as penerimaan_barang_id, no_penerimaan_lengkap as no_penerimaan
             FROM nd_penerimaan_barang
             WHERE id = ${id}
         `;

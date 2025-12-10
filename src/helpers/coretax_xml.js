@@ -345,9 +345,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 let dpp = pd.harga_jual / (1 + (ppn_berlaku / 100));
                 dpp = dpp.toFixed(2);
                 const subTotal = pd.harga_jual * qty;
-                const taxBase = (dpp * qty).toFixed(2);
+                const taxBase = (dpp * qty).toFixed(0);
                 let otherTaxBase = taxBase * ppn_berlaku / 12;
-                otherTaxBase = otherTaxBase.toFixed(2);
+                otherTaxBase = otherTaxBase.toFixed(0);
                 let vat = subTotal - taxBase;
 
     
@@ -365,9 +365,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 GoodServiceOpt: 'A',
                 SerialNo: fp.no_faktur_jual,
                 TransactionDate: tanggal,
-                TaxBaseSellingPrice: totalTaxBase.toFixed(2),
-                OtherTaxBaseSellingPrice: totalOtherTaxBase.toFixed(2),
-                VAT: totalVAT.toFixed(2),
+                TaxBaseSellingPrice: totalTaxBase.toFixed(0),
+                OtherTaxBaseSellingPrice: totalOtherTaxBase.toFixed(0),
+                VAT: totalVAT.toFixed(0),
                 STLG: "0",
                 Info: 'ok'
             };
