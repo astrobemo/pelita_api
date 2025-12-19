@@ -128,7 +128,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     for (const list of COMPANY_LIST) {
         const companyIndex = COMPANY_LIST.indexOf(list);
         const company = list.toLowerCase();
-        const aggeratedCustomer = await prismaClient[company].rekam_faktur_pajak_detail.groupBy({
+        const aggeratedCustomer = await prismaClient[company].nd_rekam_faktur_pajak_detail.groupBy({
             by: ['customer_id'],
             _max: {
             tanggal: true
@@ -146,7 +146,7 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
         
 
         const customerIds = aggeratedCustomer.map((item) => item.customer_id);
-        customers[company] = await prismaClient[company].customer.findMany({
+        customers[company] = await prismaClient[company].nd_customer.findMany({
             where: {
                 id: {
                     in: customerIds
@@ -345,6 +345,132 @@ app.put('/customers/:company_index/:id', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while updating the customer' });
     }
 });
+
+app.get('/customerById', async (req, res) => {
+    const id = parseInt(req.query.id);
+    const company_index = parseInt(req.query.company_index);
+    const company_name = req.query.company_name;
+
+    if(company_index == "" && company_name == ""){
+        return res.status(400).json({ error: 'company or company_name is required' });
+    }
+
+    if(company_index == "" && company_name != ""){
+        switch (company_name) {
+            case 'abadi':
+                company_index = 1;
+                break;
+            case 'lestari':
+                company_index = 2;
+                break;
+            case 'sejati':
+                company_index = 3;
+                break;
+            default:
+                company_index = 1;
+                break;
+        }
+    }
+
+    try {
+        const customer = await prismaClient[COMPANY_LIST[company_index]].customer.findUnique({
+            where: {
+                id: id
+            }
+        });
+        res.json(customer);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching customers' });
+    }
+});
+
+//==========================supplier====================================
+
+app.get('/supplierById', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const company_index = parseInt(req.params.company_index);
+    const company_name = req.query.company_name;
+    if(company_index == "" && company_name == ""){
+        return res.status(400).json({ error: 'company or company_name is required' });
+    }
+
+    if(company_index == "" && company_name != ""){
+        switch (company_name) {
+            case 'abadi':
+                company_index = 1;
+                break;
+            case 'lestari':
+                company_index = 2;
+                break;
+            case 'sejati':
+                company_index = 3;
+                break;
+            default:
+                company_index = 1;
+                break;
+        }
+    }
+    try {
+        const supplier = await prismaClient[COMPANY_LIST[company_index]].supplier.findUnique({
+            where: {
+                id: id
+            }
+        });
+        res.json(supplier);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching suppliers' });
+    }
+});
+
+//==========================barangWarna====================================
+
+app.get('/barang_warna_by_sku', async (req, res) => {
+    const barang_sku_id = parseInt(req.query.barang_sku_id);
+    const company_index = parseInt(req.params.company_index);
+    const company_name = req.query.company_name;
+
+    if(company_index == "" && company_name == ""){
+        return res.status(400).json({ error: 'company or company_name is required' });
+    }
+
+    if(company_index == "" && company_name != ""){
+        switch (company_name) {
+            case 'abadi':
+                company_index = 1;
+                break;
+            case 'lestari':
+                company_index = 2;
+                break;
+            case 'sejati':
+                company_index = 3;
+                break;
+            default:
+                company_index = 1;
+                break;
+        }
+    }
+    try {
+        const barangWarna = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
+        SELECT barang_id, warna_id, nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
+        FROM (
+            SELECT barang_id_master as barang_id, warna_id_master as warna_id
+            FROM nd_master_barang_sku
+            WHERE id = ${barang_sku_id}
+        )bsku
+        LEFT JOIN nd_master_toko_barang tBarang
+        ON bsku.barang_id = tBarang.barang_id_master
+        LEFT JOIN nd_master_toko_warna tWarna
+        ON bsku.warna_id = tWarna.warna_id_master
+        LEFT JOIN nd_barang
+        ON tBarang.barang_id_toko = nd_barang.id
+        `;
+        res.json(barangWarna);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching barang warna' });
+    }
+});
+
+
 
 //==========================pajak coretax====================================
 
@@ -657,7 +783,7 @@ app.get('/penerimaan_barang_status/:company_index', async (req, res) => {
 });
 
 app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
-    const { id, status } = req.query;
+    const { id, status_penerimaan } = req.body.params;
     let company_index ='';
     
     try {
@@ -667,25 +793,58 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
             company_index = req.params.company_index.toLowerCase();
         }
 
-        if(status === '' || typeof status === 'undefined'){
-            res.status(400).json({ error: 'Status is required' });
-            throw new Error('Status is required');
+        if(status_penerimaan === '' || typeof status_penerimaan === 'undefined'){
+            // res.status(400).json({ error: 'Status is required' });
+            // throw new Error('Status is required');
+            console.error('Status is required');
+            res.json({
+                success: false,
+                message: 'Status is required',
+            });
+            return;
         }
 
-        if(status === 'SUDAH_KONFIRMASI'){
-            res.status(403).json({ error: 'Status SUDAH_KONFIRMASI dilakukan oleh admin/akunting' });
-            throw new Error('Update Status SUDAH_KONFIRMASI hanya oleh admin/akunting');
+        if(status_penerimaan === 'SUDAH_KONFIRMASI'){
+            // res.status(403).json({ error: 'Status SUDAH_KONFIRMASI dilakukan oleh admin/akunting' });
+            // throw new Error('Update Status SUDAH_KONFIRMASI hanya oleh admin/akunting');
+            console.error('Update Status SUDAH_KONFIRMASI hanya oleh admin/akunting');
+            res.json({
+                success: false,
+                message: 'Update Status SUDAH_KONFIRMASI hanya oleh admin/akunting',
+            });
+            return;
         }
 
-        const respond = await prismaClient[company_index].penerimaan_barang_status.create({
+        const getLastStatus = await prismaClient[company_index].penerimaan_barang_status.findFirst({
+            where: {
+                penerimaan_barang_id: parseInt(id)
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        });
+
+        if(getLastStatus && getLastStatus.status_penerimaan === status_penerimaan){
+            // res.status(400).json({ error: `Status is already ${status_penerimaan}` });
+            // throw new Error(`Status is already ${status_penerimaan}`);
+            console.error(`Status is already ${status_penerimaan}`);
+            res.json({
+                success: false,
+                message: `Status is already ${status_penerimaan}`,
+            });
+            return;
+        }
+
+        await prismaClient[company_index].penerimaan_barang_status.create({
             data: {
                 penerimaan_barang_id: parseInt(id),
-                status_penerimaan: status
+                status_penerimaan: status_penerimaan
             }
         });
 
         res.json({
-            success: true
+            success: true,
+            message: `Status updated to ${status_penerimaan} successfully`,
         });
 
         
