@@ -394,6 +394,8 @@ app.get('/supplierById', async (req, res) => {
         return res.status(400).json({ error: 'company or company_name is required' });
     }
 
+    console.log('company_index', company_index);
+
     if(company_index == "" && company_name != ""){
         switch (company_name) {
             case 'abadi':
@@ -418,7 +420,7 @@ app.get('/supplierById', async (req, res) => {
         });
         res.json(supplier);
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching suppliers' });
+        res.status(500).json({ error: 'An error occurred while fetching suppliers', msg: error.message});
     }
 });
 
@@ -584,7 +586,8 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
 
         const daftarBarang = await prismaClient[company_index].$queryRaw`
             SELECT barang_sku_id, tSKU.barang_id_master as barang_id, tSKU.warna_id_master as warna_id, tSKU.satuan_id_master as satuan_id, 
-                tSKU.nama_barang as nama_barang, sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, penerimaan_barang_id
+                tSKU.nama_barang as nama_barang, sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, penerimaan_barang_id,
+                tBarang.barang_id_toko
             FROM
                 (
                     SELECT * FROM nd_pembelian
@@ -740,7 +743,7 @@ app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
     }
 });
 
-app.get('/penerimaan_barang_status/:company_index', async (req, res) => {
+app.get('/nd_penerimaan_barang_status/:company_index', async (req, res) => {
     const { id } = req.query;
     let company_index ='';
     
@@ -757,7 +760,7 @@ app.get('/penerimaan_barang_status/:company_index', async (req, res) => {
             }
         });
 
-        const respond = await prismaClient[company_index].penerimaan_barang_status.findMany({
+        const respond = await prismaClient[company_index].nd_penerimaan_barang_status.findMany({
             where: {
                 penerimaan_barang_id: parseInt(id)
             }
@@ -783,6 +786,7 @@ app.get('/penerimaan_barang_status/:company_index', async (req, res) => {
 });
 
 app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
+    console.log('penerimaan_barang_update_status called');
     const { id, status_penerimaan } = req.body.params;
     let company_index ='';
     
@@ -815,7 +819,7 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
             return;
         }
 
-        const getLastStatus = await prismaClient[company_index].penerimaan_barang_status.findFirst({
+        const getLastStatus = await prismaClient[company_index].nd_penerimaan_barang_status.findFirst({
             where: {
                 penerimaan_barang_id: parseInt(id)
             },
@@ -835,12 +839,133 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
             return;
         }
 
-        await prismaClient[company_index].penerimaan_barang_status.create({
+        await prismaClient[company_index].nd_penerimaan_barang_status.create({
             data: {
                 penerimaan_barang_id: parseInt(id),
                 status_penerimaan: status_penerimaan
             }
         });
+
+        res.json({
+            success: true,
+            message: `Status updated to ${status_penerimaan} successfully`,
+        });
+
+        
+    } catch (error) {
+        console.error('Error fetching penerimaan barang status', error);
+        res.status(500).json({ error: 'An error occurred while fetching barang status' });
+    }
+});
+
+app.put('/verifikasi_penerimaan_barang/:company_index', async (req, res) => {
+    console.log('verifikasi_penerimaan_barang called');
+    const { id, daftar_barang } = req.body.params;
+    let company_index ='';
+    
+    try {
+        if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
+            company_index = (req.params.company_index);
+        }else{
+            company_index = req.params.company_index.toLowerCase();
+        }
+
+        const getLastStatus = await prismaClient[company_index].nd_penerimaan_barang_status.findFirst({
+            where: {
+                penerimaan_barang_id: parseInt(id)
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        });
+
+        const status_penerimaan = getLastStatus?.status_penerimaan;
+
+
+        if(status_penerimaan === 'MENUNGGU_INPUT_AKUNTING'){
+            console.log('Masih dalam proses input oleh akunting');
+            res.json({
+                success: false,
+                message: 'Masih dalam proses input oleh akunting',
+            });
+            return;
+        }else if(status_penerimaan !== 'MENUNGGU_DATA_GUDANG'){
+            // res.status(403).json({ error: 'Status SUDAH_KONFIRMASI dilakukan oleh admin/akunting' });
+            // throw new Error('Update Status SUDAH_KONFIRMASI hanya oleh admin/akunting');
+            console.error('Status ');
+            res.json({
+                success: false,
+                message: 'Status saat ini '+status_penerimaan+', tidak bisa diverifikasi gudang',
+            });
+            return;
+        }else{
+
+            if (!daftar_barang || !Array.isArray(daftar_barang) || daftar_barang.length === 0) {
+                res.json({
+                    success: false,
+                    message: 'daftar_barang is required and must be a non-empty array',
+                });
+                return;
+            }
+
+            const daftarBarang = await prismaClient[company_index].$queryRaw`
+                SELECT no_plat, pB.id as penerimaan_barang_id, 
+                    tSKU.barang_sku_id as barang_sku_id, tSKU.barang_id_master as barang_id, tSKU.warna_id_master as warna_id,
+                    tSKU.satuan_id_master as satuan_id, tSKU.nama_barang, sum(pD.qty * pD.jumlah_roll) as qty, sum(pD.jumlah_roll) as jumlah_roll
+                FROM (
+                    SELECT *
+                    FROM nd_penerimaan_barang
+                    WHERE id = ${parseInt(id)}
+                ) pB
+                LEFT JOIN nd_pembelian p ON p.penerimaan_barang_id = pB.id
+                LEFT JOIN nd_pembelian_detail pD ON p.id = pD.pembelian_id
+                LEFT JOIN nd_master_toko_barang tBarang ON pD.barang_id = tBarang.barang_id_toko
+                LEFT JOIN nd_master_toko_warna tWarna ON pD.warna_id = tWarna.warna_id_toko
+                LEFT JOIN nd_master_barang_sku tSKU ON tBarang.barang_id_master = tSKU.barang_id_master
+                    AND tWarna.warna_id_master = tSKU.warna_id_master
+                    WHERE pD.qty IS NOT NULL
+                    GROUP BY tSKU.id
+            `;
+
+            let isVerified = true;
+            // compare daftar_barang with daftarBarang
+            for (const item of daftar_barang) {
+                const matchedItem = daftarBarang.find(
+                    (dbItem) => dbItem.barang_sku_id === item.barang_sku_id
+                );
+                if (!matchedItem) {
+                    isVerified = false;
+                    break;
+                }
+                if (matchedItem.qty !== item.qty || matchedItem.jumlah_roll !== item.jumlah_roll) {
+                    isVerified = false;
+                    break;
+                }
+            }
+
+            if (!isVerified) {
+                res.json({
+                    success: false,
+                    message: 'Data barang tidak sesuai dengan penerimaan barang',
+                    unmatchedData: {
+                        erpItems : daftarBarang,
+                        inputItems: daftar_barang
+                    }
+                });
+                return;
+            }
+            
+        }
+
+        if(isVerified){
+            await prismaClient[company_index].nd_penerimaan_barang_status.create({
+                data: {
+                    penerimaan_barang_id: parseInt(id),
+                    status_penerimaan: "SUDAH_KONFIRMASI"
+                }
+            });
+        }
+
 
         res.json({
             success: true,
