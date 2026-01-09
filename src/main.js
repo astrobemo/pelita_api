@@ -108,6 +108,28 @@ app.get('/testing-consumer', (req, res) => {
     res.send('Testing World!');
 });
 
+const getCompanyByName = (company_name) => {
+    
+    let company_index = 0;
+    switch (company_name) {
+        case 'abadi':
+            company_index = 0;
+            break;
+        case 'lestari':
+            company_index = 1;
+            break;
+        case 'sejati':
+            company_index = 2;
+            break;
+        default:
+            company_index = 0;
+            break;
+    }
+
+    return company_index;
+};
+
+
 //==========================customers data====================================
 
 
@@ -356,20 +378,7 @@ app.get('/customerById', async (req, res) => {
     }
 
     if(company_index == "" && company_name != ""){
-        switch (company_name) {
-            case 'abadi':
-                company_index = 1;
-                break;
-            case 'lestari':
-                company_index = 2;
-                break;
-            case 'sejati':
-                company_index = 3;
-                break;
-            default:
-                company_index = 1;
-                break;
-        }
+        company_index = getCompanyByName(company_name);
     }
 
     try {
@@ -387,40 +396,39 @@ app.get('/customerById', async (req, res) => {
 //==========================supplier====================================
 
 app.get('/supplierById', async (req, res) => {
-    const id = parseInt(req.params.id);
-    const company_index = parseInt(req.params.company_index);
+    const id = parseInt(req.query.id);
+    let company_index = parseInt(req.query.company_index);
     const company_name = req.query.company_name;
     if(company_index == "" && company_name == ""){
         return res.status(400).json({ error: 'company or company_name is required' });
     }
 
-    console.log('company_index', company_index);
-
-    if(company_index == "" && company_name != ""){
-        switch (company_name) {
-            case 'abadi':
-                company_index = 1;
-                break;
-            case 'lestari':
-                company_index = 2;
-                break;
-            case 'sejati':
-                company_index = 3;
-                break;
-            default:
-                company_index = 1;
-                break;
-        }
+    if( ( typeof company_index === "undefined" || Number.isNaN(company_index) )  && company_name != ""){
+        company_index = getCompanyByName(company_name);
     }
+
+    if(typeof COMPANY_LIST[company_index] === 'undefined'){
+        console.log('COMPANY_LIST', COMPANY_LIST, COMPANY_LIST[0]);
+        console.log('company_index', 
+            '1'+company_index, 
+            '2'+typeof company_index, 
+            '3'+req.params.company_index, 
+            '4'+req.query.company_index, 
+            '5'+req.query.params
+        );
+        console.log('test',COMPANY_LIST[1]);
+        return res.status(400).json({ error: 'Invalid company or client id' });
+    }
+
     try {
-        const supplier = await prismaClient[COMPANY_LIST[company_index]].supplier.findUnique({
+        const supplier = await prismaClient[COMPANY_LIST[company_index]].nd_supplier.findUnique({
             where: {
                 id: id
             }
         });
         res.json(supplier);
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching suppliers', msg: error.message});
+        res.status(500).json({ error: 'An error occurred while fetching suppliers', details: error.message });
     }
 });
 
@@ -436,21 +444,9 @@ app.get('/barang_warna_by_sku', async (req, res) => {
     }
 
     if(company_index == "" && company_name != ""){
-        switch (company_name) {
-            case 'abadi':
-                company_index = 1;
-                break;
-            case 'lestari':
-                company_index = 2;
-                break;
-            case 'sejati':
-                company_index = 3;
-                break;
-            default:
-                company_index = 1;
-                break;
-        }
+        company_index = getCompanyByName(company_name);
     }
+    
     try {
         const barangWarna = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
         SELECT barang_id, warna_id, nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
