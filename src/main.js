@@ -1,5 +1,5 @@
 import express from 'express';
-import { COMPANY, ALLOWED_IPS, ALLOWED_ORIGINS, ENVIRONMENT } from '../config/loadEnv.js';
+import { COMPANY, ALLOWED_IPS, ALLOWED_ORIGINS, ENVIRONMENT, API_KEY } from '../config/loadEnv.js';
 import { checkMemoryUsage } from './check-memory-usage.js';
 import { expressjwt } from "express-jwt";
 import cors from "cors";
@@ -95,13 +95,24 @@ app.use((req, res, next) => {
     console.log('========================');
     if (req.path === '/api-docs') {
       next();
-    }else if(ENVIRONMENT === 'development' || ENVIRONMENT === 'staging') {
+    }else{
+        const apiKey = req.headers['x-api-key'];
+
+        if (req.headers['x-api-key'] && apiKey === API_KEY) {
+            console.log(`Access from machine: ${clientIP}, Hostname: ${hostname}`);
+            next();
+        }else{
+            res.status(403).send({error: 'Access restricted'});
+        }
+    }
+    
+    /* else if(ENVIRONMENT === 'development' || ENVIRONMENT === 'staging') {
         console.log('testing/staging environment');
         next();
     }else {
         next();
         // ipFilter(req, res, next);
-    }
+    } */
 });
 
 app.get('/testing-consumer', (req, res) => {
@@ -110,7 +121,7 @@ app.get('/testing-consumer', (req, res) => {
 
 const getCompanyByName = (company_name) => {
     
-    let company_index = 0;
+    let company_index = null;
     switch (company_name) {
         case 'abadi':
             company_index = 0;
@@ -122,8 +133,7 @@ const getCompanyByName = (company_name) => {
             company_index = 2;
             break;
         default:
-            company_index = 0;
-            break;
+            throw new Error(`Invalid company name: ${company_name}`);
     }
 
     return company_index;
@@ -446,7 +456,7 @@ app.get('/barang_warna_by_sku', async (req, res) => {
     if(company_index == "" && company_name != ""){
         company_index = getCompanyByName(company_name);
     }
-    
+
     try {
         const barangWarna = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
         SELECT barang_id, warna_id, nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
