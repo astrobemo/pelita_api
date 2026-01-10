@@ -44,17 +44,19 @@ const allowedIPs = ALLOWED_IPS.split(',');
 const allowedCors = ALLOWED_ORIGINS.split(',');
 
 const corsOptions = {
-    
     origin: function (origin, callback) {
-        callback(null, true); // Allow the request
+        // Allow requests with no origin (like mobile apps, curl, Postman)
         if (!origin || allowedCors.indexOf(origin) !== -1) {
+            callback(null, true); // Allow the request
         } else {
-            console.log('origin', origin);
+            console.log('Blocked origin:', origin);
             callback(new Error('Not allowed by CORS')); // Reject the request
         }
     },
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+    credentials: true,
+    optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions)); 
