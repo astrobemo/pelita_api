@@ -99,7 +99,7 @@ app.use((req, res, next) => {
         const apiKey = req.headers['x-api-key'];
 
         if (req.headers['x-api-key'] && apiKey === API_KEY) {
-            console.log(`Access from machine: Hostname: ${hostname}`);
+            console.log(`Access from machine: Hostname: `);
             next();
         }else{
             res.status(403).send({error: 'Access restricted'});
