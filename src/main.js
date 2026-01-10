@@ -46,12 +46,12 @@ const allowedCors = ALLOWED_ORIGINS.split(',');
 const corsOptions = {
     
     origin: function (origin, callback) {
-        if (!origin || allowedCors.indexOf(origin) !== -1) {
-            callback(null, true); // Allow the request
+        callback(null, true); // Allow the request
+        /* if (!origin || allowedCors.indexOf(origin) !== -1) {
         } else {
             console.log('origin', origin);
             callback(new Error('Not allowed by CORS')); // Reject the request
-        }
+        } */
     },
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
