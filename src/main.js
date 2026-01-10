@@ -47,11 +47,11 @@ const corsOptions = {
     
     origin: function (origin, callback) {
         callback(null, true); // Allow the request
-        /* if (!origin || allowedCors.indexOf(origin) !== -1) {
+        if (!origin || allowedCors.indexOf(origin) !== -1) {
         } else {
             console.log('origin', origin);
             callback(new Error('Not allowed by CORS')); // Reject the request
-        } */
+        }
     },
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
@@ -99,7 +99,7 @@ app.use((req, res, next) => {
         const apiKey = req.headers['x-api-key'];
 
         if (req.headers['x-api-key'] && apiKey === API_KEY) {
-            console.log(`Access from machine: Hostname: `);
+            console.log(`Access from machine: ${clientIP}, Hostname: ${hostname}`);
             next();
         }else{
             res.status(403).send({error: 'Access restricted'});
