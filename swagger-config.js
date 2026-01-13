@@ -23,7 +23,7 @@ const options = {
         description: 'Development server',
       },
       {
-        url: 'http://localhost:3001',
+        url: 'http://api-test.favourtdj.com',
         description: 'Staging server',
       },
     ],
