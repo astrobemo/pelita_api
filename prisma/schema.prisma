@@ -34,7 +34,7 @@ model barang {
   created_at       DateTime           @default(now()) @db.DateTime(0)
   updated_at       DateTime           @default(now()) @db.DateTime(0)
   satuan           satuan?            @relation(fields: [satuan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_barang_nd_satuan")
-  penjualan_detail penjualan_detail[]
+  penjualan_detail nd_penjualan_detail[]
 
   @@index([nama], map: "nama")
   @@index([nama_jual], map: "nama_jual")
@@ -875,7 +875,7 @@ model nd_pembayaran_type {
   nama String? @db.VarChar(100)
 }
 
-model pembelian {
+model nd_pembelian {
   id                    Int                @id @default(autoincrement())
   no_nota               Int
   ockh_info             String?            @db.VarChar(100)
@@ -896,7 +896,7 @@ model pembelian {
   cancelled_by          Int?
   cancelled_date        DateTime?          @db.DateTime(0)
   updated_at            DateTime           @default(now()) @db.DateTime(0)
-  penerimaan_barang     penerimaan_barang? @relation(fields: [penerimaan_barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_pembelian_nd_penerimaan_barang")
+  penerimaan_barang     nd_penerimaan_barang? @relation(fields: [penerimaan_barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_pembelian_nd_penerimaan_barang")
 
   @@index([created_at], map: "created_at")
   @@index([po_pembelian_batch_id], map: "po_pembelian_batch_id")
@@ -905,7 +905,6 @@ model pembelian {
   @@index([penerimaan_barang_id], map: "FK_nd_pembelian_nd_penerimaan_barang")
   @@index([gudang_id], map: "gudang_id")
   @@index([status_aktif], map: "status_aktif")
-  @@map("nd_pembelian")
 }
 
 model pembelian_barang_list {
@@ -922,7 +921,7 @@ model pembelian_barang_list {
   @@map("nd_pembelian_barang_list")
 }
 
-model pembelian_detail {
+model nd_pembelian_detail {
   id             Int      @id @default(autoincrement())
   pembelian_id   Int?     @db.MediumInt
   ockh           String?  @db.VarChar(100)
@@ -939,7 +938,6 @@ model pembelian_detail {
   @@index([barang_id], map: "barang_id")
   @@index([pembelian_id], map: "pembelian_id")
   @@index([warna_id], map: "warna_id")
-  @@map("nd_pembelian_detail")
 }
 
 model nd_pembelian_lain {
@@ -976,7 +974,7 @@ model nd_pembelian_qty_detail {
   @@index([pembelian_detail_id], map: "pembelian_detail_id")
 }
 
-model penerimaan_barang {
+model nd_penerimaan_barang {
   id                    Int         @id @default(autoincrement())
   no_penerimaan         Int?        @default(0)
   no_penerimaan_lengkap String?     @default(dbgenerated("()")) @db.VarChar(50)
@@ -985,9 +983,8 @@ model penerimaan_barang {
   user_id               Int         @default(0) @db.SmallInt
   createdAt             DateTime    @default(now()) @db.DateTime(0)
   updatedAt             DateTime    @default(now()) @db.DateTime(0)
-  pembelian             pembelian[]
+  pembelian             nd_pembelian[]
 
-  @@map("nd_penerimaan_barang")
 }
 
 model nd_pengeluaran_stok_lain {
@@ -1031,7 +1028,7 @@ model nd_pengeluaran_stok_lain_qty_detail {
   jumlah_roll                     Int? @db.SmallInt
 }
 
-model penjualan {
+model nd_penjualan {
   id                Int       @id @default(autoincrement())
   toko_id           Int
   penjualan_type_id Int       @default(3)
@@ -1071,10 +1068,9 @@ model penjualan {
   @@index([tanggal], map: "tanggal")
   @@index([closed_date], map: "closed_date")
   @@index([created_at], map: "created_at")
-  @@map("nd_penjualan")
 }
 
-model penjualan_detail {
+model nd_penjualan_detail {
   id                 Int      @id @default(autoincrement())
   penjualan_id       Int?
   barang_id          Int?
@@ -1083,7 +1079,7 @@ model penjualan_detail {
   warna_id           Int?     @db.SmallInt
   satuan_id          Int?     @db.TinyInt
   harga_jual         Int?
-  gudang_id          String?  @db.VarChar(50)
+  gudang_id          Int?  
   subqty             Decimal? @db.Decimal(10, 2)
   subjumlah_roll     Int?     @db.SmallInt
   createdAt          DateTime @default(now()) @db.DateTime(0)
@@ -1093,7 +1089,6 @@ model penjualan_detail {
   @@index([barang_id], map: "barang_id")
   @@index([penjualan_id], map: "penjualan_id")
   @@index([warna_id], map: "warna_id")
-  @@map("nd_penjualan_detail")
 }
 
 model nd_penjualan_log {

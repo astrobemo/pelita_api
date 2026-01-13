@@ -9,6 +9,7 @@ import path, { join } from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 import { prismaClient } from './prisma-client.js';
+import { swaggerSpec } from '../swagger-config.js';
 
 import { coretaxPajak, coretaxPajakGunggung } from './helpers/coretax_xml.js';
 import http from 'http';
@@ -24,11 +25,10 @@ const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const swaggerDocument = fs.readFileSync(path.join(__dirname, '../pelita_api.json'), 'utf8');
 
-
+// Use auto-generated OpenAPI spec instead of static JSON
 app.use('/api-docs', 
-    swaggerUi.serve, swaggerUi.setup(JSON.parse(swaggerDocument))
+    swaggerUi.serve, swaggerUi.setup(swaggerSpec)
 );
 
 /* app.use(expressjwt({
@@ -67,6 +67,21 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+/**
+ * @swagger
+ * /hello:
+ *   get:
+ *     summary: Health check endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Server is running
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *             example: Hello World!
+ */
 app.get('/hello', (req, res) => {
     res.send('Hello World!');
 });
@@ -145,10 +160,33 @@ const getCompanyByName = (company_name) => {
 //==========================customers data====================================
 
 
-app.get('/customers_bounce_back', async (req, res) => {
-    
-});
-
+/**
+ * @swagger
+ * /customers/sudah_verifikasi_oleh_pajak:
+ *   get:
+ *     summary: Get customers verified by tax authority
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of records per page
+ *     responses:
+ *       200:
+ *         description: List of verified customers grouped by NPWP/NIK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ */
 app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     console.log('get customer verified by pajak');
 
@@ -238,6 +276,25 @@ app.get('/customers/sudah_verifikasi_oleh_pajak', async (req, res) => {
     // res.json(result);
 });
 
+/**
+ * @swagger
+ * /customers/customer-central/{id}:
+ *   get:
+ *     summary: Get customer from central system (GraphQL)
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Customer ID or 'all' to get all customers
+ *     responses:
+ *       200:
+ *         description: Customer data
+ *       500:
+ *         description: GraphQL backend error
+ */
 app.get('/customers/customer-central/:id', async (req, res) => {
 
     let query = "";
@@ -307,9 +364,53 @@ app.get('/customers/customer-central/:id', async (req, res) => {
     }
 });
 
-app.get('/customers/:company_index', async (req, res) => {
+/**
+ * @swagger
+ * /customers/:
+ *   get:
+ *     summary: Get customers by company
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: company_index
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Company index (0=abadi, 1=lestari, 2=sejati)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: orderByField
+ *         schema:
+ *           type: string
+ *           default: nama
+ *       - in: query
+ *         name: orderDirection
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *     responses:
+ *       200:
+ *         description: Paginated list of customers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       500:
+ *         description: Error fetching customers
+ */
+app.get('/customers', async (req, res) => {
     console.log('get customer by company index');
-    const company_index = parseInt(req.params.company_index);
+    const company_index = parseInt(req.query.company_index);
     
     try {
         const { page = 1, limit = 10, orderByField = ['nama'], orderDirection = 'asc' } = req.query;
@@ -344,26 +445,41 @@ app.get('/customers/:company_index', async (req, res) => {
     }
 });
 
-app.get('/customers/:company_index/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-    const company_index = parseInt(req.params.company_index);
 
-    console.log('params',id, company_index);
-    try {
-        const customers = await prismaClient[COMPANY_LIST[company_index]].customer.findUnique({
-            where: {
-                id: id
-            }
-        });
-        res.json(customers);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching customers' });
-    }
-});
-
-app.put('/customers/:company_index/:id', async (req, res) => {
+/**
+ * @swagger
+ * /customers/{id}:
+ *   put:
+ *     summary: Update customer by ID
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: query
+ *         name: company_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Updated customer
+ *       500:
+ *         description: Error updating customer
+ */
+app.put('/customers/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    const company_index = parseInt(req.params.company_index);
+    const company_name = req.query.company_name;
+    const company_index = getCompanyByName(company_name);
     const updateData = req.body;
 
     try {
@@ -380,6 +496,35 @@ app.put('/customers/:company_index/:id', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /customerById:
+ *   get:
+ *     summary: Get customer by ID with company name or index
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_index
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *       200:
+ *         description: Customer details
+ *       400:
+ *         description: Company or company_name required
+ *       500:
+ *         description: Error fetching customer
+ */
 app.get('/customerById', async (req, res) => {
     const id = parseInt(req.query.id);
     const company_index = parseInt(req.query.company_index);
@@ -405,19 +550,203 @@ app.get('/customerById', async (req, res) => {
     }
 });
 
-//==========================supplier====================================
+//==========================Penjualan====================================
 
-app.get('/supplierById', async (req, res) => {
+/**
+ * @swagger
+ * /PenjualanById:
+ *   get:
+ *     summary: Get penjualan by ID with company name or index
+ *     tags: [Penjualan]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *       200:
+ *         description: Penjualan details
+ *       400:
+ *         description: company_name required
+ *       500:
+ *         description: Error fetching penjualan
+ */
+
+
+app.get('/PenjualanById', async (req, res) => {
     const id = parseInt(req.query.id);
-    let company_index = parseInt(req.query.company_index);
     const company_name = req.query.company_name;
-    if(company_index == "" && company_name == ""){
+    if(company_name == ""){
+        return res.status(400).json({ error: 'company or company_name is required' });
+    }
+    
+    const company_index = getCompanyByName(company_name);
+    try {
+        const penjualan = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
+            SELECT id, tanggal, customer_id, toko_id, penjualan_type_id, no_faktur_fp as no_faktur,
+            npwp_cust_fp as npwp, nik_cust_fp as nik, nama_cust_fp as nama_customer, alamat_cust_fp as alamat_lengkap,
+            nama_keterangan, alamat_keterangan
+            FROM (
+                SELECT *
+                FROM nd_penjualan
+                WHERE id = ${id}
+            )pj
+        `;
+
+        const penjualan_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
+            SELECT penjualan_id, barang_id, warna_id, b.satuan_id, gudang_id, 
+            sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, pd.harga_jual as harga,
+            nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
+            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap
+            FROM (
+                SELECT *
+                FROM nd_penjualan_detail
+                WHERE penjualan_id = ${id}
+            )pd
+            LEFT JOIN nd_barang b
+            ON b.id = pd.barang_id
+            LEFT JOIN nd_warna w
+            ON w.id = pd.warna_id
+            LEFT JOIN nd_satuan s
+            ON s.id = b.satuan_id 
+            GROUP BY barang_id, warna_id, pd.harga_jual
+        `;
+        
+        res.json({...penjualan[0], penjualan_detail: penjualan_detail});
+
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching penjualan', message: error.message});
+    }
+});
+
+
+//==========================Pembelian====================================
+
+/**
+ * @swagger
+ * /PembelianById:
+ *   get:
+ *     summary: Get pembelian by ID with company name or index
+ *     tags: [Pembelian]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *       200:
+ *         description: Pembelian details
+ *       400:
+ *         description: company_name required
+ *       500:
+ *         description: Error fetching pembelian
+ */
+
+app.get('/PembelianById', async (req, res) => {
+    const id = parseInt(req.query.id);
+    const company_name = req.query.company_name;
+    if(company_name == ""){
         return res.status(400).json({ error: 'company or company_name is required' });
     }
 
-    if( ( typeof company_index === "undefined" || Number.isNaN(company_index) )  && company_name != ""){
-        company_index = getCompanyByName(company_name);
+    const company_index = getCompanyByName(company_name);
+    try {
+        const pembelian = await prismaClient[COMPANY_LIST[company_index]].nd_pembelian.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        const supplier_id = pembelian?.supplier_id;
+
+        const supplier = await prismaClient[COMPANY_LIST[company_index]].nd_supplier.findUnique({
+            where: {
+                id: supplier_id
+            },
+            select: {
+                id: true,
+                nama: true,
+                alamat: true,
+                kode: true,
+            }
+        });
+        
+        const pembelian_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
+            SELECT pembelian_id, barang_id, warna_id, b.satuan_id, gudang_id,
+            sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, pd.harga_beli as harga,
+            nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
+            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap
+            FROM (
+                SELECT *
+                FROM nd_pembelian_detail
+                WHERE pembelian_id = ${id}
+            )pd
+            LEFT JOIN nd_barang b
+            ON b.id = pd.barang_id
+            LEFT JOIN nd_warna w
+            ON w.id = pd.warna_id
+            LEFT JOIN nd_satuan s
+            ON s.id = b.satuan_id
+            GROUP BY barang_id, warna_id, pd.harga_beli
+        `;
+        res.json({...pembelian, pembelian_detail: pembelian_detail, supplier: supplier});
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching pembelian', message: error.message });
     }
+});
+
+
+
+//==========================supplier====================================
+
+/**
+ * @swagger
+ * /supplierById:
+ *   get:
+ *     summary: Get supplier by ID
+ *     tags: [Suppliers]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *       200:
+ *         description: Supplier details
+ *       400:
+ *         description: Company or company_name required / Invalid company or client id
+ *       500:
+ *         description: Error fetching supplier
+ */
+app.get('/supplierById', async (req, res) => {
+    const id = parseInt(req.query.id);
+    // let company_index = parseInt(req.query.company_index);
+    const company_name = req.query.company_name;
+    if(company_name == ""){
+        return res.status(400).json({ error: 'company or company_name is required' });
+    }
+    const company_index = getCompanyByName(company_name);
+    
 
     if(typeof COMPANY_LIST[company_index] === 'undefined'){
         console.log('COMPANY_LIST', COMPANY_LIST, COMPANY_LIST[0]);
@@ -446,6 +775,29 @@ app.get('/supplierById', async (req, res) => {
 
 //==========================barangWarna====================================
 
+/**
+ * @swagger
+ * /barang_warna_by_sku:
+ *   get:
+ *     summary: Get barang warna (colors) by SKU
+ *     tags: [Barang]
+ *     parameters:
+ *       - in: query
+ *         name: barang_sku_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *       200:
+ *         description: List of barang warna details
+ *       500:
+ *         description: Error fetching barang warna
+ */
 app.get('/barang_warna_by_sku', async (req, res) => {
     const barang_sku_id = parseInt(req.query.barang_sku_id);
     const company_index = parseInt(req.params.company_index);
@@ -484,7 +836,34 @@ app.get('/barang_warna_by_sku', async (req, res) => {
 
 //==========================pajak coretax====================================
 
-
+/**
+ * @swagger
+ * /pajak/generate_faktur_pajak_coretax:
+ *   get:
+ *     summary: Generate tax invoice XML (CoretaxPajak)
+ *     tags: [Pajak]
+ *     parameters:
+ *       - in: query
+ *         name: company_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *       - in: query
+ *         name: rekam_faktur_pajak_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: XML file attachment
+ *         content:
+ *           application/xml:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Error generating faktur pajak
+ */
 app.get('/pajak/generate_faktur_pajak_coretax', async (req, res) => {
     const company_name = req.query.company_name;
     const rekam_faktur_pajak_id = req.query.rekam_faktur_pajak_id;
@@ -503,6 +882,34 @@ app.get('/pajak/generate_faktur_pajak_coretax', async (req, res) => {
     
 });
 
+/**
+ * @swagger
+ * /pajak/generate_faktur_pajak_gunggung:
+ *   get:
+ *     summary: Generate bulk tax invoice XML (CoretaxPajakGunggung)
+ *     tags: [Pajak]
+ *     parameters:
+ *       - in: query
+ *         name: company_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *       - in: query
+ *         name: rekam_faktur_pajak_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: XML file attachment
+ *         content:
+ *           application/xml:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Error generating faktur pajak gunggung
+ */
 app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
 
     const company_name = req.query.company_name;
@@ -525,11 +932,11 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
 
 //==========================penerimaan barang====================================
 
-app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
+app.get('/penerimaan_barang_by_tanggal', async (req, res) => {
     
     let company_index ='';
     console.log('ENV', ENVIRONMENT);
-    company_index = req.params.company_index;
+    company_index = req.query.company_index;
     console.log('param', req.params);
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
         
@@ -684,14 +1091,14 @@ app.get('/penerimaan_barang_by_tanggal/:company_index', async (req, res) => {
     }
 });
 
-app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
+app.get('/penerimaan_barang_by_id/', async (req, res) => {
     
     const { id } = req.query;
     let company_index ='';
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-        company_index = req.params.company_index;
+        company_index = req.query.company_index;
     }else{
-        company_index = req.params.company_index.toLowerCase();
+        company_index = req.query.company_index.toLowerCase();
     }
 
     let penerimaanBarang = [];
@@ -751,9 +1158,8 @@ app.get('/penerimaan_barang_by_id/:company_index', async (req, res) => {
     }
 });
 
-app.get('/nd_penerimaan_barang_status/:company_index', async (req, res) => {
-    const { id } = req.query;
-    let company_index ='';
+app.get('/nd_penerimaan_barang_status/', async (req, res) => {
+    let { id, company_index } = req.query;
     
     try {
         if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
@@ -793,16 +1199,16 @@ app.get('/nd_penerimaan_barang_status/:company_index', async (req, res) => {
     }
 });
 
-app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
+app.put('/penerimaan_barang_update_status/', async (req, res) => {
     console.log('penerimaan_barang_update_status called');
     const { id, status_penerimaan } = req.body.params;
     let company_index ='';
     
     try {
         if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-            company_index = (req.params.company_index);
+            company_index = (req.query.company_index);
         }else{
-            company_index = req.params.company_index.toLowerCase();
+            company_index = req.query.company_index.toLowerCase();
         }
 
         if(status_penerimaan === '' || typeof status_penerimaan === 'undefined'){
@@ -866,16 +1272,16 @@ app.put('/penerimaan_barang_update_status/:company_index', async (req, res) => {
     }
 });
 
-app.put('/verifikasi_penerimaan_barang/:company_index', async (req, res) => {
+app.put('/verifikasi_penerimaan_barang/', async (req, res) => {
     console.log('verifikasi_penerimaan_barang called');
     const { id, daftar_barang } = req.body.params;
     let company_index ='';
     
     try {
         if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-            company_index = (req.params.company_index);
+            company_index = (req.query.company_index);
         }else{
-            company_index = req.params.company_index.toLowerCase();
+            company_index = req.query.company_index.toLowerCase();
         }
 
         const getLastStatus = await prismaClient[company_index].nd_penerimaan_barang_status.findFirst({
@@ -989,14 +1395,14 @@ app.put('/verifikasi_penerimaan_barang/:company_index', async (req, res) => {
 
 //==========================mutasi barang====================================
 
-app.post('/mutasi_barang_keluar/:company_index', async (req, res) => {
+app.post('/mutasi_barang_keluar/', async (req, res) => {
     const { barang_sku_id, barcode_id, qty, tanggal, gudang_id_tujuan } = req.body;
 
     let company_index ='';
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
-        company_index = req.params.company_index;
+        company_index = req.query.company_index;
     }else{
-        company_index = req.params.company_index.toLowerCase();
+        company_index = req.query.company_index.toLowerCase();
     }
 
     if(company_index === ''){
