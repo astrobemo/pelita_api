@@ -19,7 +19,7 @@ model nd_bank_list {
   updated_at     DateTime @default(now()) @db.DateTime(0)
 }
 
-model barang {
+model nd_barang {
   id               Int                @id @default(autoincrement())
   jenis_barang     String?            @default(dbgenerated("(POLYESTER)")) @db.VarChar(100)
   nama             String?            @db.VarChar(100)
@@ -33,16 +33,15 @@ model barang {
   tipe_qty         Boolean?           @default(true)
   created_at       DateTime           @default(now()) @db.DateTime(0)
   updated_at       DateTime           @default(now()) @db.DateTime(0)
-  satuan           satuan?            @relation(fields: [satuan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_barang_nd_satuan")
+  satuan           nd_satuan?            @relation(fields: [satuan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_barang_nd_satuan")
   penjualan_detail nd_penjualan_detail[]
 
   @@index([nama], map: "nama")
   @@index([nama_jual], map: "nama_jual")
   @@index([satuan_id], map: "FK_nd_barang_nd_satuan")
-  @@map("nd_barang")
 }
 
-model barang_beli {
+model nd_barang_beli {
   id           Int      @id @default(autoincrement())
   nama         String?  @db.VarChar(100)
   barang_id    Int?
@@ -51,7 +50,6 @@ model barang_beli {
   created_at   DateTime @default(now()) @db.DateTime(0)
   updated_at   DateTime @default(now()) @db.DateTime(0)
 
-  @@map("nd_barang_beli")
 }
 
 model nd_barang_forecasting_data {
@@ -126,7 +124,7 @@ model nd_controller {
   name String? @db.VarChar(100)
 }
 
-model customer {
+model nd_customer {
   id                   Int              @id @default(autoincrement())
   customer_type_id     Boolean          @default(true)
   nama                 String?          @db.VarChar(70)
@@ -166,9 +164,8 @@ model customer {
   created_register     DateTime         @default(now()) @db.DateTime(0)
   verified_time        DateTime?        @db.DateTime(0)
   customer_id_central  String?          @db.VarChar(50)
-  customer_source      customer_source?
+  customer_source      nd_customer_source?
 
-  @@map("nd_customer")
 }
 
 model nd_customer_alamat_kirim {
@@ -263,7 +260,7 @@ model nd_customer_harga_history_detail {
   updated_at   DateTime @default(now()) @db.DateTime(0)
 }
 
-model customer_source {
+model nd_customer_source {
   id              Int       @id @default(autoincrement())
   customer_id     Int       @unique
   registered_date DateTime? @db.Date
@@ -271,9 +268,8 @@ model customer_source {
   source_detail   String?   @db.VarChar(100)
   created_at      DateTime  @default(now()) @db.DateTime(0)
   updated_at      DateTime  @default(now()) @db.DateTime(0)
-  customer        customer  @relation(fields: [customer_id], references: [id])
+  customer        nd_customer  @relation(fields: [customer_id], references: [id])
 
-  @@map("nd_customer_source")
 }
 
 model nd_dp_keluar {
@@ -505,7 +501,7 @@ model nd_maintenance_list {
   status     Int       @default(1) @db.TinyInt
 }
 
-model master_barang_sku {
+model nd_master_barang_sku {
   id               Int      @id @default(autoincrement())
   barang_sku_id    String   @db.VarChar(100)
   nama_barang      String   @db.VarChar(100)
@@ -515,22 +511,20 @@ model master_barang_sku {
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
-  @@map("nd_master_barang_sku")
 }
 
-model master_barang {
+model nd_master_toko_barang {
   id               Int      @id @default(autoincrement())
-  barang_id_toko   Int?
+  barang_id_toko   Int      @unique
   barang_id_master Int?
   nama_master      String?  @db.VarChar(100)
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   @@unique([barang_id_toko, barang_id_master], map: "barang_id_toko_master")
-  @@map("nd_master_toko_barang")
 }
 
-model master_satuan {
+model nd_master_toko_satuan {
   id               Int      @id @default(autoincrement())
   satuan_id_toko   Int      @default(0)
   satuan_id_master Int      @default(0)
@@ -539,10 +533,9 @@ model master_satuan {
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   @@unique([satuan_id_toko, satuan_id_master], map: "satuan_id")
-  @@map("nd_master_toko_satuan")
 }
 
-model master_warna {
+model nd_master_toko_warna {
   id              Int       @id @default(autoincrement())
   warna_id_toko   Int
   warna_id_master Int
@@ -551,7 +544,6 @@ model master_warna {
   updatedAt       DateTime? @default(now()) @db.DateTime(0)
 
   @@unique([warna_id_toko, warna_id_master], map: "warna_id_master_toko")
-  @@map("nd_master_toko_warna")
 }
 
 model nd_menu {
@@ -1084,7 +1076,7 @@ model nd_penjualan_detail {
   subjumlah_roll     Int?     @db.SmallInt
   createdAt          DateTime @default(now()) @db.DateTime(0)
   updatedAt          DateTime @default(now()) @db.DateTime(0)
-  barang             barang?  @relation(fields: [barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_penjualan_detail_nd_barang")
+  barang             nd_barang?  @relation(fields: [barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_penjualan_detail_nd_barang")
 
   @@index([barang_id], map: "barang_id")
   @@index([penjualan_id], map: "penjualan_id")
@@ -1633,13 +1625,11 @@ model nd_retur_jual_qty {
   jumlah_roll          Int?
 }
 
-model satuan {
+model nd_satuan {
   id           Int      @id @default(autoincrement())
   nama         String?  @db.VarChar(100)
   status_aktif Int?     @default(1)
-  barang       barang[]
-
-  @@map("nd_satuan")
+  barang       nd_barang[]
 }
 
 model nd_setting {
@@ -1863,14 +1853,13 @@ model nd_user_access_time {
   time_end   DateTime? @db.Time(0)
 }
 
-model warna {
+model nd_warna {
   id           Int     @id @default(autoincrement())
   warna_beli   String? @db.VarChar(50)
   warna_jual   String? @db.VarChar(50)
   kode_warna   String? @db.VarChar(7)
   status_aktif Int     @default(1)
 
-  @@map("nd_warna")
 }
 
 model nd_warning_jatuh_tempo_harian {

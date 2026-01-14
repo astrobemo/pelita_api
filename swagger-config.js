@@ -23,8 +23,8 @@ const options = {
         description: 'Development server',
       },
       {
-        url: 'http://api-test.favourtdj.com',
-        description: 'Staging server',
+        url: 'https://api-test.favourtdj.com',
+        description: 'Staging server',  
       },
     ],
     components: {

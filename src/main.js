@@ -509,10 +509,6 @@ app.put('/customers/:id', async (req, res) => {
  *         schema:
  *           type: integer
  *       - in: query
- *         name: company_index
- *         schema:
- *           type: integer
- *       - in: query
  *         name: company_name
  *         schema:
  *           type: string
@@ -527,23 +523,20 @@ app.put('/customers/:id', async (req, res) => {
  */
 app.get('/customerById', async (req, res) => {
     const id = parseInt(req.query.id);
-    const company_index = parseInt(req.query.company_index);
     const company_name = req.query.company_name;
-
-    if(company_index == "" && company_name == ""){
+    if(company_name == ""){
         return res.status(400).json({ error: 'company or company_name is required' });
     }
 
-    if(company_index == "" && company_name != ""){
-        company_index = getCompanyByName(company_name);
-    }
+    let company_index = getCompanyByName(company_name);
 
     try {
-        const customer = await prismaClient[COMPANY_LIST[company_index]].customer.findUnique({
+        const customer = await prismaClient[COMPANY_LIST[company_index]].nd_customer.findUnique({
             where: {
                 id: id
             }
         });
+
         res.json(customer);
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching customers' });
@@ -604,7 +597,7 @@ app.get('/PenjualanById', async (req, res) => {
             SELECT penjualan_id, barang_id, warna_id, b.satuan_id, gudang_id, 
             sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, pd.harga_jual as harga,
             nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
-            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap
+            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id
             FROM (
                 SELECT *
                 FROM nd_penjualan_detail
@@ -616,6 +609,13 @@ app.get('/PenjualanById', async (req, res) => {
             ON w.id = pd.warna_id
             LEFT JOIN nd_satuan s
             ON s.id = b.satuan_id 
+            LEFT JOIN nd_master_toko_barang tBarang
+            ON tBarang.barang_id_toko = pd.barang_id
+            LEFT JOIN nd_master_toko_warna tWarna
+            ON tWarna.warna_id_toko = pd.warna_id
+            LEFT JOIN nd_master_barang_sku mBSku
+            ON mBSku.barang_id_master = tBarang.barang_id_master
+            AND mBSku.warna_id_master = tWarna.warna_id_master
             GROUP BY barang_id, warna_id, pd.harga_jual
         `;
         
@@ -773,7 +773,94 @@ app.get('/supplierById', async (req, res) => {
     }
 });
 
-//==========================barangWarna====================================
+//==============================barang=======================================
+
+/**
+ * @swagger
+ * /barang:
+ *   get:
+ *     summary: Get barang
+ *     tags: [Barang]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *      200:
+ *        description: Barang details
+ *      500:
+ *        description: Error fetching barang
+ */
+
+app.get('/barang', async (req, res) => {
+    const id = parseInt(req.query.id);
+    const company_name = req.query.company_name;
+    let company_index = getCompanyByName(company_name);
+
+    try {
+        const barang = await prismaClient[COMPANY_LIST[company_index]].nd_barang.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        const master_toko_barang = await prismaClient[COMPANY_LIST[company_index]].nd_master_toko_barang.findUnique({
+            where: {
+                barang_id_toko: id
+            }
+        });
+
+        const master_barang_sku = await prismaClient[COMPANY_LIST[company_index]].nd_master_barang_sku.findMany({
+            where: {
+                barang_id_master: master_toko_barang ? master_toko_barang?.barang_id_master : 0
+            }
+        }); 
+
+
+        res.json({...barang, warna_list: master_barang_sku});
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching barang', message: error.message });
+    }
+});
+    
+/**
+ * @swagger
+ * /allBarang:
+ *   get:
+ *     summary: Get all barang
+ *     tags: [Barang]
+ *     parameters:
+ *       - in: query
+ *         name: company_name
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *      200:
+ *        description: Barang
+ *      500:
+ *        description: Error fetching barang
+ */
+
+app.get('/allBarang', async (req, res) => {
+    const company_name = req.query.company_name;
+    let company_index = getCompanyByName(company_name);
+
+    try {
+        const barang = await prismaClient[COMPANY_LIST[company_index]].nd_barang.findMany();
+
+        res.json(barang);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching barang', message: error.message });
+    }
+});
 
 /**
  * @swagger
@@ -832,6 +919,48 @@ app.get('/barang_warna_by_sku', async (req, res) => {
     }
 });
 
+//==============================warna=======================================
+
+/**
+ * @swagger
+ * /warna:
+ *   get:
+ *     summary: Get warna
+ *     tags: [Warna]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: company_name
+ *         schema:
+ *           type: string
+ *           enum: [abadi, lestari, sejati]
+ *     responses:
+ *      200:
+ *        description: Barang details
+ *      500:
+ *        description: Error fetching barang
+ */
+
+app.get('/warna', async (req, res) => {
+    const id = parseInt(req.query.id);
+    const company_name = req.query.company_name;
+    let company_index = getCompanyByName(company_name);
+
+    try {
+        const warna = await prismaClient[COMPANY_LIST[company_index]].nd_warna.findUnique({
+            where: {
+                id: id
+            }
+        });
+        res.json(warna);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching warna', message: error.message });
+    }
+});
 
 
 //==========================pajak coretax====================================
