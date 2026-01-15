@@ -869,7 +869,7 @@ model nd_pembayaran_type {
 
 model nd_pembelian {
   id                    Int                @id @default(autoincrement())
-  no_nota               Int
+  no_nota               Int?
   ockh_info             String?            @db.VarChar(100)
   no_faktur             String?            @db.VarChar(50)
   penerimaan_barang_id  Int?
