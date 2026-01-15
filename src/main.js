@@ -596,7 +596,7 @@ app.get('/PenjualanById', async (req, res) => {
         const penjualan_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
             SELECT penjualan_id, barang_id, warna_id, b.satuan_id, gudang_id, 
             sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, 
-            pd.harga_jual as harga_jual, CAST(harga_beli AS SIGNED INTEGER) as harga_beli, 
+            pd.harga_jual as harga_jual, harga_beli, 
             nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
             concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id
             FROM (
@@ -690,7 +690,7 @@ app.get('/PembelianById', async (req, res) => {
             SELECT pembelian_id, barang_id, warna_id, b.satuan_id, gudang_id,
             sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, pd.harga_beli as harga_beli, harga_jual,
             nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
-            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap
+            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id
             FROM (
                 SELECT *
                 FROM nd_pembelian_detail
@@ -702,6 +702,13 @@ app.get('/PembelianById', async (req, res) => {
             ON w.id = pd.warna_id
             LEFT JOIN nd_satuan s
             ON s.id = b.satuan_id
+            LEFT JOIN nd_master_toko_barang tBarang
+            ON tBarang.barang_id_toko = pd.barang_id
+            LEFT JOIN nd_master_toko_warna tWarna
+            ON tWarna.warna_id_toko = pd.warna_id
+            LEFT JOIN nd_master_barang_sku mBSku
+            ON mBSku.barang_id_master = tBarang.barang_id_master
+            AND mBSku.warna_id_master = tWarna.warna_id_master
             GROUP BY barang_id, warna_id, pd.harga_beli
         `;
         res.json({...pembelian, pembelian_detail: pembelian_detail, supplier: supplier});
