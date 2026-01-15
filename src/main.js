@@ -901,7 +901,7 @@ app.get('/barang_warna_by_sku', async (req, res) => {
 
     try {
         const barangWarna = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
-        SELECT tBarang.barang_id_master, tWarna.warna_id_master, barang_id_toko, warna_id_toko, 
+        SELECT barang_sku_id, tBarang.barang_id_master, tWarna.warna_id_master, barang_id_toko, warna_id_toko, 
         nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
         FROM (
             SELECT barang_id_master as barang_id, warna_id_master as warna_id
