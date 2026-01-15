@@ -595,7 +595,8 @@ app.get('/PenjualanById', async (req, res) => {
 
         const penjualan_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
             SELECT penjualan_id, barang_id, warna_id, b.satuan_id, gudang_id, 
-            sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, pd.harga_jual as harga,
+            sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, 
+            pd.harga_jual as harga_jual, CAST(harga_beli AS SIGNED INTEGER) as harga_beli, 
             nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
             concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id
             FROM (
@@ -687,7 +688,7 @@ app.get('/PembelianById', async (req, res) => {
         
         const pembelian_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
             SELECT pembelian_id, barang_id, warna_id, b.satuan_id, gudang_id,
-            sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, pd.harga_beli as harga,
+            sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, pd.harga_beli as harga_beli, harga_jual,
             nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
             concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap
             FROM (
