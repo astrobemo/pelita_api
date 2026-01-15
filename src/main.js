@@ -904,7 +904,7 @@ app.get('/barang_warna_by_sku', async (req, res) => {
         SELECT barang_sku_id, tBarang.barang_id_master, tWarna.warna_id_master, barang_id_toko, warna_id_toko, 
         nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
         FROM (
-            SELECT barang_id_master as barang_id, warna_id_master as warna_id
+            SELECT barang_id_master as barang_id, warna_id_master as warna_id, barang_sku_id
             FROM nd_master_barang_sku
             WHERE id = ${barang_sku_id}
         )bsku
