@@ -881,7 +881,7 @@ app.get('/allBarang', async (req, res) => {
  *         name: barang_sku_id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *       - in: query
  *         name: company_name
  *         schema:
@@ -895,20 +895,14 @@ app.get('/allBarang', async (req, res) => {
  */
 app.get('/barang_warna_by_sku', async (req, res) => {
     const barang_sku_id = parseInt(req.query.barang_sku_id);
-    const company_index = parseInt(req.params.company_index);
     const company_name = req.query.company_name;
 
-    if(company_index == "" && company_name == ""){
-        return res.status(400).json({ error: 'company or company_name is required' });
-    }
-
-    if(company_index == "" && company_name != ""){
-        company_index = getCompanyByName(company_name);
-    }
+    let company_index = getCompanyByName(company_name);
 
     try {
         const barangWarna = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
-        SELECT barang_id, warna_id, nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
+        SELECT tBarang.barang_id_master, tWarna.warna_id_master, barang_id_toko, warna_id_toko, 
+        nama_jual as nama_barang, warna_jual as nama_warna, harga_jual, harga_beli
         FROM (
             SELECT barang_id_master as barang_id, warna_id_master as warna_id
             FROM nd_master_barang_sku
@@ -920,10 +914,12 @@ app.get('/barang_warna_by_sku', async (req, res) => {
         ON bsku.warna_id = tWarna.warna_id_master
         LEFT JOIN nd_barang
         ON tBarang.barang_id_toko = nd_barang.id
+        LEFT JOIN nd_warna
+        ON tWarna.warna_id_toko = nd_warna.id
         `;
         res.json(barangWarna);
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching barang warna' });
+        res.status(500).json({ error: 'An error occurred while fetching barang warna', message: error.message });
     }
 });
 
