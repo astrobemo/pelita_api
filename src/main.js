@@ -682,6 +682,7 @@ app.get('/PembelianById', async (req, res) => {
                 id: true,
                 nama: true,
                 alamat: true,
+                telepon: true,
                 kode: true,
             }
         });
@@ -711,7 +712,15 @@ app.get('/PembelianById', async (req, res) => {
             AND mBSku.warna_id_master = tWarna.warna_id_master
             GROUP BY barang_id, warna_id, pd.harga_beli
         `;
-        res.json({...pembelian, pembelian_detail: pembelian_detail, supplier: supplier});
+
+        let total = 0;
+        pembelian_detail.forEach(item => {
+            total += parseFloat(item.harga_beli) * parseFloat(item.qty);
+        });
+
+                
+        const shipping_date = pembelian?.created_at.toISOString().split('T')[0];
+        res.json({...pembelian, total:total, shipping_date:shipping_date, pembelian_detail: pembelian_detail, supplier: supplier});
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching pembelian', message: error.message });
     }
