@@ -598,7 +598,8 @@ app.get('/PenjualanById', async (req, res) => {
             sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, 
             pd.harga_jual as harga_jual, harga_beli, 
             nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
-            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id
+            concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id,
+            g.nama as nama_gudang
             FROM (
                 SELECT *
                 FROM nd_penjualan_detail
@@ -617,6 +618,8 @@ app.get('/PenjualanById', async (req, res) => {
             LEFT JOIN nd_master_barang_sku mBSku
             ON mBSku.barang_id_master = tBarang.barang_id_master
             AND mBSku.warna_id_master = tWarna.warna_id_master
+            LEFT JOIN nd_gudang g
+            ON g.id = pd.gudang_id
             GROUP BY barang_id, warna_id, pd.harga_jual
         `;
         
@@ -720,7 +723,18 @@ app.get('/PembelianById', async (req, res) => {
 
                 
         const shipping_date = pembelian?.created_at.toISOString().split('T')[0];
-        res.json({...pembelian, total:total, shipping_date:shipping_date, pembelian_detail: pembelian_detail, supplier: supplier});
+        const gudang_id = pembelian?.gudang_id;
+        const gudang = await prismaClient[COMPANY_LIST[company_index]].nd_gudang.findUnique({
+            where: {
+                id: gudang_id
+            }
+        });
+        res.json({...pembelian, 
+            total:total, shipping_date:shipping_date, 
+            pembelian_detail: pembelian_detail, 
+            supplier: supplier,
+            gudang: gudang
+        });
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching pembelian', message: error.message });
     }
