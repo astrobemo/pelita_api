@@ -641,7 +641,7 @@ app.get('/PenjualanById', async (req, res) => {
         let total = 0;
         penjualan_detail.forEach(item => {
             total += parseFloat(item.harga_jual) * parseFloat(item.qty);
-            gudang_id.add(item.gudang_id);
+            gudang_id.add(parseInt(item.gudang_id));
         });
 
         const gudang = await prismaClient[COMPANY_LIST[company_index]].nd_gudang.findMany({
