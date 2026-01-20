@@ -618,6 +618,8 @@ app.get('/PenjualanById', async (req, res) => {
                 SELECT *
                 FROM nd_penjualan_detail
                 WHERE penjualan_id = ${id}
+                AND subqty is not null
+                AND harga_jual is not null
             )pd
             LEFT JOIN nd_barang b
             ON b.id = pd.barang_id
@@ -647,7 +649,7 @@ app.get('/PenjualanById', async (req, res) => {
         const gudang = await prismaClient[COMPANY_LIST[company_index]].nd_gudang.findMany({
             where: {
                 id: {
-                    in: Array.from(gudang_id).map(id => parseInt(id))
+                    in: Array.from(gudang_id)
                 }
             }
         });
