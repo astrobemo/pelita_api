@@ -1053,6 +1053,7 @@ model nd_penjualan {
   fp_status         Int       @default(0)
   is_custom_view    Int       @default(0) @db.TinyInt
   rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
+  penjualan_detail       nd_penjualan_detail[]
 
   @@index([customer_id], map: "customer_id")
   @@index([no_faktur], map: "no_faktur")
@@ -1078,6 +1079,7 @@ model nd_penjualan_detail {
   createdAt          DateTime @default(now()) @db.DateTime(0)
   updatedAt          DateTime @default(now()) @db.DateTime(0)
   barang             nd_barang?  @relation(fields: [barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_penjualan_detail_nd_barang")
+  penjualan          nd_penjualan? @relation(fields: [penjualan_id], references: [id])
 
   @@index([barang_id], map: "barang_id")
   @@index([penjualan_id], map: "penjualan_id")
