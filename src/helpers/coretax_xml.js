@@ -29,9 +29,9 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 ]
             },
             include: {
-                nd_penjualan: {
+                penjualan: {
                     include: {
-                        nd_penjualan_detail: {
+                        penjualan_detail: {
                             include: {
                                 nd_barang: {
                                     include: {
@@ -239,9 +239,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                 ]
             },
             include: {
-                nd_penjualan: {
+                penjualan: {
                     include: {
-                        nd_penjualan_detail: {
+                        penjualan_detail: {
                             include: {
                                 nd_barang: {
                                     include: {
