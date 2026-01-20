@@ -243,9 +243,9 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
                     include: {
                         penjualan_detail: {
                             include: {
-                                nd_barang: {
+                                barang: {
                                     include: {
-                                        nd_satuan:true
+                                        satuan:true
                                     }
                                 }
                             }
