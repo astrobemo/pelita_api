@@ -593,6 +593,20 @@ app.get('/PenjualanById', async (req, res) => {
             )pj
         `;
 
+        const customer_id = penjualan[0]?.customer_id;
+        const customer = await prismaClient[COMPANY_LIST[company_index]].nd_customer.findUnique({
+            where: {
+                id: customer_id
+            },
+            select: {
+                id: true,
+                nama: true,
+                alamat: true,
+                telepon1: true
+            }
+        });
+                
+
         const penjualan_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
             SELECT penjualan_id, barang_id, warna_id, b.satuan_id, gudang_id, 
             sum(subqty) as qty, sum(subjumlah_roll) as jumlah_roll, 
@@ -622,8 +636,23 @@ app.get('/PenjualanById', async (req, res) => {
             ON g.id = pd.gudang_id
             GROUP BY barang_id, warna_id, pd.harga_jual
         `;
+
+        let gudang_id = new Set();
+        let total = 0;
+        penjualan_detail.forEach(item => {
+            total += parseFloat(item.harga_jual) * parseFloat(item.qty);
+            gudang_id.add(item.gudang_id);
+        });
+
+        const gudang = await prismaClient[COMPANY_LIST[company_index]].nd_gudang.findMany({
+            where: {
+                id: {
+                    in: Array.from(gudang_id)
+                }
+            }
+        });
         
-        res.json({...penjualan[0], penjualan_detail: penjualan_detail});
+        res.json({...penjualan[0], total:total, shipping_date: penjualan[0].tanggal, penjualan_detail: penjualan_detail, customer:customer, gudang:gudang});
 
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching penjualan', message: error.message});
