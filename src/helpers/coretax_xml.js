@@ -29,13 +29,13 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
                 ]
             },
             include: {
-                penjualan: {
+                nd_penjualan: {
                     include: {
-                        penjualan_detail: {
+                        nd_penjualan_detail: {
                             include: {
-                                barang: {
+                                nd_barang: {
                                     include: {
-                                        satuan:true
+                                        nd_satuan:true
                                     }
                                 }
                             }
@@ -51,7 +51,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     let toko;
     try {
-        toko = await prismaClient[company].toko.findMany();
+        toko = await prismaClient[company].nd_toko.findMany();
     } catch (error) {
         console.error('Error fetching toko:', error);
         return; // or handle the error as needed
@@ -261,7 +261,7 @@ export const coretaxPajakGunggung = async (rekam_faktur_pajak_id, company_name) 
 
     let toko;
     try {
-        toko = await prismaClient[company].toko.findMany(); 
+        toko = await prismaClient[company].nd_toko.findMany(); 
         console.log('toko', toko[0].NPWP);
     } catch (error) {
         console.error('Error fetching toko:', error);
