@@ -649,7 +649,7 @@ app.get('/PenjualanById', async (req, res) => {
         const gudang = await prismaClient[COMPANY_LIST[company_index]].nd_gudang.findMany({
             where: {
                 id: {
-                    in: Array.from(gudang_id)
+                    in: Array.from(gudang_id).filter(Boolean).map(id => parseInt(id))
                 }
             }
         });
