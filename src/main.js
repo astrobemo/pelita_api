@@ -594,17 +594,16 @@ app.get('/PenjualanById', async (req, res) => {
         `;
 
         const customer_id = penjualan[0]?.customer_id;
-        const customer = await prismaClient[COMPANY_LIST[company_index]].nd_customer.findUnique({
-            where: {
-                id: customer_id
-            },
-            select: {
-                id: true,
-                nama: true,
-                alamat: true,
-                telepon1: true
-            }
-        });
+        const customer = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
+            SELECT id, concat(ifnull(if(tipe_company ='','',concat(tipe_company,' ')),''),nama) as nama,kota,  
+					concat(' ',alamat,' ', if(blok = '-' or blok='','',blok),' ', 
+                    if(no='-' or no='','',concat('no ',no) ), 
+                    if(rt='0' or rt='' ,'000',concat(', RT',LPAD(rt,3,'0')) ),
+                    if(rw='0' or rw='' ,'000',concat(' RW',LPAD(rw,3,'0'))) ) as alamat_bon,
+					kelurahan, kecamatan, kode_pos, nik, npwp, telepon1 as telepon
+				FROM nd_customer
+                WHERE id = ${customer_id}
+        `;
                 
 
         const penjualan_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
