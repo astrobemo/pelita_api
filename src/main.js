@@ -600,7 +600,7 @@ app.get('/PenjualanById', async (req, res) => {
                     if(no='-' or no='','',concat('no ',no) ), 
                     if(rt='0' or rt='' ,'000',concat(', RT',LPAD(rt,3,'0')) ),
                     if(rw='0' or rw='' ,'000',concat(' RW',LPAD(rw,3,'0'))) ) as alamat_bon,
-					kelurahan, kecamatan, kode_pos, nik, npwp, telepon1 as telepon
+					kelurahan, kecamatan, kode_pos, nik, npwp, telepon1 as telepon, null as email
 				FROM nd_customer
                 WHERE id = ${customer_id}
         `;
