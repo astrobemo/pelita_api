@@ -654,7 +654,7 @@ app.get('/PenjualanById', async (req, res) => {
             }
         });
 
-        const pembayaran = await prismaClient[COMPANY_LIST[company_index]].nd_penjualan_pembayaran.findMany({
+        const pembayaran = await prismaClient[COMPANY_LIST[company_index]].nd_pembayaran_penjualan.findMany({
             where: {
                 penjualan_id: id
             }
