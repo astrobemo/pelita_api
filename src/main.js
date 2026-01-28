@@ -653,8 +653,21 @@ app.get('/PenjualanById', async (req, res) => {
                 }
             }
         });
+
+        const pembayaran = await prismaClient[COMPANY_LIST[company_index]].nd_penjualan_pembayaran.findMany({
+            where: {
+                penjualan_id: id
+            }
+        });
         
-        res.json({...penjualan[0], total:total, shipping_date: penjualan[0].tanggal, penjualan_detail: penjualan_detail, customer:customer, gudang:gudang});
+        res.json({...penjualan[0], 
+            total:total, 
+            shipping_date: penjualan[0].tanggal, 
+            penjualan_detail: penjualan_detail, 
+            customer:customer, 
+            gudang:gudang,
+            pembayaran:pembayaran
+        });
 
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching penjualan', message: error.message});
