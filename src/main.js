@@ -659,7 +659,7 @@ app.get('/PenjualanById', async (req, res) => {
                 penjualan_id: id
             },
             include:{
-                nd_pembayaran_type: true
+                pembayaran_type: true
             }
         });
         

@@ -779,6 +779,7 @@ model nd_pembayaran_penjualan {
   user_id            Int?
   created            DateTime @default(now()) @db.DateTime(0)
   updated            DateTime @default(now()) @db.DateTime(0)
+  pembayaran_type    nd_pembayaran_type? @relation(fields: [pembayaran_type_id], references: [id])
 
   @@index([pembayaran_type_id], map: "pembayaran_type_id")
   @@index([penjualan_id], map: "penjualan_id")
@@ -865,6 +866,7 @@ model nd_pembayaran_retur {
 model nd_pembayaran_type {
   id   Int     @id @default(autoincrement())
   nama String? @db.VarChar(100)
+  pembayaran_penjualan nd_pembayaran_penjualan[]
 }
 
 model nd_pembelian {
