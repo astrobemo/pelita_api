@@ -722,9 +722,9 @@ app.get('/PembelianById', async (req, res) => {
         });
         
         const pembelian_detail = await prismaClient[COMPANY_LIST[company_index]].$queryRaw`
-            SELECT pembelian_id, barang_id, warna_id, b.satuan_id, gudang_id,
+            SELECT pembelian_id, pd.barang_id, warna_id, b.satuan_id, gudang_id,
             sum(qty) as qty, sum(jumlah_roll) as jumlah_roll, pd.harga_beli as harga_beli, harga_jual,
-            nama_jual as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
+            concat(bb.nama, ' ', warna_jual) as nama_barang, warna_jual as nama_warna, s.nama as nama_satuan,
             concat(nama_jual, ' ', warna_jual) as nama_barang_lengkap, barang_sku_id
             FROM (
                 SELECT *
@@ -733,6 +733,8 @@ app.get('/PembelianById', async (req, res) => {
             )pd
             LEFT JOIN nd_barang b
             ON b.id = pd.barang_id
+            LEFT JOIN nd_barang_beli bb
+            ON bb.id = pd.barang_beli_id
             LEFT JOIN nd_warna w
             ON w.id = pd.warna_id
             LEFT JOIN nd_satuan s
