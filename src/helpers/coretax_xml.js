@@ -51,7 +51,7 @@ export const coretaxPajak = async (rekam_faktur_pajak_id, company_name) => {
 
     let toko;
     try {
-        toko = await prismaClient[company].nd_toko.findMany();
+        toko = await prismaClient[company].toko.findMany();
     } catch (error) {
         console.error('Error fetching toko:', error);
         return; // or handle the error as needed
