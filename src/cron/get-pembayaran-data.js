@@ -194,7 +194,7 @@ const syncCompanyPayments = async (companyKey) => {
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
 
-		if(transStatus === 'paid') {
+		if(transStatus.toString().toLowerCase() === 'paid') {
 			for (const payment of paymentData) {
 				const matchingInvoice = invoiceNumberswithId.find((invoice) => invoice.no_faktur_fp === payment.transaction_no);
 				if (matchingInvoice) {
