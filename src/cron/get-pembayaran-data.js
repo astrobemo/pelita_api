@@ -91,6 +91,7 @@ const buildInsertPayload = (payment, penjualanId) => {
 
 	const pembayaranTypeId = pembayaranNormalize[payment.payment_method_name] || 0;
 	
+	
 
 	const payload = {
 		penjualan_id: penjualanId,
@@ -192,64 +193,74 @@ const syncCompanyPayments = async (companyKey) => {
 		const transStatus = paymentData[0].transaction_status.name;
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
-		for (const payment of paymentData) {
-			const matchingInvoice = invoiceNumberswithId.find((invoice) => invoice.no_faktur_fp === payment.transaction_no);
-			if (matchingInvoice) {
 
-				/* await prisma.nd_pembayaran_penjualan.deleteMany({
-					where: { penjualan_id: matchingInvoice.id }
-				}); */
+		if(transStatus === 'paid') {
+			for (const payment of paymentData) {
+				const matchingInvoice = invoiceNumberswithId.find((invoice) => invoice.no_faktur_fp === payment.transaction_no);
+				if (matchingInvoice) {
 
-				const paymentList = payment.payments || [];
-				const inserts = [];
+					/* await prisma.nd_pembayaran_penjualan.deleteMany({
+						where: { penjualan_id: matchingInvoice.id }
+					}); */
 
-				for (const paymentItem of paymentList) {
-					let isReconciled = paymentItem.is_reconciled;
-					if(paymentItem.payment_method_name === 'Transfer Bank') {
-						if (!isReconciled) {
-							continue;
+					const paymentList = payment.payments || [];
+					const hasUnreconciledTransfer = paymentList.some(
+						(item) => item.payment_method_name === 'Transfer Bank' && !item.is_reconciled
+					);
+
+					if (hasUnreconciledTransfer) {
+						console.log(`Skipping invoice ${payment.transaction_no} due to unreconciled Transfer Bank payment.`);
+						continue;
+					}
+
+					const inserts = [];
+
+					for (const paymentItem of paymentList) {
+						let isReconciled = paymentItem.is_reconciled;
+						if(paymentItem.payment_method_name === 'Transfer Bank') {
+							if (!isReconciled) {
+								continue;
+							}
+						}
+						const payload = buildInsertPayload(paymentItem, matchingInvoice.id);
+						if (payload) {
+							inserts.push(payload);
+						}
+						else {
+							console.warn(`Invalid payment data for invoice ${payment.transaction_no}:`, paymentItem);
 						}
 					}
-					const payload = buildInsertPayload(paymentItem, matchingInvoice.id);
-					if (payload) {
-						inserts.push(payload);
-					}
-					else {
-						console.warn(`Invalid payment data for invoice ${payment.transaction_no}:`, paymentItem);
-					}
-				}
 
-				if (inserts.length) {
-					await prisma.nd_pembayaran_penjualan.createMany({
-						data: inserts
-					});
-					console.log(`Inserted ${inserts.length} pembayaran rows for invoice ${payment.transaction_no}`);
+					if (inserts.length) {
+						await prisma.nd_pembayaran_penjualan.createMany({
+							data: inserts
+						});
+						console.log(`Inserted ${inserts.length} pembayaran rows for invoice ${payment.transaction_no}`);
 
-					if(transStatus === 'paid') {
 
 						const printPayload = printInsertPayload(matchingInvoice.id, matchingInvoice.no_faktur_fp, matchingInvoice.user_id);
 						await prisma.nd_print_jual_log.create({
 							data: printPayload
 						});
 						console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
-					}else{
-						console.log(`Transaction status for invoice ${payment.transaction_no} is ${transStatus}. Skipping print job.`);
 					}
-				}
 
-				/*
-				data: {
-					data_faktur: dataPrint,
-					jenis_dokumen: jenisDokumen,
-					penjualan_id: "<?=$penjualan_id?>",
-					no_faktur_lengkap: "<?=$no_faktur_lengkap?>",
-					status: 1,
-				},
-				 */
-			}else{
-				console.warn(`No matching invoice found for payment with transaction_no: ${payment.transaction_no}`);
-				continue;
+					/*
+					data: {
+						data_faktur: dataPrint,
+						jenis_dokumen: jenisDokumen,
+						penjualan_id: "<?=$penjualan_id?>",
+						no_faktur_lengkap: "<?=$no_faktur_lengkap?>",
+						status: 1,
+					},
+					*/
+				}else{
+					console.warn(`No matching invoice found for payment with transaction_no: ${payment.transaction_no}`);
+					continue;
+				}
 			}
+		} else {
+			console.log(`Transaction status for company ${companyKey} is not 'paid'. Skipping pembayaran sync.`);
 		}
 	}
 };
