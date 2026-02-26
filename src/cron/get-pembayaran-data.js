@@ -142,7 +142,7 @@ const syncCompanyPayments = async (companyKey) => {
 	} 
 
 	const penjualanRows = await prisma.$queryRaw`
-		SELECT p.id, p.no_faktur_fp
+		SELECT p.id, p.no_faktur_fp, total_penjualan, pp.id as pembayaran_id
 		FROM (
 			SELECT * 
 			FROM nd_penjualan p
@@ -153,12 +153,21 @@ const syncCompanyPayments = async (companyKey) => {
 			AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
 		) p
 		LEFT JOIN (
-			SELECT * 
+			SELECT penjualan_id, sum(subqty * harga_jual) as total_penjualan
+			FROM nd_penjualan_detail
+			GROUP BY penjualan_id
+		) pDETAIL
+		ON pDETAIL.penjualan_id = p.id
+		LEFT JOIN (
+			SELECT penjualan_id, sum(amount) as total_pembayaran, id
 			FROM nd_pembayaran_penjualan
-			WHERE amount > 0 
+			GROUP BY penjualan_id
 		)pp 
 		ON pp.penjualan_id = p.id
-		WHERE pp.id IS NULL			
+		WHERE (
+			pp.id IS NULL
+			OR pp.total_pembayaran < pDETAIL.total_penjualan
+		)			
 		ORDER BY p.id DESC
 		LIMIT ${BATCH_LIMIT}
 	`;
@@ -179,6 +188,7 @@ const syncCompanyPayments = async (companyKey) => {
 	console.log(`Payment status for company ${companyKey}: ${checkPaymentStatus}`);
 	if (checkPaymentStatus) {	
 		const paymentData = payments[0].data;
+		const transStatus = paymentData.transaction_status.name;
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
 		for (const payment of paymentData) {
@@ -208,11 +218,16 @@ const syncCompanyPayments = async (companyKey) => {
 					});
 					console.log(`Inserted ${inserts.length} pembayaran rows for invoice ${payment.transaction_no}`);
 
-					const printPayload = printInsertPayload(matchingInvoice.id, matchingInvoice.no_faktur_fp, matchingInvoice.user_id);
-					await prisma.nd_print_jual_log.create({
-						data: printPayload
-					});
-					console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
+					if(transStatus === 'paid') {
+
+						const printPayload = printInsertPayload(matchingInvoice.id, matchingInvoice.no_faktur_fp, matchingInvoice.user_id);
+						await prisma.nd_print_jual_log.create({
+							data: printPayload
+						});
+						console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
+					}else{
+						console.log(`Transaction status for invoice ${payment.transaction_no} is ${transStatus}. Skipping print job.`);
+					}
 				}
 
 				/*
