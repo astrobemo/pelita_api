@@ -143,14 +143,22 @@ const syncCompanyPayments = async (companyKey) => {
 
 	const penjualanRows = await prisma.$queryRaw`
 		SELECT p.id, p.no_faktur_fp
-		FROM nd_penjualan p
-		LEFT JOIN nd_pembayaran_penjualan pp ON pp.penjualan_id = p.id
-		WHERE p.no_faktur_fp IS NOT NULL
-		AND p.no_faktur_fp <> ''
-		AND pp.id IS NULL
-        AND p.status_aktif = 1
-		AND p.status = 0
-        AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+		FROM (
+			SELECT * 
+			FROM nd_penjualan p
+			WHERE p.no_faktur_fp IS NOT NULL
+			AND p.no_faktur_fp <> ''
+			AND p.status_aktif = 1
+			AND p.status = 0
+			AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+		) p
+		LEFT JOIN (
+			SELECT * 
+			FROM nd_pembayaran_penjualan
+			WHERE amount > 0 
+		)pp 
+		ON pp.penjualan_id = p.id
+		WHERE pp.id IS NULL			
 		ORDER BY p.id DESC
 		LIMIT ${BATCH_LIMIT}
 	`;
