@@ -150,7 +150,7 @@ const syncCompanyPayments = async (companyKey) => {
 		AND pp.id IS NULL
         AND p.status_aktif = 1
 		AND p.status = 0
-        AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+        AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
 		ORDER BY p.id DESC
 		LIMIT ${BATCH_LIMIT}
 	`;
