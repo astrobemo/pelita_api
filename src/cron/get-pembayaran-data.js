@@ -150,6 +150,7 @@ const syncCompanyPayments = async (companyKey) => {
 			AND p.no_faktur_fp <> ''
 			AND p.status_aktif = 1
 			AND p.status = 0
+			AND p.penjualan_type_id != 2
 			AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
 		) p
 		LEFT JOIN (
@@ -188,7 +189,7 @@ const syncCompanyPayments = async (companyKey) => {
 	console.log(`Payment status for company ${companyKey}: ${checkPaymentStatus}`);
 	if (checkPaymentStatus) {	
 		const paymentData = payments[0].data;
-		const transStatus = paymentData.transaction_status.name;
+		const transStatus = paymentData[0].transaction_status.name;
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
 		for (const payment of paymentData) {
@@ -203,6 +204,12 @@ const syncCompanyPayments = async (companyKey) => {
 				const inserts = [];
 
 				for (const paymentItem of paymentList) {
+					let isReconciled = paymentItem.is_reconciled;
+					if(paymentItem.payment_method_name === 'Transfer Bank') {
+						if (!isReconciled) {
+							continue;
+						}
+					}
 					const payload = buildInsertPayload(paymentItem, matchingInvoice.id);
 					if (payload) {
 						inserts.push(payload);
