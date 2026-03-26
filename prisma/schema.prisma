@@ -1560,13 +1560,14 @@ model nd_retur_beli {
 }
 
 model nd_retur_beli_detail {
-  id            Int     @id @default(autoincrement())
-  retur_beli_id Int?    @db.SmallInt
-  gudang_id     Int?
-  barang_id     Int?
-  warna_id      Int?
-  harga         Int?
-  keterangan    String? @db.VarChar(200)
+  id             Int     @id @default(autoincrement())
+  retur_beli_id  Int?    @db.SmallInt
+  gudang_id      Int?
+  barang_id      Int?
+  warna_id       Int?
+  harga          Int?
+  keterangan     String? @db.VarChar(200)
+  barang_beli_id Int?
 
   @@index([barang_id], map: "barang_id")
   @@index([retur_beli_id], map: "retur_beli_id")
@@ -2118,6 +2119,8 @@ model nd_stok_current {
   jumlah_roll Int?     @db.SmallInt
   created_at  DateTime @default(now()) @db.DateTime(0)
   updated_at  DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([barang_id, warna_id, gudang_id], map: "barang_id_warna_id_gudang_id")
 }
 
 model nd_stok_movement {
