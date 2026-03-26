@@ -243,6 +243,31 @@ const syncCompanyPayments = async (companyKey) => {
 							data: printPayload
 						});
 						console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
+
+						const data_log = {
+							channel : "penjualan",
+							entity_type : "PENJUALAN",
+							entity_id : matchingInvoice.id,
+							event_type : "PAID"
+						}
+
+						await prisma.nd_system_event_log.create({
+							data: data_log
+						});
+
+						const data_jual_update = {
+							status_enum: "PAID"
+						}
+
+						await prisma.nd_penjualan.update({
+							where: {
+								id: matchingInvoice.id
+							},
+							data: data_jual_update
+						});
+
+						
+						console.log(`Logged system event for invoice ${payment.transaction_no}`);
 					}
 
 					/*

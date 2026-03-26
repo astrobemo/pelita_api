@@ -20,21 +20,19 @@ model nd_bank_list {
 }
 
 model nd_barang {
-  id               Int                @id @default(autoincrement())
-  jenis_barang     String?            @default(dbgenerated("(POLYESTER)")) @db.VarChar(100)
-  nama             String?            @db.VarChar(100)
-  nama_jual        String?            @db.VarChar(100)
-  harga_jual       Int?
-  harga_beli       Decimal?           @db.Decimal(10, 2)
-  satuan_id        Int?
-  qty_warning      Int                @default(500)
-  deskripsi_info   String?            @db.VarChar(500)
-  status_aktif     Int?               @default(1)
-  tipe_qty         Boolean?           @default(true)
-  created_at       DateTime           @default(now()) @db.DateTime(0)
-  updated_at       DateTime           @default(now()) @db.DateTime(0)
-  satuan           nd_satuan?            @relation(fields: [satuan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_barang_nd_satuan")
-  penjualan_detail nd_penjualan_detail[]
+  id             Int      @id @default(autoincrement())
+  jenis_barang   String?  @default(dbgenerated("(POLYESTER)")) @db.VarChar(100)
+  nama           String?  @db.VarChar(100)
+  nama_jual      String?  @db.VarChar(100)
+  harga_jual     Int?
+  harga_beli     Decimal? @db.Decimal(10, 2)
+  satuan_id      Int?
+  qty_warning    Int      @default(500)
+  deskripsi_info String?  @db.VarChar(500)
+  status_aktif   Int?     @default(1)
+  tipe_qty       Boolean? @default(true)
+  created_at     DateTime @default(now()) @db.DateTime(0)
+  updated_at     DateTime @default(now()) @db.DateTime(0)
 
   @@index([nama], map: "nama")
   @@index([nama_jual], map: "nama_jual")
@@ -49,7 +47,6 @@ model nd_barang_beli {
   status_aktif Int      @default(1) @db.TinyInt
   created_at   DateTime @default(now()) @db.DateTime(0)
   updated_at   DateTime @default(now()) @db.DateTime(0)
-
 }
 
 model nd_barang_forecasting_data {
@@ -125,47 +122,45 @@ model nd_controller {
 }
 
 model nd_customer {
-  id                   Int              @id @default(autoincrement())
-  customer_type_id     Boolean          @default(true)
-  nama                 String?          @db.VarChar(70)
-  alias                String           @db.VarChar(300)
-  alamat               String?          @db.VarChar(1000)
-  telepon1             String?          @db.VarChar(500)
-  telepon2             String?          @db.VarChar(50)
-  npwp_lama            String?          @db.VarChar(200)
-  npwp                 String?          @db.Text
-  nik                  String?          @db.VarChar(16)
-  kota                 String?          @db.VarChar(200)
-  provinsi             String?          @db.VarChar(100)
-  kode_pos             String?          @db.VarChar(20)
-  email                String?          @db.VarChar(200)
-  contact_person       String           @db.VarChar(500)
-  tempo_kredit         Int?             @db.TinyInt
-  warning_kredit       Int?             @db.TinyInt
-  limit_warning_type   Int?             @db.TinyInt
+  id                   Int       @id @default(autoincrement())
+  customer_type_id     Int?      @db.TinyInt
+  nama                 String?   @db.VarChar(70)
+  alias                String?   @db.VarChar(300)
+  alamat               String?   @db.VarChar(1000)
+  telepon1             String?   @db.VarChar(500)
+  telepon2             String?   @db.VarChar(50)
+  npwp_lama            String?   @db.VarChar(200)
+  npwp                 String?   @db.Text
+  nik                  String?   @db.VarChar(16)
+  kota                 String?   @db.VarChar(200)
+  provinsi             String?   @db.VarChar(100)
+  kode_pos             String?   @db.VarChar(20)
+  email                String?   @db.VarChar(200)
+  contact_person       String?   @db.VarChar(500)
+  tempo_kredit         Int?      @db.TinyInt
+  warning_kredit       Int?      @db.TinyInt
+  limit_warning_type   Int?      @db.TinyInt
   limit_amount         Int?
   limit_atas           Int?
   limit_warning_amount Int?
-  status_aktif         Boolean          @default(true)
-  img_link             String?          @db.VarChar(500)
-  npwp_link            String?          @db.VarChar(500)
-  ktp_link             String?          @db.VarChar(500)
-  medsos_link          String?          @db.VarChar(2000)
-  updated_at           DateTime         @default(now()) @db.DateTime(0)
-  tipe_company         String?          @db.VarChar(3)
-  blok                 String           @default(dbgenerated("(-)")) @db.VarChar(100)
-  no                   String?          @default(dbgenerated("(-)")) @db.VarChar(100)
-  rt                   String           @default(dbgenerated("(000)")) @db.VarChar(4)
-  rw                   String           @default(dbgenerated("(000)")) @db.VarChar(4)
-  kecamatan            String           @default(dbgenerated("(-)")) @db.VarChar(100)
-  kelurahan            String           @default(dbgenerated("(-)")) @db.VarChar(100)
-  locked_status        Boolean          @default(true)
-  user_id              Int              @default(0) @db.TinyInt
-  created_register     DateTime         @default(now()) @db.DateTime(0)
-  verified_time        DateTime?        @db.DateTime(0)
-  customer_id_central  String?          @db.VarChar(50)
-  customer_source      nd_customer_source?
-
+  status_aktif         Boolean   @default(true)
+  img_link             String?   @db.VarChar(500)
+  npwp_link            String?   @db.VarChar(500)
+  ktp_link             String?   @db.VarChar(500)
+  medsos_link          String?   @db.VarChar(2000)
+  updated_at           DateTime  @default(now()) @db.DateTime(0)
+  tipe_company         String?   @db.VarChar(3)
+  blok                 String    @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?   @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String    @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String    @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String    @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String    @default(dbgenerated("(-)")) @db.VarChar(100)
+  locked_status        Boolean   @default(true)
+  user_id              Int       @default(0) @db.TinyInt
+  created_register     DateTime  @default(now()) @db.DateTime(0)
+  verified_time        DateTime? @db.DateTime(0)
+  customer_id_central  String?   @db.VarChar(50)
 }
 
 model nd_customer_alamat_kirim {
@@ -268,8 +263,6 @@ model nd_customer_source {
   source_detail   String?   @db.VarChar(100)
   created_at      DateTime  @default(now()) @db.DateTime(0)
   updated_at      DateTime  @default(now()) @db.DateTime(0)
-  customer        nd_customer  @relation(fields: [customer_id], references: [id])
-
 }
 
 model nd_dp_keluar {
@@ -510,12 +503,11 @@ model nd_master_barang_sku {
   satuan_id_master Int      @default(0)
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
-
 }
 
 model nd_master_toko_barang {
   id               Int      @id @default(autoincrement())
-  barang_id_toko   Int      @unique
+  barang_id_toko   Int?
   barang_id_master Int?
   nama_master      String?  @db.VarChar(100)
   createdAt        DateTime @default(now()) @db.DateTime(0)
@@ -528,7 +520,7 @@ model nd_master_toko_satuan {
   id               Int      @id @default(autoincrement())
   satuan_id_toko   Int      @default(0)
   satuan_id_master Int      @default(0)
-  nama_master      String   @default("") @db.VarChar(50)
+  nama_master      String   @default(dbgenerated("()")) @db.VarChar(50)
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
@@ -779,7 +771,6 @@ model nd_pembayaran_penjualan {
   user_id            Int?
   created            DateTime @default(now()) @db.DateTime(0)
   updated            DateTime @default(now()) @db.DateTime(0)
-  pembayaran_type    nd_pembayaran_type? @relation(fields: [pembayaran_type_id], references: [id])
 
   @@index([pembayaran_type_id], map: "pembayaran_type_id")
   @@index([penjualan_id], map: "penjualan_id")
@@ -866,31 +857,29 @@ model nd_pembayaran_retur {
 model nd_pembayaran_type {
   id   Int     @id @default(autoincrement())
   nama String? @db.VarChar(100)
-  pembayaran_penjualan nd_pembayaran_penjualan[]
 }
 
 model nd_pembelian {
-  id                    Int                @id @default(autoincrement())
+  id                    Int       @id @default(autoincrement())
   no_nota               Int?
-  ockh_info             String?            @db.VarChar(100)
-  no_faktur             String?            @db.VarChar(50)
+  ockh_info             String?   @db.VarChar(100)
+  no_faktur             String?   @db.VarChar(50)
   penerimaan_barang_id  Int?
   po_pembelian_batch_id Int?
-  tanggal               DateTime?          @db.Date
+  tanggal               DateTime? @db.Date
   toko_id               Int?
   supplier_id           Int?
   gudang_id             Int?
   diskon                Int?
-  jatuh_tempo           DateTime?          @db.Date
-  keterangan            String?            @db.VarChar(100)
-  status                Int                @default(0)
-  status_aktif          Int                @default(1)
+  jatuh_tempo           DateTime? @db.Date
+  keterangan            String?   @db.VarChar(100)
+  status                Int       @default(0)
+  status_aktif          Int       @default(1)
   user_id               Int
-  created_at            DateTime           @default(now()) @db.DateTime(0)
+  created_at            DateTime  @default(now()) @db.DateTime(0)
   cancelled_by          Int?
-  cancelled_date        DateTime?          @db.DateTime(0)
-  updated_at            DateTime           @default(now()) @db.DateTime(0)
-  penerimaan_barang     nd_penerimaan_barang? @relation(fields: [penerimaan_barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_pembelian_nd_penerimaan_barang")
+  cancelled_date        DateTime? @db.DateTime(0)
+  updated_at            DateTime  @default(now()) @db.DateTime(0)
 
   @@index([created_at], map: "created_at")
   @@index([po_pembelian_batch_id], map: "po_pembelian_batch_id")
@@ -969,16 +958,14 @@ model nd_pembelian_qty_detail {
 }
 
 model nd_penerimaan_barang {
-  id                    Int         @id @default(autoincrement())
-  no_penerimaan         Int?        @default(0)
-  no_penerimaan_lengkap String?     @default(dbgenerated("()")) @db.VarChar(50)
-  no_plat               String      @default("") @db.VarChar(50)
-  tanggal_input         DateTime?   @db.DateTime(0)
-  user_id               Int         @default(0) @db.SmallInt
-  createdAt             DateTime    @default(now()) @db.DateTime(0)
-  updatedAt             DateTime    @default(now()) @db.DateTime(0)
-  pembelian             nd_pembelian[]
-
+  id                    Int       @id @default(autoincrement())
+  no_penerimaan         Int?      @default(0)
+  no_penerimaan_lengkap String?   @default(dbgenerated("()")) @db.VarChar(50)
+  no_plat               String    @default(dbgenerated("()")) @db.VarChar(50)
+  tanggal_input         DateTime? @db.DateTime(0)
+  user_id               Int       @default(0) @db.SmallInt
+  createdAt             DateTime  @default(now()) @db.DateTime(0)
+  updatedAt             DateTime  @default(now()) @db.DateTime(0)
 }
 
 model nd_pengeluaran_stok_lain {
@@ -1023,39 +1010,41 @@ model nd_pengeluaran_stok_lain_qty_detail {
 }
 
 model nd_penjualan {
-  id                Int       @id @default(autoincrement())
+  id                Int                      @id @default(autoincrement())
   toko_id           Int
-  penjualan_type_id Int       @default(3)
+  penjualan_type_id Int                      @default(3)
   no_faktur         Int?
-  po_number         String    @db.VarChar(50)
-  tanggal           DateTime? @db.Date
-  ppn               Decimal?  @db.Decimal(10, 2)
+  po_number         String                   @db.VarChar(50)
+  tanggal           DateTime?                @db.Date
+  ppn               Decimal?                 @db.Decimal(10, 2)
   customer_id       Int?
   gudang_id         Int?
-  diskon            Int?      @default(0)
-  jatuh_tempo       DateTime? @db.Date
-  ongkos_kirim      Int       @default(0)
-  keterangan        String?   @db.VarChar(100)
-  nama_keterangan   String    @db.VarChar(200)
-  alamat_keterangan String    @db.VarChar(200)
-  nama_cust_fp      String    @default(dbgenerated("()")) @db.VarChar(150)
-  alamat_cust_fp    String    @default(dbgenerated("()")) @db.VarChar(300)
-  npwp_cust_fp      String    @default(dbgenerated("()")) @db.VarChar(100)
-  nik_cust_fp       String    @default(dbgenerated("()")) @db.VarChar(100)
-  no_faktur_fp      String    @default(dbgenerated("()")) @db.VarChar(50)
-  tipe_po           Int?      @db.TinyInt
+  diskon            Int?                     @default(0)
+  jatuh_tempo       DateTime?                @db.Date
+  ongkos_kirim      Int                      @default(0)
+  keterangan        String?                  @db.VarChar(100)
+  nama_keterangan   String                   @db.VarChar(200)
+  alamat_keterangan String                   @db.VarChar(200)
+  nama_cust_fp      String                   @default(dbgenerated("()")) @db.VarChar(150)
+  alamat_cust_fp    String                   @default(dbgenerated("()")) @db.VarChar(300)
+  npwp_cust_fp      String                   @default(dbgenerated("()")) @db.VarChar(100)
+  nik_cust_fp       String                   @default(dbgenerated("()")) @db.VarChar(100)
+  no_faktur_fp      String                   @default(dbgenerated("()")) @db.VarChar(50)
+  tipe_po           Int?                     @db.TinyInt
   po_penjualan_id   Int?
-  status            Int       @default(1)
-  status_aktif      Int       @default(1)
+  status            Int                      @default(1)
+  status_aktif      Int                      @default(1)
   closed_by         Int
-  closed_date       DateTime? @db.DateTime(0)
+  closed_date       DateTime?                @db.DateTime(0)
   user_id           Int
-  created_at        DateTime  @default(now()) @db.DateTime(0)
-  revisi            Int       @default(0)
-  fp_status         Int       @default(0)
-  is_custom_view    Int       @default(0) @db.TinyInt
-  rekam_faktur_pajak_detail rekam_faktur_pajak_detail[]
-  penjualan_detail       nd_penjualan_detail[]
+  created_at        DateTime                 @default(now()) @db.DateTime(0)
+  revisi            Int                      @default(0)
+  fp_status         Int                      @default(0)
+  is_custom_view    Int                      @default(0) @db.TinyInt
+  status_enum       nd_penjualan_status_enum @default(dbgenerated("(INPUT_ORDER)"))
+  no_pi             Int?
+  no_pi_lengkap     String?                  @default(dbgenerated("()")) @db.VarChar(50)
+  revisi_pi         Int?                     @default(0) @db.SmallInt
 
   @@index([customer_id], map: "customer_id")
   @@index([no_faktur], map: "no_faktur")
@@ -1075,13 +1064,11 @@ model nd_penjualan_detail {
   warna_id           Int?     @db.SmallInt
   satuan_id          Int?     @db.TinyInt
   harga_jual         Int?
-  gudang_id          Int?  
+  gudang_id          Int?     @db.SmallInt
   subqty             Decimal? @db.Decimal(10, 2)
   subjumlah_roll     Int?     @db.SmallInt
   createdAt          DateTime @default(now()) @db.DateTime(0)
   updatedAt          DateTime @default(now()) @db.DateTime(0)
-  barang             nd_barang?  @relation(fields: [barang_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_nd_penjualan_detail_nd_barang")
-  penjualan          nd_penjualan? @relation(fields: [penjualan_id], references: [id])
 
   @@index([barang_id], map: "barang_id")
   @@index([penjualan_id], map: "penjualan_id")
@@ -1448,7 +1435,6 @@ model rekam_faktur_pajak_detail {
   updated_at            DateTime  @default(now()) @db.DateTime(0)
   created_at            DateTime  @default(now()) @db.DateTime(0)
   status                Boolean   @default(true)
-  penjualan             nd_penjualan? @relation(fields: [penjualan_id], references: [id])
 
   @@index([penjualan_id], map: "penjualan_id")
   @@index([penjualan_id], map: "penjualan_id_2")
@@ -1632,10 +1618,9 @@ model nd_retur_jual_qty {
 }
 
 model nd_satuan {
-  id           Int      @id @default(autoincrement())
-  nama         String?  @db.VarChar(100)
-  status_aktif Int?     @default(1)
-  barang       nd_barang[]
+  id           Int     @id @default(autoincrement())
+  nama         String? @db.VarChar(100)
+  status_aktif Int?    @default(1)
 }
 
 model nd_setting {
@@ -1865,7 +1850,6 @@ model nd_warna {
   warna_jual   String? @db.VarChar(50)
   kode_warna   String? @db.VarChar(7)
   status_aktif Int     @default(1)
-
 }
 
 model nd_warning_jatuh_tempo_harian {
@@ -2115,4 +2099,125 @@ model temp_customer_updgrade {
   kota        String? @db.VarChar(200)
   provinsi    String? @db.VarChar(100)
   kode_pos    String? @db.VarChar(20)
+}
+
+model nd_notifications {
+  id         Int      @id @default(autoincrement())
+  posisi_id  Int
+  title      String   @db.VarChar(100)
+  message    String   @db.VarChar(500)
+  created_at DateTime @default(now()) @db.DateTime(0)
+}
+
+model nd_stok_current {
+  id          Int      @id @default(autoincrement())
+  barang_id   Int?     @db.MediumInt
+  warna_id    Int?     @db.MediumInt
+  gudang_id   Int?     @db.SmallInt
+  qty         Decimal? @db.Decimal(11, 2)
+  jumlah_roll Int?     @db.SmallInt
+  created_at  DateTime @default(now()) @db.DateTime(0)
+  updated_at  DateTime @default(now()) @db.DateTime(0)
+}
+
+model nd_stok_movement {
+  id            Int       @id @default(autoincrement())
+  tanggal       DateTime? @db.Date
+  tipe_movement String?   @db.Text
+  source_id     Int?      @db.MediumInt
+  source_table  String?   @db.Text
+  barang_id     Int?      @db.MediumInt
+  warna_id      Int?      @db.MediumInt
+  gudang_id     Int?      @db.SmallInt
+  qty           Decimal?  @db.Decimal(11, 2)
+  jumlah_roll   Int?      @db.SmallInt
+  keterangan    String?   @db.VarChar(200)
+  user_id       Int?      @db.TinyInt
+  created_at    DateTime  @default(now()) @db.DateTime(0)
+  updated_at    DateTime  @default(now()) @db.DateTime(0)
+
+  @@index([barang_id], map: "barang_id")
+  @@index([created_at], map: "created_at")
+  @@index([gudang_id], map: "gudang_id")
+  @@index([warna_id], map: "warna_id")
+}
+
+model nd_stok_roll_group {
+  id         Int      @id @default(autoincrement())
+  barang_id  Int?     @db.MediumInt
+  warna_id   Int?     @db.MediumInt
+  gudang_id  Int?     @db.SmallInt
+  roll_size  Decimal? @db.Decimal(11, 2)
+  roll_count Int?
+  created_at DateTime @default(now()) @db.DateTime(0)
+  updated_at DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([barang_id, warna_id, gudang_id, roll_size], map: "barang_id_warna_id_gudang_id")
+  @@index([barang_id], map: "barang_id")
+  @@index([gudang_id], map: "gudang_id")
+  @@index([warna_id], map: "warna_id")
+}
+
+model nd_system_event_log {
+  id          BigInt                          @id @default(autoincrement())
+  channel     String?                         @db.VarChar(100)
+  entity_type nd_system_event_log_entity_type
+  entity_id   Int
+  notes       String?                         @db.Text
+  event_type  String?                         @db.VarChar(100)
+  created_at  DateTime                        @default(now()) @db.DateTime(0)
+
+  @@index([channel], map: "channel")
+  @@index([entity_type], map: "entity_type")
+}
+
+model nd_user_notification_state {
+  id              Int       @id @default(autoincrement())
+  user_id         Int
+  notification_id Int
+  is_read         Boolean   @default(false)
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  read_at         DateTime? @db.DateTime(0)
+
+  @@unique([user_id, notification_id])
+}
+
+model nd_user_sse_state {
+  id            Int      @id @default(autoincrement())
+  user_id       Int      @unique
+  last_event_id Int
+  updated_at    DateTime @default(now()) @db.DateTime(0)
+}
+
+model nd_user_system_event_state {
+  id                  Int                                    @id @default(autoincrement())
+  entity_type         nd_user_system_event_state_entity_type
+  user_id             Int
+  latest_event_log_id Int
+  created_at          DateTime                               @default(now()) @db.DateTime(0)
+
+  @@unique([user_id, latest_event_log_id, entity_type], map: "user_event_state_unique")
+}
+
+enum nd_user_system_event_state_entity_type {
+  PEMBELIAN
+  PENJUALAN
+  INVENTORY
+  KASIR
+}
+
+enum nd_system_event_log_entity_type {
+  PEMBELIAN
+  PENJUALAN
+  INVENTORY
+  KASIR
+}
+
+enum nd_penjualan_status_enum {
+  INPUT_ORDER
+  AWAITING_REVIEW
+  NEED_REVISION
+  AWAITING_PAYMENT
+  PAID
+  CANCELLED
 }
