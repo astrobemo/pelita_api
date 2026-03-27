@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/astrobemo/pelita_api#readme",
   "dependencies": {
-    "@prisma/client": "^5.19.1",
+    "@prisma/client": "5.22",
     "@types/amqplib": "^0.10.5",
     "amqplib": "^0.10.4",
     "axios": "^1.6.0",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0",
-    "prisma": "^5.19.1",
+    "prisma": "5.22",
     "supertest": "^7.0.0",
     "vitest": "^3.1.1"
   }
