@@ -1176,7 +1176,7 @@ app.get('/test_event_log', async (req, res) => {
                 return res.status(400).json({ error: 'nd_system_event_log table does not exist in the database' });
             }else{
                 await prismaClient[company_index].$queryRaw`INSERT INTO nd_system_event_log (channel, entity_type, entity_id, event_type) 
-                VALUES (${data_log.channel}, ${data_log.entity_type}, ${data_log.entity_id}, ${data_log.event_type}, NOW())`;
+                VALUES (${data_log.channel}, ${data_log.entity_type}, ${data_log.entity_id}, ${data_log.event_type})`;
                 return res.json({ message: 'Event log created successfully' });
             }
         }
