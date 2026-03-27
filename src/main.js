@@ -1156,7 +1156,7 @@ app.get('/test_event_log', async (req, res) => {
         }
 
         // console.log(prismaClient['test'], typeof prismaClient['test']);
-        await prismaClient['test']
+        await prismaClient[company_index]
             .nd_system_event_log
             .create({
             data: data_log
