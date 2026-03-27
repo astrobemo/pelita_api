@@ -244,21 +244,16 @@ const syncCompanyPayments = async (companyKey) => {
 						});
 						console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
 
-						const data_log = {
+						/* const data_log = {
 							channel : "penjualan",
 							entity_type : "PENJUALAN",
 							entity_id : matchingInvoice.id,
 							event_type : "PAID"
 						}
 
-						/* await prisma.nd_system_event_log.create({
+						await prisma.nd_system_event_log.create({
 							data: data_log
 						}); */
-
-						await prisma.$queryRaw`
-							INSERT INTO nd_system_event_log (channel, entity_type, entity_id, event_type)
-							VALUES (${data_log.channel}, ${data_log.entity_type}, ${data_log.entity_id}, ${data_log.event_type})
-						`;
 
 						const data_jual_update = {
 							status_enum: "PAID"

@@ -1168,6 +1168,7 @@ app.get('/test_event_log', async (req, res) => {
         }
 
         if(typeof prismaClient[company_index].nd_system_event_log === 'undefined') {
+            console.log(typeof prismaClient[company_index].nd_barang);
             return res.status(400).json({ error: 'Prisma Client system error' });
         }
 
