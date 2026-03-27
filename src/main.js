@@ -1146,7 +1146,7 @@ app.get('/test_event_log', async (req, res) => {
 
     let company_index = getCompanyByName(company_name);
 
-    if(ENVIRONMENT !== 'test' ){
+    if(ENVIRONMENT === 'test' ){
         company_index = 'favour';
     }
 
