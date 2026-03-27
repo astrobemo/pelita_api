@@ -1168,7 +1168,8 @@ app.get('/test_event_log', async (req, res) => {
         }
 
         if(typeof prismaClient[company_index].nd_system_event_log === 'undefined') {
-            console.log(typeof prismaClient[company_index].nd_barang);
+            const test = await prismaClient[company_index].$queryRaw`SHOW TABLES LIKE 'nd_system_event_log'`;
+            console.log('test', test);
             return res.status(400).json({ error: 'Prisma Client system error' });
         }
 
