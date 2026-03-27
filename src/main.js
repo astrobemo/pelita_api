@@ -1170,7 +1170,15 @@ app.get('/test_event_log', async (req, res) => {
         if(typeof prismaClient[company_index].nd_system_event_log === 'undefined') {
             const test = await prismaClient[company_index].$queryRaw`SHOW TABLES LIKE 'nd_system_event_log'`;
             console.log('test', test);
-            return res.status(400).json({ error: 'Prisma Client system error' });
+
+            if(test.length === 0){
+                console.log('nd_system_event_log table does not exist in the database');
+                return res.status(400).json({ error: 'nd_system_event_log table does not exist in the database' });
+            }else{
+                await prismaClient[company_index].$queryRaw`INSERT INTO nd_system_event_log (channel, entity_type, entity_id, event_type) 
+                VALUES (${data_log.channel}, ${data_log.entity_type}, ${data_log.entity_id}, ${data_log.event_type}, NOW())`;
+                return res.json({ message: 'Event log created successfully' });
+            }
         }
 
         // console.log(prismaClient['test'], typeof prismaClient['test']);
