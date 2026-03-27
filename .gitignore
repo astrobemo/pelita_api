@@ -1,7 +1,7 @@
 # Logs
 logs
 *.log
-npm-debug.log*
+npm-debug.log*w
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
@@ -37,6 +37,9 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
+
+# Generated files
+prisma/generated
 
 # Dependency directories
 node_modules/
