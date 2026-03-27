@@ -132,7 +132,7 @@ app.use((req, res, next) => {
     } */
 });
 
-app.get('/testing-consumer', (req, res) => {
+app.get('/', (req, res) => {
     res.send('Testing World!');
 });
 
@@ -1135,6 +1135,39 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
     
 });
 
+//==========================testing event log====================================
+
+app.get('/test_event_log', async (req, res) => {
+
+    let company_index ='';
+    company_index = req.query.company_index;
+
+    if(typeof prismaClient[company_index] === 'undefined'){
+        // console.log('COMPANY_LIST', COMPANY_LIST);
+        return  res.status(400).json({ error: 'Invalid company or client id' });
+    }
+
+    try {
+        const data_log = {
+            channel : "penjualan",
+            entity_type : "PENJUALAN",
+            entity_id : 1,
+            event_type : "PAID"
+        }
+
+        // console.log(prismaClient['test'], typeof prismaClient['test']);
+        await prismaClient['test']
+            .nd_system_event_log
+            .create({
+            data: data_log
+        });
+        res.json({ message: 'Event log created successfully' });
+    } catch (error) {
+        console.log('Error creating event log:', error);
+        res.status(500).json({ error: 'An error occurred while creating event log' });
+    }
+});
+
 //==========================penerimaan barang====================================
 
 app.get('/penerimaan_barang_by_tanggal', async (req, res) => {
@@ -1143,6 +1176,8 @@ app.get('/penerimaan_barang_by_tanggal', async (req, res) => {
     console.log('ENV', ENVIRONMENT);
     company_index = req.query.company_index;
     console.log('param', req.params);
+
+    
     if(ENVIRONMENT !== 'test' && ENVIRONMENT !== 'staging'){
         
         if(ENVIRONMENT === 'development' && typeof COMPANY_LIST[company_index] !== 'undefined'){
