@@ -250,12 +250,11 @@ const syncCompanyPayments = async (companyKey) => {
 							status_enum: "PAID"
 						}
 
-						await prisma.nd_penjualan.update({
-							where: {
-								id: matchingInvoice.id
-							},
-							data: data_jual_update
-						});
+						try {
+							await prisma.$queryRaw`UPDATE nd_penjualan SET status_enum = "PAID" WHERE id = ${matchingInvoice.id}`;
+						} catch (logError) {
+							console.warn('Failed to log system event:', logError.message);
+						}
 
 						
 						console.log(`Logged system event for invoice ${payment.transaction_no}`);
