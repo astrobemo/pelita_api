@@ -1150,7 +1150,7 @@ app.get('/test_event_log', async (req, res) => {
         console.log('COMPANY_LIST', COMPANY_LIST);
         console.log('company_index', company_index, typeof company_index, req.params.company_index, req.query.company_index, req.query.params);
         console.log('test', prismaClient[1]);
-        return res.status(400).json({ error: 'Invalid company or client id' });
+        return res.status(400).json({ error: 'Prisma Client not found' });
     }
 
     try {
@@ -1159,6 +1159,10 @@ app.get('/test_event_log', async (req, res) => {
             entity_type : "PENJUALAN",
             entity_id : 1,
             event_type : "PAID"
+        }
+
+        if(typeof prismaClient[company_index].nd_system_event_log === 'undefined') {
+            return res.status(400).json({ error: 'Prisma Client system error' });
         }
 
         // console.log(prismaClient['test'], typeof prismaClient['test']);
