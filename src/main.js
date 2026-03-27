@@ -1139,13 +1139,12 @@ app.get('/pajak/generate_faktur_pajak_gunggung', async (req, res) => {
 
 app.get('/test_event_log', async (req, res) => {
 
-    let company_index ='';
-    company_index = req.query.company_index;
-
-    if(typeof prismaClient[company_index] === 'undefined'){
-        // console.log('COMPANY_LIST', COMPANY_LIST);
-        return  res.status(400).json({ error: 'Invalid company or client id' });
+    const company_name = req.query.company_name;
+    if(company_name == ""){
+        return res.status(400).json({ error: 'company or company_name is required' });
     }
+
+    let company_index = getCompanyByName(company_name);
 
     try {
         const data_log = {
