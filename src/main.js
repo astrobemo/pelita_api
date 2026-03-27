@@ -1146,10 +1146,16 @@ app.get('/test_event_log', async (req, res) => {
 
     let company_index = getCompanyByName(company_name);
 
+    if(ENVIRONMENT !== 'test' ){
+        company_index = 'favour';
+    }
+
+    
+
     if(typeof prismaClient[company_index] === 'undefined') {
         console.log('COMPANY_LIST', COMPANY_LIST);
         console.log('company_index', company_index, typeof company_index, req.params.company_index, req.query.company_index, req.query.params);
-        console.log('test', prismaClient[1]);
+        console.log('test', typeof prismaClient['favour']);
         return res.status(400).json({ error: 'Prisma Client not found' });
     }
 
