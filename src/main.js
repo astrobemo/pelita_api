@@ -1146,6 +1146,13 @@ app.get('/test_event_log', async (req, res) => {
 
     let company_index = getCompanyByName(company_name);
 
+    if(typeof COMPANY_LIST[company_index] === 'undefined') {
+        console.log('COMPANY_LIST', COMPANY_LIST);
+        console.log('company_index', company_index, typeof company_index, req.params.company_index, req.query.company_index, req.query.params);
+        console.log('test', prismaClient[1]);
+        return res.status(400).json({ error: 'Invalid company or client id' });
+    }
+
     try {
         const data_log = {
             channel : "penjualan",
