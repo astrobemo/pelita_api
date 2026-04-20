@@ -15,7 +15,6 @@ console.log(`PEMBAYARAN_ENDPOINT: ${PEMBAYARAN_ENDPOINT}`);
 console.log(`CRON_INTERVAL_MS: ${CRON_INTERVAL_MS}`);
 
 const companyList = COMPANY_NAME ? COMPANY_NAME.split(',').map((value) => value.toLowerCase()) : [];
-const COMPANY = companyList.length ? companyList : null;
 
 const pembayaranNormalize = {};
 pembayaranNormalize['Kas Tunai'] = 2;
