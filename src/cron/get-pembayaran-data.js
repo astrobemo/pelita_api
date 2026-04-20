@@ -15,6 +15,7 @@ console.log(`PEMBAYARAN_ENDPOINT: ${PEMBAYARAN_ENDPOINT}`);
 console.log(`CRON_INTERVAL_MS: ${CRON_INTERVAL_MS}`);
 
 const companyList = COMPANY_NAME ? COMPANY_NAME.split(',').map((value) => value.toLowerCase()) : [];
+const COMPANY = companyList.length ? companyList : null;
 
 const pembayaranNormalize = {};
 pembayaranNormalize['Kas Tunai'] = 2;
@@ -162,7 +163,7 @@ const printInsertPayload = (penjualanId, no_faktur_lengkap, user_id) => {
 const syncCompanyPayments = async (companyKey) => {
 
 	const compIndex = getCompanyByName(companyKey);
-	const prisma = prismaClient[compIndex];
+	const prisma = prismaClient[COMPANY[compIndex]];
 	if (!prisma) {
 		console.warn(`Prisma client not found for company: ${compIndex}`);
 		return;
