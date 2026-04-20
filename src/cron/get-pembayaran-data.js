@@ -20,6 +20,25 @@ const pembayaranNormalize = {};
 pembayaranNormalize['Kas Tunai'] = 2;
 pembayaranNormalize['Transfer Bank'] = 4;
 
+const getCompanyByName = (company_name) => {
+    
+    let company_index = null;
+    switch (company_name) {
+        case 'abadi':
+            company_index = 0;
+            break;
+        case 'lestari':
+            company_index = 1;
+            break;
+        case 'sejati':
+            company_index = 2;
+            break;
+        default:
+            throw new Error(`Invalid company name: ${company_name}`);
+    }
+
+    return company_index;
+};
 
 const isWithinWindow = (date) => {
 	const jakartaHour = Number(
@@ -141,9 +160,11 @@ const printInsertPayload = (penjualanId, no_faktur_lengkap, user_id) => {
 }
 
 const syncCompanyPayments = async (companyKey) => {
-	const prisma = prismaClient[companyKey];
+
+	const compIndex = getCompanyByName(companyKey);
+	const prisma = prismaClient[compIndex];
 	if (!prisma) {
-		console.warn(`Prisma client not found for company: ${companyKey}`);
+		console.warn(`Prisma client not found for company: ${compIndex}`);
 		return;
 	} 
 
