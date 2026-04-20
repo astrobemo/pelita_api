@@ -8,12 +8,13 @@ const START_HOUR = Number(process.env.PEMBAYARAN_CRON_START_HOUR || 8);
 const END_HOUR = Number(process.env.PEMBAYARAN_CRON_END_HOUR || 17);
 const BATCH_LIMIT = Number(process.env.PEMBAYARAN_CRON_BATCH_LIMIT || 5);
 const REQUEST_TIMEOUT_MS = Number(process.env.PEMBAYARAN_CRON_TIMEOUT_MS || 10000);
+const COMPANY_NAME = process.env.COMPANY_NAME || COMPANY || '';
 
 console.log('Pembayaran cron configuration:');
 console.log(`PEMBAYARAN_ENDPOINT: ${PEMBAYARAN_ENDPOINT}`);
 console.log(`CRON_INTERVAL_MS: ${CRON_INTERVAL_MS}`);
 
-const companyList = COMPANY ? COMPANY.split(',').map((value) => value.toLowerCase()) : [];
+const companyList = COMPANY_NAME ? COMPANY_NAME.split(',').map((value) => value.toLowerCase()) : [];
 
 const pembayaranNormalize = {};
 pembayaranNormalize['Kas Tunai'] = 2;
@@ -74,10 +75,13 @@ const paymentFingerprint = (payment) => {
 	return `${payment.pembayaran_type_id ?? ''}|${payment.dp_masuk_id ?? ''}|${payment.amount ?? ''}|${payment.keterangan ?? ''}|${created}`;
 };
 
-const fetchPembayaran = async (invoiceNumbers) => {
+const fetchPembayaran = async (invoiceNumbers, companyKey) => {
 	const response = await axios.post(PEMBAYARAN_ENDPOINT, {
 		transaction_no: invoiceNumbers
 	}, {
+		headers: {
+			'x-company-key': companyKey
+		},
 		timeout: REQUEST_TIMEOUT_MS
 	});
 	return normalizePayments(response.data);
@@ -183,7 +187,7 @@ const syncCompanyPayments = async (companyKey) => {
 
 	console.log(`Found ${invoiceNumbers.length} invoices for company ${companyKey}:`, invoiceNumbers);
 	const invoiceNumberswithId = penjualanRows.map((row) => ({ id: row.id, no_faktur_fp: row.no_faktur_fp })).filter((row) => row.no_faktur_fp);
-	const payments = await fetchPembayaran(invoiceNumbers);
+	const payments = await fetchPembayaran(invoiceNumbers, companyKey);
 	console.log('Fetched pembayaran data:', payments[0]);
 
 	const checkPaymentStatus = payments[0].success;
@@ -323,7 +327,7 @@ export const startPembayaranCron = () => {
 			// fetchPembayaran(" PA:PJ01/2602/0001");
 			for (const companyKey of companyList) {
 				console.log(`Starting pembayaran sync for company: ${companyKey}`);
-				await syncCompanyPayments(companyKey);
+				// await syncCompanyPayments(companyKey);
 			}
 		} catch (error) {
 			console.error('Pembayaran cron failed:', error.message);
