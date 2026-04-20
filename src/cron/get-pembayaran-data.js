@@ -162,7 +162,10 @@ const printInsertPayload = (penjualanId, no_faktur_lengkap, user_id) => {
 const syncCompanyPayments = async (companyKey) => {
 
 	const compIndex = getCompanyByName(companyKey);
-	const prisma = prismaClient[COMPANY[compIndex]];
+	const companies = COMPANY.split(',');
+	console.log(`Company index for ${companyKey}: ${compIndex}`, companies);
+	console.log(`Syncing pembayaran for company ${companyKey} (index ${companies[compIndex]})`);
+	const prisma = prismaClient[companies[compIndex]];
 	if (!prisma) {
 		console.warn(`Prisma client not found for company: ${compIndex}`);
 		return;
