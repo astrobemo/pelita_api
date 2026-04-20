@@ -76,6 +76,7 @@ const paymentFingerprint = (payment) => {
 };
 
 const fetchPembayaran = async (invoiceNumbers, companyKey) => {
+	console.log(`Fetching pembayaran data for company ${companyKey} with invoice numbers:`, invoiceNumbers);
 	const response = await axios.post(PEMBAYARAN_ENDPOINT, {
 		transaction_no: invoiceNumbers
 	}, {
