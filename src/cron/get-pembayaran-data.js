@@ -328,7 +328,7 @@ export const startPembayaranCron = () => {
 			// fetchPembayaran(" PA:PJ01/2602/0001");
 			for (const companyKey of companyList) {
 				console.log(`Starting pembayaran sync for company: ${companyKey}`);
-				// await syncCompanyPayments(companyKey);
+				await syncCompanyPayments(companyKey);
 			}
 		} catch (error) {
 			console.error('Pembayaran cron failed:', error.message);
