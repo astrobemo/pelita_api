@@ -9,6 +9,7 @@ const END_HOUR = Number(process.env.PEMBAYARAN_CRON_END_HOUR || 17);
 const BATCH_LIMIT = Number(process.env.PEMBAYARAN_CRON_BATCH_LIMIT || 5);
 const REQUEST_TIMEOUT_MS = Number(process.env.PEMBAYARAN_CRON_TIMEOUT_MS || 10000);
 const COMPANY_NAME = process.env.COMPANY_NAME || COMPANY || '';
+let limitCounter = 5;
 
 console.log('Pembayaran cron configuration:');
 console.log(`PEMBAYARAN_ENDPOINT: ${PEMBAYARAN_ENDPOINT}`);
@@ -181,6 +182,7 @@ const syncCompanyPayments = async (companyKey) => {
 			AND p.status_aktif = 1
 			AND p.status = 0
 			AND p.penjualan_type_id != 2
+			AND status_enum = 'AWAITING_PAYMENT'
 		) p
 		LEFT JOIN (
 			SELECT penjualan_id, sum(subqty * harga_jual) as total_penjualan
@@ -199,8 +201,23 @@ const syncCompanyPayments = async (companyKey) => {
 			OR pp.total_pembayaran < pDETAIL.total_penjualan
 		)			
 		ORDER BY p.id DESC
-		LIMIT ${BATCH_LIMIT}
+		LIMIT ${limitCounter*BATCH_LIMIT}, ${BATCH_LIMIT}
 	`;
+
+	const penjualanCount = await prisma.$queryRaw`
+		SELECT count(id) as jumlah
+		FROM nd_penjualan
+		WHERE status_aktif = 1
+		AND status_enum = 'AWAITING_PAYMENT'`;
+
+	const jumlah = penjualanCount[0]?.jumlah || 0;
+
+	if(jumlah > (0*BATCH_LIMIT)) {
+		limitCounter++;
+	}else{
+		limitCounter = 0;
+	}
+
 
 
 	// const invoiceNumbers = penjualanRows.map((row) => row.no_faktur_fp).filter(Boolean);
