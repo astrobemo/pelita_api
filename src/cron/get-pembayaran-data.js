@@ -172,7 +172,6 @@ const syncCompanyPayments = async (companyKey) => {
 		return;
 	}
 
-	console.log(limitCounter*BATCH_LIMIT, BATCH_LIMIT)
 	const penjualanRows = await prisma.$queryRaw`
 		SELECT p.id, p.no_faktur_fp, total_penjualan, pp.id as pembayaran_id
 		FROM (
@@ -213,7 +212,10 @@ const syncCompanyPayments = async (companyKey) => {
 
 	const jumlah = penjualanCount[0]?.jumlah || 0;
 
-	if(jumlah > (0*BATCH_LIMIT)) {
+	console.log(limitCounter*BATCH_LIMIT, BATCH_LIMIT)
+
+
+	if(jumlah > (limitCounter*BATCH_LIMIT)) {
 		limitCounter++;
 	}else{
 		limitCounter = 0;
