@@ -223,103 +223,109 @@ const syncCompanyPayments = async (companyKey) => {
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
 
-		if(transStatus.toString().toLowerCase() === 'paid') {
-			for (const payment of paymentData) {
-				const matchingInvoice = invoiceNumberswithId.find((invoice) => invoice.no_faktur_fp === payment.transaction_no);
-				if (matchingInvoice) {
-
-					/* await prisma.nd_pembayaran_penjualan.deleteMany({
-						where: { penjualan_id: matchingInvoice.id }
-					}); */
-
-					const paymentList = payment.payments || [];
-					const hasUnreconciledTransfer = paymentList.some(
-						(item) => item.payment_method_name === 'Transfer Bank' && !item.is_reconciled
-					);
-
-					if (hasUnreconciledTransfer) {
-						console.log(`Skipping invoice ${payment.transaction_no} due to unreconciled Transfer Bank payment.`);
-						continue;
-					}
-
-					const inserts = [];
-
-					for (const paymentItem of paymentList) {
-						let isReconciled = paymentItem.is_reconciled;
-						if(paymentItem.payment_method_name === 'Transfer Bank') {
-							if (!isReconciled) {
-								continue;
-							}
-						}
-						const payload = buildInsertPayload(paymentItem, matchingInvoice.id);
-						if (payload) {
-							inserts.push(payload);
-						}
-						else {
-							console.warn(`Invalid payment data for invoice ${payment.transaction_no}:`, paymentItem);
-						}
-					}
-
-					if (inserts.length) {
-						await prisma.nd_pembayaran_penjualan.createMany({
-							data: inserts
-						});
-						console.log(`Inserted ${inserts.length} pembayaran rows for invoice ${payment.transaction_no}`);
-
-
-						const printPayload = printInsertPayload(matchingInvoice.id, matchingInvoice.no_faktur_fp, matchingInvoice.user_id);
-						await prisma.nd_print_jual_log.create({
-							data: printPayload
-						});
-						console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
-
-						
-
-						const data_jual_update = {
-							status_enum: "PAID"
-						}
-
-						try {
-							await prisma.$queryRaw`UPDATE nd_penjualan SET status_enum = "PAID" WHERE id = ${matchingInvoice.id}`;
-						} catch (logError) {
-							console.warn('Failed to log system event:', logError.message);
-						}
-
-						
-						console.log(`Logged system event for invoice ${payment.transaction_no}`);
-
-						const data_log = {
-							channel : "penjualan",
-							entity_type : "PENJUALAN",
-							entity_id : matchingInvoice.id,
-							event_type : "PAID"
-						}
-
-						try {
-							await prisma.$queryRaw`INSERT INTO nd_system_event_log (channel, entity_type, entity_id, event_type) 
-							VALUES (${data_log.channel}, ${data_log.entity_type}, ${data_log.entity_id}, ${data_log.event_type})`;
-						} catch (logError) {
-							console.warn('Failed to log system event:', logError.message);
-						}
-						
-					}
-
-					/*
-					data: {
-						data_faktur: dataPrint,
-						jenis_dokumen: jenisDokumen,
-						penjualan_id: "<?=$penjualan_id?>",
-						no_faktur_lengkap: "<?=$no_faktur_lengkap?>",
-						status: 1,
-					},
-					*/
-				}else{
-					console.warn(`No matching invoice found for payment with transaction_no: ${payment.transaction_no}`);
-					continue;
-				}
-			}
+		/* if(transStatus.toString().toLowerCase() === 'paid') {
+			
 		} else {
 			console.log(`Transaction status for company ${companyKey} is not 'paid'. Skipping pembayaran sync.`);
+		} */
+
+		for (const payment of paymentData) {
+			if (payment.transaction_status.name.toString().toLowerCase() !== 'paid') {
+				console.log(`Skipping payment with transaction_no ${payment.transaction_no} due to transaction status: ${payment.transaction_status.name}`);
+				continue;
+			}
+			const matchingInvoice = invoiceNumberswithId.find((invoice) => invoice.no_faktur_fp === payment.transaction_no);
+			if (matchingInvoice) {
+
+				/* await prisma.nd_pembayaran_penjualan.deleteMany({
+					where: { penjualan_id: matchingInvoice.id }
+				}); */
+
+				const paymentList = payment.payments || [];
+				const hasUnreconciledTransfer = paymentList.some(
+					(item) => item.payment_method_name === 'Transfer Bank' && !item.is_reconciled
+				);
+
+				if (hasUnreconciledTransfer) {
+					console.log(`Skipping invoice ${payment.transaction_no} due to unreconciled Transfer Bank payment.`);
+					continue;
+				}
+
+				const inserts = [];
+
+				for (const paymentItem of paymentList) {
+					let isReconciled = paymentItem.is_reconciled;
+					if(paymentItem.payment_method_name === 'Transfer Bank') {
+						if (!isReconciled) {
+							continue;
+						}
+					}
+					const payload = buildInsertPayload(paymentItem, matchingInvoice.id);
+					if (payload) {
+						inserts.push(payload);
+					}
+					else {
+						console.warn(`Invalid payment data for invoice ${payment.transaction_no}:`, paymentItem);
+					}
+				}
+
+				if (inserts.length) {
+					await prisma.nd_pembayaran_penjualan.createMany({
+						data: inserts
+					});
+					console.log(`Inserted ${inserts.length} pembayaran rows for invoice ${payment.transaction_no}`);
+
+
+					const printPayload = printInsertPayload(matchingInvoice.id, matchingInvoice.no_faktur_fp, matchingInvoice.user_id);
+					await prisma.nd_print_jual_log.create({
+						data: printPayload
+					});
+					console.log(`Enqueued print job for invoice ${payment.transaction_no}`);
+
+					
+
+					const data_jual_update = {
+						status_enum: "PAID"
+					}
+
+					try {
+						await prisma.$queryRaw`UPDATE nd_penjualan SET status_enum = "PAID" WHERE id = ${matchingInvoice.id}`;
+					} catch (logError) {
+						console.warn('Failed to log system event:', logError.message);
+					}
+
+					
+					console.log(`Logged system event for invoice ${payment.transaction_no}`);
+
+					const data_log = {
+						channel : "penjualan",
+						entity_type : "PENJUALAN",
+						entity_id : matchingInvoice.id,
+						event_type : "PAID"
+					}
+
+					try {
+						await prisma.$queryRaw`INSERT INTO nd_system_event_log (channel, entity_type, entity_id, event_type) 
+						VALUES (${data_log.channel}, ${data_log.entity_type}, ${data_log.entity_id}, ${data_log.event_type})`;
+					} catch (logError) {
+						console.warn('Failed to log system event:', logError.message);
+					}
+					
+				}
+
+				/*
+				data: {
+					data_faktur: dataPrint,
+					jenis_dokumen: jenisDokumen,
+					penjualan_id: "<?=$penjualan_id?>",
+					no_faktur_lengkap: "<?=$no_faktur_lengkap?>",
+					status: 1,
+				},
+				*/
+			}else{
+				console.warn(`No matching invoice found for payment with transaction_no: ${payment.transaction_no}`);
+				continue;
+			}
 		}
 	}
 };
