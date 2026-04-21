@@ -169,7 +169,7 @@ const syncCompanyPayments = async (companyKey) => {
 	if (!prisma) {
 		console.warn(`Prisma client not found for company: ${compIndex}`);
 		return;
-	} 
+	}
 
 	const penjualanRows = await prisma.$queryRaw`
 		SELECT p.id, p.no_faktur_fp, total_penjualan, pp.id as pembayaran_id
@@ -181,7 +181,6 @@ const syncCompanyPayments = async (companyKey) => {
 			AND p.status_aktif = 1
 			AND p.status = 0
 			AND p.penjualan_type_id != 2
-			AND p.tanggal >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
 		) p
 		LEFT JOIN (
 			SELECT penjualan_id, sum(subqty * harga_jual) as total_penjualan
@@ -202,6 +201,7 @@ const syncCompanyPayments = async (companyKey) => {
 		ORDER BY p.id DESC
 		LIMIT ${BATCH_LIMIT}
 	`;
+
 
 	// const invoiceNumbers = penjualanRows.map((row) => row.no_faktur_fp).filter(Boolean);
 	const invoiceNumbers = penjualanRows.map((row) => row.no_faktur_fp).filter(Boolean);
