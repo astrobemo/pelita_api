@@ -115,8 +115,6 @@ const buildInsertPayload = (payment, penjualanId) => {
 	}
 
 	const pembayaranTypeId = pembayaranNormalize[payment.payment_method_name] || 0;
-	
-	
 
 	const payload = {
 		penjualan_id: penjualanId,
@@ -239,6 +237,8 @@ const syncCompanyPayments = async (companyKey) => {
 	console.log(`Payment status for company ${companyKey}: ${checkPaymentStatus}`);
 	if (checkPaymentStatus) {	
 		const paymentData = payments[0].data;
+		console.log('paymentData', paymentData);
+		console.log('paymentData-0', paymentData[0]);
 		const transStatus = paymentData[0].transaction_status.name;
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
@@ -250,6 +250,7 @@ const syncCompanyPayments = async (companyKey) => {
 		} */
 
 		for (const payment of paymentData) {
+				console.log('payment_status', payment.transaction_status);
 			if (payment.transaction_status.name.toString().toLowerCase() !== 'paid') {
 				console.log(`Skipping payment with transaction_no ${payment.transaction_no} due to transaction status: ${payment.transaction_status.name}`);
 				continue;
