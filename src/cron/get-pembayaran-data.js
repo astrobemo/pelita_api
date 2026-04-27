@@ -239,6 +239,11 @@ const syncCompanyPayments = async (companyKey) => {
 		const paymentData = payments[0].data;
 		console.log('paymentData', paymentData);
 		console.log('paymentData-0', paymentData[0]);
+
+		if (!paymentData[0] || paymentData.length === 0) {
+			return;
+		}
+
 		const transStatus = paymentData[0].transaction_status.name;
 		console.log(`Processing ${paymentData.length} pembayaran records for company ${companyKey}`);
 		console.log('Sample pembayaran record:', paymentData);
